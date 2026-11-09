@@ -41,7 +41,7 @@ const AdminLogin = () => {
         });
 
         if (data.success) {
-          setAuth(data.token);
+          setAuth(data.token, data.user);
           toast.success('Đăng nhập hệ thống quản trị thành công!');
           navigate(ROUTES.ADMIN_OVERVIEW);
         } else {

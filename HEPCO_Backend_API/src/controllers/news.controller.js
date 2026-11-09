@@ -5,13 +5,21 @@ const positiveId = (value) => {
   if (!/^[1-9]\d*$/.test(String(value)) || !Number.isSafeInteger(Number(value))) throw new AppError('INVALID_INPUT', 400, 'A positive integer ID is required');
   return Number(value);
 };
-const validateUrl = (value) => typeof value === 'string' && (value.startsWith('/api/media/images/') || value.startsWith('/images/') || value.startsWith('/pdf/') || value.startsWith('/Public/Upload/') || value.startsWith('/uploads/') || /^https:\/\//i.test(value));
+const validateUrl = (value) => typeof value === 'string' && (
+  value.startsWith('/api/media/') ||
+  value.startsWith('/images/') ||
+  value.startsWith('/pdf/') ||
+  value.startsWith('/Public/Upload/') ||
+  value.startsWith('/uploads/') ||
+  value.startsWith('data:') ||
+  /^https?:\/\//i.test(value)
+);
 const payloadFrom = (body) => {
   const { title, content, thumbnail, type, date } = body || {};
   if (typeof title !== 'string' || !title.trim() || title.length > 255 || typeof content !== 'string' || !content.trim()) throw new AppError('MISSING_REQUIRED_FIELDS', 400, 'Title and content are required');
   if (!NEWS_TYPES.includes(type)) throw new AppError('INVALID_INPUT', 400, 'Unsupported article type');
-  if (typeof date !== 'string' || !date.trim() || date.length > 20) throw new AppError('INVALID_INPUT', 400, 'An article date of at most 20 characters is required');
-  if (thumbnail && (!validateUrl(thumbnail) || thumbnail.length > 500)) throw new AppError('INVALID_INPUT', 400, 'A permanent image URL is required');
+  if (typeof date !== 'string' || !date.trim() || date.length > 50) throw new AppError('INVALID_INPUT', 400, 'An article date is required');
+  if (thumbnail && (!validateUrl(thumbnail) || thumbnail.length > 2000)) throw new AppError('INVALID_INPUT', 400, 'A permanent image URL is required');
   const metadata = {};
   for (const key of NEWS_METADATA_FIELDS) if (body[key] !== undefined) metadata[key] = body[key];
   for (const key of ['summary', 'category', 'documentType', 'slug']) if (metadata[key] !== undefined && (typeof metadata[key] !== 'string' || metadata[key].length > 2000)) throw new AppError('INVALID_INPUT', 400, 'Invalid article metadata');

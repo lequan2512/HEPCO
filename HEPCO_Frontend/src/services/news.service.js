@@ -836,3 +836,41 @@ export const getCmsOverviewCounts = () => {
     bannersCount
   };
 };
+
+
+export const saveAboutSettingsServer = async (newSettings) => {
+  const overrides = loadLocalOverrides();
+  overrides.aboutSettings = {
+    ...getAboutSettings(),
+    ...newSettings
+  };
+  saveLocalOverrides(overrides);
+
+  try {
+    const listRes = await axiosInstance.get('/api/news', { params: { type: 'about', limit: 20 }, timeout: 4000 });
+    const articles = listRes.data?.data || [];
+    const configArticle = articles.find(
+      (a) => a.slug === 'about_settings' || a.metadata?.slug === 'about_settings' || a.title === 'Cấu hình thông tin Giới thiệu HEPCO'
+    );
+    const payload = {
+      title: 'Cấu hình thông tin Giới thiệu HEPCO',
+      date: new Date().toLocaleDateString('vi-VN'),
+      type: 'about',
+      content: newSettings.openLetterParagraph1 || 'Cấu hình trang giới thiệu',
+      thumbnail: newSettings.hqImage || '/images/cover.png',
+      metadata: {
+        slug: 'about_settings',
+        ...newSettings
+      }
+    };
+    if (configArticle) {
+      await axiosInstance.put(`/api/news/${configArticle.id}`, payload);
+    } else {
+      await axiosInstance.post('/api/news', payload);
+    }
+  } catch (err) {
+    console.warn('Server sync for about settings failed, saved locally:', err);
+    throw err;
+  }
+  return overrides.aboutSettings;
+};

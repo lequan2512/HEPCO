@@ -9,7 +9,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getAboutSettings, updateAboutSettings } from '../../../services/news.service';
+import { getAboutSettings, updateAboutSettings, saveAboutSettingsServer } from '../../../services/news.service';
 import { useUploadImage } from '../../../apis/upload';
 import { resolveAssetUrl } from '../../../utils/assetUrl';
 import { ROUTES } from '../../../constants/routes';

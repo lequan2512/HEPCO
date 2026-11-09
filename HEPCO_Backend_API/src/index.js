@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
     name: 'HEPCO Website & CMS API',
     version: '2026.1',
     status: 'running',
-    database: process.env.DATABASE_URL.startsWith('sqlserver') ? 'Microsoft SQL Server' : 'SQLite Dev'
+    database: 'connected'
   });
 });
 

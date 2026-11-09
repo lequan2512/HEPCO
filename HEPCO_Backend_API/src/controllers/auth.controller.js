@@ -18,4 +18,7 @@ exports.login = async (req, res, next) => {
     res.json({ success: true, user: { id: user.id, username: user.username }, token });
   } catch (error) { next(error); }
 };
-exports.getSession = (req, res) => res.json({ success: true, user: req.user, canManageContent: getCmsAdminIds().has(req.user.id) });
+exports.getSession = (req, res) => {
+  const isCmsAdmin = getCmsAdminIds().has(req.user.id) || req.user.role === 'super_admin' || req.user.role === 'admin' || req.user.role === 'editor';
+  res.json({ success: true, user: req.user, canManageContent: isCmsAdmin });
+};

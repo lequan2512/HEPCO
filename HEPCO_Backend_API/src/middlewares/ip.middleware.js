@@ -22,6 +22,7 @@ const isPrivateIp = (ip) => {
 };
 
 const assertAllowedIp = async (req) => {
+  if (process.env.ENABLE_IP_WHITELIST !== 'true') return;
   const ip = getClientIp(req);
   if (isPrivateIp(ip)) return;
   if (!net.isIP(ip) || !(await IpWhitelistModel.checkIp(ip))) {
