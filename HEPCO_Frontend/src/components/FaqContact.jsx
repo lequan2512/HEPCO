@@ -81,14 +81,14 @@ const FaqContact = ({ config }) => {
   });
 
   return (
-    <section id="faq-contact-section" className="py-20 md:py-28 bg-[#f8fafc] border-b border-gray-200/80 scroll-mt-20">
+    <section id="faq-contact-section" className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#f8fafc] border-b border-gray-200/80 scroll-mt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-14 md:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight mb-4">
+        <div className="max-w-4xl mx-auto text-center mb-10 sm:mb-14 md:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
             {title}
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-2xl mx-auto">
             {subtitle}
           </p>
         </div>

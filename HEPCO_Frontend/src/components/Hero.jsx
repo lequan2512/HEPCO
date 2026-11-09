@@ -26,7 +26,7 @@ const Hero = ({ config }) => {
       <div className="container mx-auto px-3.5 sm:px-6 lg:px-8 max-w-7xl">
         {/* Main Display Headline */}
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-8 sm:mb-10 md:mb-12">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#10243b] leading-[1.2] sm:leading-[1.15] mb-4 sm:mb-6 drop-shadow-2xs">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#10243b] leading-[1.2] sm:leading-[1.15] text-balance mb-4 sm:mb-6 drop-shadow-2xs">
             <span className="block">{heroConfig.headlinePrefix}</span>
             <span className="block text-hepco-green mt-1 sm:mt-2">
               {heroConfig.headlineHighlight}
@@ -34,7 +34,7 @@ const Hero = ({ config }) => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-800 max-w-3xl leading-relaxed mb-6 sm:mb-8 md:mb-10 font-medium px-1">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-800 max-w-3xl leading-relaxed mb-6 sm:mb-8 md:mb-10 font-medium px-1 text-pretty">
             {heroConfig.subtitle}
           </p>
 

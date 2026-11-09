@@ -32,49 +32,49 @@ const HomeTestimonials = ({ config }) => {
     : DEFAULT_TESTIMONIALS;
 
   return (
-    <section className="py-20 md:py-28 bg-[#fafafa] border-b border-gray-200/80">
+    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#fafafa] border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16 md:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight mb-4">
+        <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
             {title}
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-2xl mx-auto">
             {subtitle}
           </p>
         </div>
 
         {/* Review Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {testimonials.map((item, idx) => (
             <div
               key={idx}
-              className="group flex flex-col justify-between p-8 rounded-3xl bg-white border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
+              className="group flex flex-col justify-between p-6 sm:p-7 md:p-8 rounded-3xl bg-white border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
             >
               <div>
                 {/* 5 Stars Rating */}
-                <div className="flex gap-1 text-amber-400 mb-6">
+                <div className="flex gap-1 text-amber-400 mb-5 sm:mb-6">
                   {[...Array(Number(item.rating) || 5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
+                    <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                   ))}
                 </div>
 
                 {/* Content */}
-                <p className="text-base text-gray-700 leading-relaxed italic mb-8 font-normal">
+                <p className="text-sm sm:text-base text-gray-700 leading-relaxed italic mb-6 sm:mb-8 font-normal text-pretty">
                   "{item.content}"
                 </p>
               </div>
 
               {/* Author Meta */}
-              <div className="pt-6 border-t border-gray-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-sm">
+              <div className="pt-5 sm:pt-6 border-t border-gray-100 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-sm shrink-0">
                   {item.author ? item.author.charAt(0) : 'H'}
                 </div>
                 <div>
                   <div className="font-black text-[#10243b] text-sm">
                     {item.author}
                   </div>
-                  <div className="text-xs text-gray-500 font-normal">
+                  <div className="text-xs text-gray-500 font-medium">
                     {item.role}
                   </div>
                 </div>

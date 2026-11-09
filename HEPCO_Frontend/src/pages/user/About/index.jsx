@@ -94,7 +94,7 @@ const About = () => {
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-orange rounded-full"></div>
                   </h2>
 
-                  <div className="prose prose-sm sm:prose-base md:prose-lg text-gray-700 space-y-4 sm:space-y-6 text-justify">
+                  <div className="prose prose-sm sm:prose-base md:prose-lg text-gray-700 space-y-4 sm:space-y-6 text-pretty">
                     <p className="italic font-bold text-hepco-green text-lg sm:text-xl mt-4 mb-3">
                       {aboutConfig.openLetterGreeting || 'Kính gửi Quý khách hàng,'}
                     </p>

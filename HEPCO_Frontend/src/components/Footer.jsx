@@ -37,7 +37,7 @@ const Footer = () => {
                 HEPCO
               </span>
             </div>
-            <p className="text-sm leading-relaxed mb-6 text-green-50 text-justify">
+            <p className="text-sm leading-relaxed mb-6 text-green-50 text-pretty">
               Phát huy thế mạnh và đa dạng hóa lĩnh vực hoạt động để trở thành Công ty môi trường hàng đầu khu vực miền Trung - Tây Nguyên.
             </p>
 

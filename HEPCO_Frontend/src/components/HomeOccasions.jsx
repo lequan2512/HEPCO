@@ -47,6 +47,15 @@ const BADGE_COLORS = [
   'bg-teal-50 text-teal-800 border-teal-200'
 ];
 
+// Helper to bind the last 2 words with non-breaking space, preventing single orphan words on newline
+const formatHeadingBalanced = (str) => {
+  if (!str || typeof str !== 'string') return str;
+  const trimmed = str.trim();
+  const lastSpace = trimmed.lastIndexOf(' ');
+  if (lastSpace === -1) return trimmed;
+  return trimmed.substring(0, lastSpace) + '\u00A0' + trimmed.substring(lastSpace + 1);
+};
+
 const HomeOccasions = ({ config }) => {
   const title = config?.title || 'Lĩnh Vực Hoạt Động & Phục Vụ Đa Dạng';
   const subtitle = config?.subtitle || 'Giải pháp chuyên biệt cho từng nhóm đối tượng khách hàng và không gian đô thị';
@@ -59,55 +68,55 @@ const HomeOccasions = ({ config }) => {
     : DEFAULT_OCCASIONS;
 
   return (
-    <section className="py-20 md:py-28 bg-[#f8fafc] border-b border-gray-200/80">
+    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#f8fafc] border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
-        <div className="max-w-3xl mb-16 md:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight mb-4">
-            {title}
+        <div className="max-w-4xl mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
+            {formatHeadingBalanced(title)}
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
             {subtitle}
           </p>
         </div>
 
-        {/* 4 Occasions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        {/* 4 Occasions Grid - Responsive 1 col on mobile, 2 cols on tablet, 4 cols on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {items.map((item, idx) => {
             const IconComponent = item.icon || Building2;
             return (
               <div
                 key={idx}
-                className="group relative flex flex-col justify-between p-7 sm:p-8 rounded-3xl bg-white border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
+                className="group relative flex flex-col justify-between p-6 sm:p-7 md:p-8 rounded-3xl bg-white border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-[#f0fdf4] text-emerald-800 flex items-center justify-center transition-transform group-hover:scale-110">
-                      <IconComponent className="w-7 h-7" />
+                  <div className="flex items-center justify-between mb-5 sm:mb-6">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#f0fdf4] text-emerald-800 flex items-center justify-center transition-transform group-hover:scale-110">
+                      <IconComponent className="w-6 h-6 sm:w-7 sm:h-7" />
                     </div>
                     {item.tag && (
                       <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full border ${item.badgeColor || BADGE_COLORS[0]}`}
+                        className={`text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 rounded-full border ${item.badgeColor || BADGE_COLORS[0]}`}
                       >
                         {item.tag}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-2">
+                  <h3 className="text-lg sm:text-xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-2 text-balance leading-snug">
                     {item.title}
                   </h3>
                   {item.subtitle && (
-                    <div className="text-xs font-bold text-emerald-700 mb-4">
+                    <div className="text-xs font-bold text-emerald-700 mb-3 sm:mb-4">
                       {item.subtitle}
                     </div>
                   )}
-                  <p className="text-sm text-gray-600 leading-relaxed font-normal">
+                  <p className="text-sm text-gray-600 leading-relaxed font-normal text-pretty">
                     {item.description}
                   </p>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-gray-100 flex items-center gap-2 text-xs font-bold text-gray-400 group-hover:text-emerald-700 transition-colors">
+                <div className="pt-5 sm:pt-6 mt-5 sm:mt-6 border-t border-gray-100 flex items-center gap-2 text-xs font-bold text-gray-400 group-hover:text-emerald-700 transition-colors">
                   <span>Tiêu chuẩn công ích</span>
                 </div>
               </div>

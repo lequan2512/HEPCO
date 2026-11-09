@@ -174,17 +174,17 @@ const NewsPartnersAwards = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 relative bg-white overflow-hidden border-b border-gray-200/80">
+    <section className="py-14 sm:py-20 md:py-24 lg:py-28 relative bg-white overflow-hidden border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
         {/* News Section */}
         {news.length > 0 && (
           <div className="mb-24">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 md:mb-16 gap-6">
               <div className="max-w-4xl">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
                   Tin Tức &amp; Sự Kiện Mới Nhất
                 </h2>
-                <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
                   Cập nhật các hoạt động sản xuất kinh doanh, phong trào thi đua và thông báo chính thức từ HEPCO.
                 </p>
               </div>

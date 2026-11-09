@@ -227,7 +227,7 @@ const ArticleDetail = () => {
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#10243b] leading-snug mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#10243b] leading-snug sm:leading-tight mb-4 sm:mb-6 text-balance">
               {article.title}
             </h1>
 
@@ -426,7 +426,7 @@ const ArticleDetail = () => {
             <div className="text-gray-800 text-base md:text-lg leading-relaxed font-normal">
               {typeof article.content === 'string' ? (
                 <div
-                  className="prose prose-lg max-w-none [word-break:keep-all] [overflow-wrap:break-word]
+                  className="prose prose-lg max-w-none [word-break:normal] [overflow-wrap:break-word]
                     prose-p:mb-6
                     prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mt-10 prose-headings:mb-4
                     prose-a:text-hepco-green hover:prose-a:text-hepco-orange prose-a:font-semibold

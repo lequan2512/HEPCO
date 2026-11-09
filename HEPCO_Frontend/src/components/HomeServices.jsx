@@ -41,30 +41,30 @@ const HomeServices = () => {
   const displayServices = rawServices.length > 0 ? rawServices : FALLBACK_SERVICES;
 
   return (
-    <section className="py-20 md:py-28 bg-white border-b border-gray-200/80">
+    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-white border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Section Header (Oakdale Editorial Style) */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 md:mb-16 gap-6">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-14 md:mb-16 gap-6">
           <div className="max-w-4xl">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
               Giải Pháp Môi Trường &amp; <span className="inline-block whitespace-nowrap">Hạ Tầng Đô Thị</span>
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-gray-600 leading-relaxed font-normal">
+            <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
               Đáp ứng trọn gói nhu cầu của người dân, cơ quan, doanh nghiệp và các sự kiện lớn trên địa bàn tỉnh Thừa Thiên Huế.
             </p>
           </div>
 
           <Link
             to={ROUTES.SERVICES}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto"
+            className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
           >
             <span>Tất Cả Dịch Vụ</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Services Showcase Cards (Oakdale Style High-Impact Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+        {/* Services Showcase Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {displayServices.map((service, index) => {
             const imageSrc = service.thumbnail
               ? resolveAssetUrl(service.thumbnail)
@@ -78,7 +78,7 @@ const HomeServices = () => {
                 className="group flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
                 {/* Image Container */}
-                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-gray-200">
+                <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden bg-gray-200">
                   <img
                     src={imageSrc}
                     alt={service.title}
@@ -92,26 +92,25 @@ const HomeServices = () => {
                 </div>
 
                 {/* Content Details */}
-                <div className="p-7 sm:p-8 flex flex-col justify-between flex-grow bg-white">
+                <div className="p-6 sm:p-7 md:p-8 flex flex-col justify-between flex-grow bg-white">
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-3 line-clamp-2">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-3 line-clamp-2 text-balance leading-snug">
                       {service.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-normal mb-6 line-clamp-3">
-                      {service.summary ||
-                        'Dịch vụ chuyên nghiệp với quy trình chuẩn hóa, đội ngũ nhân sự tận tâm và cam kết bảo vệ môi trường cao nhất.'}
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-normal mb-6 line-clamp-3 text-pretty">
+                      {service.summary}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-sm font-bold text-[#10243b] group-hover:text-emerald-700 transition-colors">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>Đảm bảo an toàn &amp; vệ sinh</span>
+                  <div className="pt-4 sm:pt-6 border-t border-gray-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-emerald-700">
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                      <span>{service.tag || 'Tiêu chuẩn đô thị'}</span>
                     </div>
 
-                    <div className="inline-flex items-center gap-1.5 font-bold group-hover:translate-x-1 transition-transform">
-                      <span>Chi tiết</span>
-                      <ArrowRight className="w-4 h-4" />
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#10243b] group-hover:text-emerald-700">
+                      <span>Chi tiết phương án</span>
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
                 </div>
