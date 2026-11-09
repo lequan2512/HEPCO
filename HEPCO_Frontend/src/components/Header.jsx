@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Phone, Menu, X, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Phone, Menu, X, ExternalLink, ShieldCheck, Home, Newspaper, FileText } from 'lucide-react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import logo from '../assets/images/logo.png';
@@ -32,13 +32,18 @@ const Header = () => {
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!isMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => { if (desktop.matches) setIsMenuOpen(false); };
+    const closeOnEscape = (event) => { if (event.key === 'Escape') setIsMenuOpen(false); };
+    document.body.style.overflow = 'hidden';
+    desktop.addEventListener('change', closeOnDesktop);
+    document.addEventListener('keydown', closeOnEscape);
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      desktop.removeEventListener('change', closeOnDesktop);
+      document.removeEventListener('keydown', closeOnEscape);
     };
   }, [isMenuOpen]);
 
@@ -61,13 +66,12 @@ const Header = () => {
 
   return (
     <header
-      className={`sticky top-0 w-full z-50 transition-all duration-300 ${
-        isMenuOpen
-          ? 'bg-white shadow-md border-b border-gray-200 py-2.5'
-          : isScrolled
-            ? 'bg-white/98 backdrop-blur-md shadow-md border-b border-gray-200/90 py-2 sm:py-2.5'
-            : 'bg-white/95 backdrop-blur-md shadow-xs border-b border-gray-200/60 py-2.5 sm:py-3.5'
-      }`}
+      className={`sticky top-0 w-full z-50 transition-all duration-300 ${isMenuOpen
+        ? 'bg-white shadow-md border-b border-gray-200 py-2.5'
+        : isScrolled
+          ? 'bg-white/98 backdrop-blur-md shadow-md border-b border-gray-200/90 py-2 sm:py-2.5'
+          : 'bg-white/95 backdrop-blur-md shadow-xs border-b border-gray-200/60 py-2.5 sm:py-3.5'
+        }`}
     >
       <div className="container mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 max-w-7xl">
         <div className="flex items-center justify-between gap-2 lg:gap-3 xl:gap-4">
@@ -85,12 +89,12 @@ const Header = () => {
               />
             </div>
             <div className="flex flex-col whitespace-nowrap">
-              <span className="text-lg sm:text-xl xl:text-2xl font-black tracking-tight text-[#10243b] leading-none group-hover:text-emerald-700 transition-colors">
+              {/* <span className="text-lg sm:text-xl xl:text-2xl font-black tracking-tight text-[#10243b] leading-none group-hover:text-emerald-700 transition-colors">
                 HEPCO
               </span>
               <span className="text-[9px] sm:text-[10px] xl:text-[11px] font-bold text-emerald-700 tracking-wider uppercase leading-none mt-1">
                 Môi Trường Đô Thị Huế
-              </span>
+              </span> */}
             </div>
           </Link>
 
@@ -120,11 +124,10 @@ const Header = () => {
                 <NavLink
                   key={index}
                   to={item.path}
-                  className={`whitespace-nowrap shrink-0 px-2.5 xl:px-3.5 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold transition-all duration-200 ${
-                    isItemActive
-                      ? 'text-emerald-700 bg-emerald-50/90 shadow-2xs font-extrabold'
-                      : 'text-gray-700 hover:text-[#10243b] hover:bg-gray-100/80'
-                  }`}
+                  className={`whitespace-nowrap shrink-0 px-2.5 xl:px-3.5 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold transition-all duration-200 ${isItemActive
+                    ? 'text-emerald-700 bg-emerald-50/90 shadow-2xs font-extrabold'
+                    : 'text-gray-700 hover:text-[#10243b] hover:bg-gray-100/80'
+                    }`}
                 >
                   {item.name}
                 </NavLink>
@@ -137,9 +140,8 @@ const Header = () => {
             {/* Tablet & Desktop Hotline Pill Button */}
             <a
               href="tel:1900969669"
-              className={`${
-                isMenuOpen ? 'hidden lg:inline-flex' : 'hidden sm:inline-flex'
-              } whitespace-nowrap shrink-0 items-center gap-2 xl:gap-2.5 px-3.5 xl:px-4 py-2 rounded-full bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-xs xl:text-sm shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 group`}
+              className={`${isMenuOpen ? 'hidden lg:inline-flex' : 'hidden sm:inline-flex'
+                } whitespace-nowrap shrink-0 items-center gap-2 xl:gap-2.5 px-3.5 xl:px-4 py-2 rounded-full bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-xs xl:text-sm shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 group`}
               title="Gọi tổng đài hỗ trợ HEPCO 1900 969669"
             >
               <div className="w-6 h-6 xl:w-7 xl:h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-emerald-700 transition-all">
@@ -181,6 +183,8 @@ const Header = () => {
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 active:scale-95 transition-all focus:outline-none cursor-pointer"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-site-menu"
               aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
             >
               {isMenuOpen ? <X className="w-6 h-6 text-gray-800" /> : <Menu className="w-6 h-6" />}
@@ -188,6 +192,22 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <nav aria-label="Truy cập nhanh" className="grid grid-cols-3 border-t border-emerald-900/10 bg-white px-2 lg:hidden">
+        {[
+          [ROUTES.HOME, 'Trang chủ', Home],
+          [ROUTES.NEWS_AND_ANNOUNCEMENTS, 'Tin tức', Newspaper],
+          [ROUTES.SHAREHOLDERS, 'Cổ đông', FileText]
+        ].map(([path, label, Icon]) => (
+          <NavLink key={path} to={path} end={path === ROUTES.HOME}
+            className={({ isActive }) => "flex min-h-12 items-center justify-center gap-1.5 rounded-lg px-1 text-xs font-semibold " +
+              (isActive ? "bg-emerald-50 text-emerald-800" : "text-gray-600")}
+          >
+            <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
 
       {/* Backdrop overlay for mobile drawer */}
       {isMenuOpen && (
@@ -199,11 +219,12 @@ const Header = () => {
 
       {/* Mobile & Tablet Navigation Drawer */}
       <div
-        className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-2xl transition-all duration-250 ease-out origin-top z-50 max-h-[calc(100dvh-64px)] overflow-y-auto ${
-          isMenuOpen
-            ? 'opacity-100 scale-y-100 visible'
-            : 'opacity-0 scale-y-95 invisible pointer-events-none'
-        }`}
+        id="mobile-site-menu"
+        inert={!isMenuOpen}
+        className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-2xl transition-all duration-250 ease-out origin-top z-50 max-h-[calc(100dvh-120px)] overflow-y-auto ${isMenuOpen
+          ? 'opacity-100 scale-y-100 visible'
+          : 'opacity-0 scale-y-95 invisible pointer-events-none'
+          }`}
       >
         <div className="container mx-auto px-4 py-4 space-y-1.5 max-w-7xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
@@ -233,11 +254,10 @@ const Header = () => {
                   key={index}
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                    isItemActive
-                      ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
-                      : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
-                  }`}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${isItemActive
+                    ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
+                    : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
+                    }`}
                 >
                   <span>{item.name}</span>
                 </NavLink>
