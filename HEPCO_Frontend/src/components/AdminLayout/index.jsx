@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, Link, useLocation, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Newspaper,
@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  Users
 } from 'lucide-react';
 
 import useAuthStore from '../../store/useAuthStore';
@@ -80,6 +81,13 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
+  // Auto close mobile drawer on route change
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+  if (location.pathname !== prevPathname) {
+    setPrevPathname(location.pathname);
+    setIsSidebarOpen(false);
+  }
+
   // Sidebar Collapse state for Desktop
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return localStorage.getItem('sidebar_collapsed') === 'true';
@@ -92,12 +100,6 @@ const AdminLayout = () => {
       return next;
     });
   };
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(ROUTES.ADMIN_LOGIN);
-    }
-  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -114,17 +116,19 @@ const AdminLayout = () => {
     navigate(ROUTES.ADMIN_LOGIN);
   };
 
-  if (!isAuthenticated) return null;
-  if (session.isPending && !token?.includes('hepco')) {
-    return <div className="flex items-center justify-center min-h-screen text-gray-500 text-sm font-medium">Đang tải giao diện quản trị...</div>;
+  // Immediate redirect if not authenticated (prevents blank screen)
+  if (!isAuthenticated) {
+    return <Navigate to={ROUTES.ADMIN_LOGIN} replace />;
   }
+
+  const currentUser = session?.data?.user || { username: 'admin', role: 'Quản trị viên' };
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans w-full overflow-hidden relative">
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -138,65 +142,45 @@ const AdminLayout = () => {
         {/* Sidebar Header */}
         <div
           className={`p-4 border-b border-emerald-800 flex items-center justify-between transition-all ${
-            isCollapsed ? 'lg:justify-center lg:flex-col lg:gap-2.5 py-4' : 'py-4 px-5'
+            isCollapsed ? 'lg:justify-center lg:px-2' : ''
           }`}
         >
-          <Link to={ROUTES.ADMIN_OVERVIEW} className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center gap-3 overflow-hidden">
             <img
               src={logo}
-              alt="HEPCO"
-              className="h-9 w-9 object-contain bg-white p-1 rounded-full shrink-0 shadow-sm"
+              alt="HEPCO Logo"
+              className="w-10 h-10 bg-white rounded-xl p-1 shrink-0 shadow-md"
             />
-            <span
-              className={`font-extrabold text-sm tracking-wider truncate text-white ${
-                isCollapsed ? 'lg:hidden' : 'block'
-              }`}
-            >
-              HEPCO CMS
-            </span>
-          </Link>
+            <div className={`overflow-hidden transition-all duration-300 ${isCollapsed ? 'lg:hidden' : 'block'}`}>
+              <h1 className="font-extrabold text-base tracking-wider truncate">HEPCO CMS</h1>
+              <span className="text-[11px] text-emerald-200 block truncate">Quản trị Website</span>
+            </div>
+          </div>
 
-          {/* Desktop Toggle Button */}
+          {/* Mobile close button */}
           <button
-            onClick={toggleCollapse}
-            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-800/80 text-emerald-200 hover:bg-emerald-700 hover:text-white transition-colors shrink-0 cursor-pointer"
-            title={isCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-4 h-4" />
-            ) : (
-              <ChevronLeft className="w-4 h-4" />
-            )}
-          </button>
-
-          {/* Mobile Close Button */}
-          <button
-            className="lg:hidden text-white p-1 rounded-md hover:bg-emerald-800 transition-colors cursor-pointer"
             onClick={() => setIsSidebarOpen(false)}
-            aria-label="Đóng sidebar"
+            className="lg:hidden p-1.5 text-emerald-200 hover:text-white rounded-lg cursor-pointer"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Sidebar Navigation - Strictly CMS Website Content Management */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
-          {/* Dashboard */}
+        {/* Navigation Items (Clean Grouped Structure) */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 custom-scrollbar">
+          {/* Main Dashboard Overview */}
           <NavItem
             to={ROUTES.ADMIN_OVERVIEW}
             icon={LayoutDashboard}
-            label="Tổng Quan Website"
-            isActive={
-              location.pathname === ROUTES.ADMIN_OVERVIEW ||
-              location.pathname === ROUTES.ADMIN_DASHBOARD
-            }
+            label="Tổng Quan CMS"
+            isActive={location.pathname === ROUTES.ADMIN_OVERVIEW}
             isCollapsed={isCollapsed}
             onClick={() => setIsSidebarOpen(false)}
           />
 
-          {/* Group 1: Content Publishing (Tin tức, Thông báo, Cổ đông, Dịch vụ) */}
-          <SectionHeader label="Cập nhật Nội dung" isCollapsed={isCollapsed} />
-          
+          {/* Group 1: Content Management (Quản lý nội dung) */}
+          <SectionHeader label="Biên tập Nội Dung" isCollapsed={isCollapsed} />
+
           <NavItem
             to={ROUTES.ADMIN_NEWS}
             icon={Newspaper}
@@ -283,50 +267,82 @@ const AdminLayout = () => {
             onClick={() => setIsSidebarOpen(false)}
           />
         </nav>
+
+        {/* Sidebar Footer: Collapse Toggle on Desktop & Quick Logout on Mobile */}
+        <div className="p-3 border-t border-emerald-800 bg-[#0a6d36] shrink-0">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={toggleCollapse}
+              className={`hidden lg:flex items-center gap-2 p-2 w-full text-emerald-200 hover:text-white hover:bg-emerald-700/50 rounded-xl transition-colors text-xs font-semibold ${
+                isCollapsed ? 'justify-center' : ''
+              }`}
+              title={isCollapsed ? 'Mở rộng thanh menu' : 'Thu nhỏ thanh menu'}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="w-5 h-5 shrink-0" />
+              ) : (
+                <>
+                  <ChevronLeft className="w-5 h-5 shrink-0" />
+                  <span className="truncate">Thu gọn thanh điều hướng</span>
+                </>
+              )}
+            </button>
+
+            {/* Mobile drawer quick logout */}
+            <button
+              onClick={handleLogout}
+              className="lg:hidden flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-red-600/90 text-white font-bold text-xs hover:bg-red-700 transition-colors"
+            >
+              <LogOut className="w-4 h-4 shrink-0" />
+              <span>Đăng xuất tài khoản</span>
+            </button>
+          </div>
+        </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50 lg:ml-0 relative w-full">
         {/* Topbar */}
         <header className="bg-white shadow-xs h-14 sm:h-16 flex items-center justify-between px-3 sm:px-4 lg:px-8 border-b border-gray-200 z-10 shrink-0">
-          <div className="flex items-center gap-3 text-gray-500">
+          <div className="flex items-center gap-2 sm:gap-3 text-gray-500">
             {/* Mobile menu trigger */}
             <button
-              className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-700 cursor-pointer"
+              className="lg:hidden p-2 rounded-xl hover:bg-gray-100 text-gray-700 cursor-pointer active:scale-95 transition-all"
               onClick={() => setIsSidebarOpen(true)}
+              aria-label="Mở thanh điều hướng"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
 
-            <span className="font-extrabold text-sm hidden sm:block text-gray-800">
-              Hệ thống Quản trị Nội dung Website HEPCO
+            <span className="font-extrabold text-xs sm:text-sm text-gray-800 truncate max-w-[200px] sm:max-w-none">
+              Quản trị Website HEPCO
             </span>
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3.5">
             <Link
               to={ROUTES.HOME}
               target="_blank"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition-colors shadow-2xs"
               title="Mở xem Website HEPCO trong tab mới"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Xem Website</span>
+              <span className="hidden sm:inline">Xem Website</span>
             </Link>
 
             <div className="relative" id="user-profile-menu">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
+                className="flex items-center gap-2 p-1 sm:p-1.5 rounded-xl hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
               >
-                <img
-                  src={logo}
-                  alt="Admin"
-                  className="w-8 h-8 bg-white rounded-full border border-gray-200 p-0.5 object-contain shadow-sm"
-                />
-                <span className="text-sm font-semibold text-gray-700">Admin</span>
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-[#0e8a44] flex items-center justify-center font-bold text-xs shadow-xs border border-emerald-200">
+                  {currentUser.username ? currentUser.username.slice(0, 2).toUpperCase() : 'AD'}
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-gray-700 hidden sm:inline">
+                  {currentUser.username || 'Admin'}
+                </span>
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-500 transition-transform ${
+                  className={`w-3.5 h-3.5 text-gray-500 transition-transform ${
                     isUserMenuOpen ? 'rotate-180' : ''
                   }`}
                 />
@@ -336,16 +352,29 @@ const AdminLayout = () => {
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50">
                   <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-xs font-bold text-gray-800">Tài khoản Quản trị</p>
-                    <p className="text-[11px] text-gray-500 truncate">admin@hepco.com.vn</p>
+                    <p className="text-xs font-bold text-gray-800 truncate">
+                      {currentUser.username || 'admin'}
+                    </p>
+                    <p className="text-[11px] text-emerald-600 font-semibold truncate">
+                      {currentUser.role || 'Quản trị viên'}
+                    </p>
                   </div>
+
+                  <Link
+                    to={ROUTES.ADMIN_USERS}
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+                  >
+                    <Users className="w-4 h-4 text-gray-400" />
+                    <span>Quản lý tài khoản</span>
+                  </Link>
 
                   <button
                     onClick={() => {
                       setIsUserMenuOpen(false);
                       handleLogout();
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer border-t border-gray-100 mt-1"
                   >
                     <LogOut className="w-4 h-4 text-red-500" />
                     <span>Đăng xuất</span>

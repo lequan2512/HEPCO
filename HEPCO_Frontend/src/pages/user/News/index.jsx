@@ -1039,9 +1039,19 @@ const News = ({ pageType = 'news' }) => {
                                   </div>
 
                                   <h3
-                                    onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id))}
-                                    className="text-base sm:text-lg font-bold text-[#10243b] hover:text-hepco-green transition-colors cursor-pointer leading-snug"
-                                  >
+                                    onClick={() => {
+                                      if (primaryPdf) {
+                                        setPdfModal({
+                                          url: resolveAssetUrl(primaryPdf.fileUrl),
+                                          fileName: primaryPdf.fileName || 'tai-lieu-co-dong.pdf',
+                                          title: primaryPdf.title || doc.title,
+                                          subtitle: `Ngày công bố: ${doc.date} • ${doc.documentTypeLabel || 'Quan hệ cổ đông'}`
+                                        });
+                                      } else {
+                                        navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id));
+                                      }
+                                    }}
+                                    className="text-base sm:text-lg font-bold text-[#10243b] hover:text-hepco-green transition-colors cursor-pointer leading-snug">
                                     {doc.title}
                                   </h3>
 
@@ -1138,15 +1148,27 @@ const News = ({ pageType = 'news' }) => {
                                 </div>
                               </div>
 
-                              {/* Right Detail Action */}
+                              {/* Right Action: Xem trực tiếp PDF trên web */}
                               <div className="flex lg:flex-col items-center lg:items-end justify-end gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-100">
                                 <button
                                   type="button"
-                                  onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id))}
-                                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-gray-700 hover:text-hepco-green bg-gray-100 hover:bg-emerald-50 transition-colors cursor-pointer"
+                                  onClick={() => {
+                                    if (primaryPdf) {
+                                      setPdfModal({
+                                        url: resolveAssetUrl(primaryPdf.fileUrl),
+                                        fileName: primaryPdf.fileName || 'tai-lieu-co-dong.pdf',
+                                        title: primaryPdf.title || doc.title,
+                                        subtitle: `Ngày công bố: ${doc.date} • ${doc.documentTypeLabel || 'Quan hệ cổ đông'}`
+                                      });
+                                    } else {
+                                      navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id));
+                                    }
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all cursor-pointer shadow-xs active:scale-95"
+                                  title="Xem ngay tệp PDF trên website"
                                 >
-                                  <span>Chi tiết</span>
-                                  <ArrowRight className="w-3.5 h-3.5" />
+                                  <Eye className="w-4 h-4" />
+                                  <span>Xem tài liệu</span>
                                 </button>
                               </div>
                             </div>
@@ -1239,48 +1261,38 @@ const News = ({ pageType = 'news' }) => {
                                 </p>
                               </div>
 
-                              {/* Footer Actions */}
-                              <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', article.id))}
-                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#10243b] group-hover:text-hepco-green transition-colors cursor-pointer"
-                                >
-                                  <span>Xem chi tiết</span>
-                                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                                </button>
-
-                                {primaryPdf && (
-                                  <div className="flex items-center gap-1.5">
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        setPdfModal({
-                                          url: resolveAssetUrl(primaryPdf.fileUrl),
-                                          fileName: primaryPdf.fileName || 'tai-lieu.pdf',
-                                          title: primaryPdf.title || article.title,
-                                          subtitle: `Ngày đăng: ${article.date}`
-                                        })
-                                      }
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 transition-colors cursor-pointer"
-                                      title="Xem trực tiếp PDF"
-                                    >
-                                      <Eye className="w-3 h-3" />
-                                      <span>Xem PDF</span>
-                                    </button>
-                                    <a
-                                      href={resolveAssetUrl(primaryPdf.downloadUrl)}
-                                      download={primaryPdf.fileName}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-gray-100 text-gray-700 hover:bg-hepco-green hover:text-white transition-colors"
-                                      title="Tải tài liệu"
-                                    >
-                                      <Download className="w-3 h-3" />
-                                      <span>Tải về</span>
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
+                              {/* Footer Actions: Chỉ hiển thị nút Xem PDF nếu có đính kèm */}
+                              {primaryPdf && (
+                                <div className="pt-3.5 border-t border-gray-100 flex items-center justify-between gap-2 w-full">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPdfModal({
+                                        url: resolveAssetUrl(primaryPdf.fileUrl),
+                                        fileName: primaryPdf.fileName || 'tai-lieu.pdf',
+                                        title: primaryPdf.title || article.title,
+                                        subtitle: `Ngày đăng: ${article.date}`
+                                      });
+                                    }}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors cursor-pointer shadow-2xs"
+                                    title="Xem ngay PDF trực tiếp trên web"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                    <span>Xem PDF</span>
+                                  </button>
+                                  <a
+                                    href={resolveAssetUrl(primaryPdf.downloadUrl || primaryPdf.fileUrl)}
+                                    download={primaryPdf.fileName}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                    title="Tải tệp PDF về máy"
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                    <span>Tải về</span>
+                                  </a>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );

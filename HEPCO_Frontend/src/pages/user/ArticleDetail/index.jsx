@@ -591,10 +591,7 @@ const ArticleDetail = () => {
                         {rel.title}
                       </h3>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#10243b] group-hover:text-hepco-green">
-                      <span>Xem chi tiết</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </div>
+                    
                   </div>
                 </div>
               ))}
