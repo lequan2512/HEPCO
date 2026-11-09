@@ -50,14 +50,14 @@ exports.getNewsStats = async (req, res, next) => {
 
 exports.getAllNews = async (req, res, next) => {
   try {
-    const { type, search = '', category, documentType, documentTypes, year, sort = 'created_at_desc' } = req.query;
+    const { type, search = '', category, documentType, documentTypes, year, view, sort = 'created_at_desc' } = req.query;
     const page = positiveId(req.query.page || 1);
     const limit = positiveId(req.query.limit || 20);
     if (limit > NEWS_MAX_PAGE_SIZE || (type && type !== 'all' && !NEWS_TYPES.includes(type)) || typeof search !== 'string' || (category !== undefined && typeof category !== 'string') || !Object.hasOwn(NEWS_SORTS, sort)) throw new AppError('INVALID_INPUT', 400, 'Invalid list parameters');
     const parsedYear = year && year !== 'all' ? positiveId(year) : undefined;
     const filteredCategory = category && category !== 'all' ? category : undefined;
     const docTypes = documentTypes ? documentTypes.split(',').filter(Boolean) : (documentType && documentType !== 'all' ? [documentType] : undefined);
-    const result = await NewsModel.getAll({ type, search, category: filteredCategory, documentTypes: docTypes, year: parsedYear, sort, page, limit });
+    const result = await NewsModel.getAll({ type, search, category: filteredCategory, documentTypes: docTypes, year: parsedYear, sort, page, limit, summaryOnly: view === 'summary' });
     res.json(result);
   } catch (error) { next(error); }
 };

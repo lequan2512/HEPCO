@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../constants/api';
+import thumbnailUrls from '../data/thumbnailUrls.json';
 
 export const resolveAssetUrl = (url) => {
   if (!url || typeof url !== 'string') return '';
@@ -23,6 +24,11 @@ export const resolveAssetUrl = (url) => {
     return trimmed;
   }
   return trimmed;
+};
+
+export const resolveThumbnailUrl = (url) => {
+  const resolved = resolveAssetUrl(url);
+  return Object.hasOwn(thumbnailUrls, resolved) ? thumbnailUrls[resolved] : resolved;
 };
 
 export const formatFileSize = (bytes) => {

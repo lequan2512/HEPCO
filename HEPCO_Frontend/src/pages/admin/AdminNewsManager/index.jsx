@@ -157,6 +157,7 @@ const AdminNewsManager = ({ type = 'news', editOnly = false }) => {
   const handleCreateSuccess = () => {
     toast.success('Đã lưu bài viết trên máy chủ.');
     queryClient.invalidateQueries({ queryKey: ['news'] });
+    queryClient.invalidateQueries({ queryKey: ['newsStats'] });
     setIsFormOpen(false);
     formik.resetForm();
   };
@@ -164,6 +165,7 @@ const AdminNewsManager = ({ type = 'news', editOnly = false }) => {
   const handleUpdateSuccess = () => {
     toast.success('Máy chủ đã xác nhận cập nhật bài viết.');
     queryClient.invalidateQueries({ queryKey: ['news'] });
+    queryClient.invalidateQueries({ queryKey: ['newsStats'] });
     setIsFormOpen(false);
     setEditingId(null);
     formik.resetForm();
@@ -172,6 +174,7 @@ const AdminNewsManager = ({ type = 'news', editOnly = false }) => {
   const handleDeleteSuccess = () => {
     toast.success('Máy chủ đã xác nhận xóa bài viết.');
     queryClient.invalidateQueries({ queryKey: ['news'] });
+    queryClient.invalidateQueries({ queryKey: ['newsStats'] });
   };
 
   const handleError = (error) => {

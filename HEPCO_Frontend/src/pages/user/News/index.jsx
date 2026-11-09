@@ -42,10 +42,7 @@ import {
   GALLERY_CATEGORY_OPTIONS
 } from '../../../constants/news';
 import { useGetNews, useGetNewsStats, useGetGallery } from '../../../apis/news';
-import {
-  getGalleryList
-} from '../../../services/news.service';
-import { resolveAssetUrl } from '../../../utils/assetUrl';
+import { resolveAssetUrl, resolveThumbnailUrl } from '../../../utils/assetUrl';
 
 const stripHtml = (html) => {
   if (typeof html !== 'string') return '';
@@ -173,6 +170,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
+  const isGalleryView = pageType === 'news' && activeSubView === 'gallery';
   const pageSize = pageType === 'shareholders' ? 12 : 9;
 
   const { data: newsResponse, isLoading: loading } = useGetNews({
@@ -183,22 +181,31 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     category: selectedCategory,
     documentType: pageType === 'shareholders' ? selectedCategory : '',
     year: selectedYear,
-    sort: sortOption
-  });
+    sort: sortOption,
+    view: 'summary'
+  }, { enabled: !isGalleryView });
 
   const articles = useMemo(() => newsResponse?.data || [], [newsResponse]);
   const meta = newsResponse?.meta || { total: 0, page: 1, limit: pageSize, totalPages: 1 };
 
-  const { data: statsData } = useGetNewsStats();
-  const shareholderStats = useMemo(() => statsData?.shareholders || { total: 0, countsByType: {}, countsByGroup: {}, countsByYear: {}, years: [] }, [statsData]);
+  const { data: statsData } = useGetNewsStats({ enabled: !isGalleryView });
+  const shareholderStats = useMemo(() => {
+    const stats = statsData?.shareholders;
+    const countsByGroup = Object.fromEntries(SHAREHOLDER_DOC_GROUP_OPTIONS.map((group) => [
+      group.value,
+      group.value === SHAREHOLDER_DOC_GROUP.ALL ? stats?.total || 0
+        : (group.types || []).reduce((total, type) => total + (stats?.countsByType?.[type] || 0), 0)
+    ]));
+    return { total: 0, countsByType: {}, countsByYear: {}, years: [], ...stats, countsByGroup };
+  }, [statsData]);
   const newsStats = useMemo(() => statsData?.news || { total: 0, countsByCategory: {}, countsByYear: {}, years: [] }, [statsData]);
 
-  const { data: galleryResponse } = useGetGallery({
+  const { data: galleryResponse, isLoading: galleryLoading } = useGetGallery({
     category: galleryCategory,
     search: gallerySearch,
     page: galleryPage,
     limit: 16
-  });
+  }, { enabled: isGalleryView });
 
   const galleryItems = galleryResponse?.data || [];
   const allFilteredGallery = galleryItems;
@@ -345,20 +352,13 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               >
                 <ImageIcon className="w-4 h-4 shrink-0" />
                 <span className="truncate">Thư viện Hình ảnh</span>
-                <span
-                  className={`text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-extrabold shrink-0 ${
-                    activeSubView === 'gallery' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  {getGalleryList({ limit: 1 }).meta.total}
-                </span>
               </button>
             </div>
           </div>
         )}
 
         {/* ==================== PHOTO GALLERY VIEW ==================== */}
-        {pageType === 'news' && activeSubView === 'gallery' ? (
+        {isGalleryView ? (
           <div>
             {/* Gallery Controls */}
             <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 space-y-4">
@@ -450,7 +450,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
             </div>
 
             {/* Gallery Grid */}
-            {galleryItems.length > 0 ? (
+            {galleryLoading ? <Loading message="Đang tải hình ảnh..." /> : galleryItems.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {galleryItems.map((imgItem, idx) => {
@@ -469,9 +469,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                       >
                         <div className="h-52 bg-gray-100 relative overflow-hidden">
                           <img
-                            src={resolveAssetUrl(imgItem.url)}
+                            src={resolveThumbnailUrl(imgItem.url)}
                             alt={imgItem.caption || imgItem.title}
                             loading="lazy"
+                            decoding="async"
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.src = '/images/cover.png';
@@ -1106,9 +1107,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                             {/* Image Section */}
                             <div className="h-48 sm:h-52 lg:h-56 bg-gray-100 relative overflow-hidden">
                               <img
-                                src={resolveAssetUrl(article.thumbnail)}
+                                src={resolveThumbnailUrl(article.thumbnail)}
                                 alt={article.title}
                                 loading="lazy"
+                                decoding="async"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.src = '/images/cover.png';

@@ -2,16 +2,18 @@ import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import axiosInstance from '../utils/axios';
 import { getNewsList, getNewsCategoryStats, getShareholderStats, getGalleryList, getArticleById } from '../services/news.service';
 
-export const useGetNews = (params) => {
+export const useGetNews = (params, { enabled = true } = {}) => {
   return useQuery({
     queryKey: ['news', params],
-    queryFn: async () => {
+    enabled,
+    queryFn: async ({ signal }) => {
       try {
-        const response = await axiosInstance.get('/api/news', { params, timeout: 3500 });
-        if (Array.isArray(response?.data?.data) && response.data.data.length > 0) {
+        const response = await axiosInstance.get('/api/news', { params, signal, timeout: 3500 });
+        if (Array.isArray(response?.data?.data)) {
           return response.data;
         }
-      } catch {
+      } catch (error) {
+        if (signal.aborted) throw error;
         // Fall back seamlessly to complete migrated dataset
       }
       return getNewsList(params);
@@ -19,13 +21,14 @@ export const useGetNews = (params) => {
   });
 };
 
-export const useGetNewsStats = () => {
+export const useGetNewsStats = ({ enabled = true } = {}) => {
   return useQuery({
     queryKey: ['newsStats'],
+    enabled,
     queryFn: async () => {
       try {
         const response = await axiosInstance.get('/api/news/stats', { timeout: 3500 });
-        if (response?.data && (response.data.total > 0 || Object.keys(response.data.countsByYear || {}).length > 0)) {
+        if (response?.data?.news && response.data.shareholders) {
           return response.data;
         }
       } catch {
@@ -39,16 +42,18 @@ export const useGetNewsStats = () => {
   });
 };
 
-export const useGetGallery = (params) => {
+export const useGetGallery = (params, { enabled = true } = {}) => {
   return useQuery({
     queryKey: ['gallery', params],
-    queryFn: async () => {
+    enabled,
+    queryFn: async ({ signal }) => {
       try {
-        const response = await axiosInstance.get('/api/gallery', { params, timeout: 3500 });
-        if (Array.isArray(response?.data?.data) && response.data.data.length > 0) {
+        const response = await axiosInstance.get('/api/gallery', { params, signal, timeout: 3500 });
+        if (Array.isArray(response?.data?.data)) {
           return response.data;
         }
-      } catch {
+      } catch (error) {
+        if (signal.aborted) throw error;
         // Fall back to rich gallery dataset
       }
       return getGalleryList(params);

@@ -157,6 +157,21 @@ test('About settings persist and can be read without a CMS session', async () =>
     await request(path, { method: 'DELETE', token });
   }
 });
+test('summary lists omit full article content but retain attachment links', async () => {
+  const saved = await request('/api/news', { method: 'POST', token, body: { ...article, summary: '' } });
+  assert.equal(saved.status, 201);
+  const path = `/api/news/${saved.data.data.id}`;
+  try {
+    const result = await request('/api/news?type=news&view=summary&limit=100');
+    const entry = result.data.data.find(({ id }) => id === saved.data.data.id);
+    assert.equal(entry.content, undefined);
+    assert.equal(entry.summary, 'Saved content');
+    assert.deepEqual(entry.attachments, article.attachments);
+    assert.equal((await request(path)).data.content, article.content);
+  } finally {
+    await request(path, { method: 'DELETE', token });
+  }
+});
 test('invalid IDs, pagination and ephemeral attachments are rejected', async () => {
   assert.equal((await request('/api/news/12junk')).status, 400);
   assert.equal((await request('/api/news?limit=1000')).status, 400);

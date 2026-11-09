@@ -10,7 +10,7 @@ const toArticle = (record) => {
 };
 
 class NewsModel {
-  static async getAll({ type, page, limit, search, category, documentTypes, year, sort }) {
+  static async getAll({ type, page, limit, search, category, documentTypes, year, sort, summaryOnly }) {
     const where = {};
     if (type && type !== 'all') where.type = type;
     else where.OR = [{ type: null }, { type: { not: ABOUT_SETTINGS_TYPE } }];
@@ -37,7 +37,14 @@ class NewsModel {
       prisma.news.count({ where }),
       prisma.news.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: NEWS_SORTS[sort] }),
     ]);
-    return { data: records.map(toArticle), meta: { total, page, limit, totalPages: Math.max(1, Math.ceil(total / limit)) } };
+    const data = records.map((record) => {
+      const article = toArticle(record);
+      if (!summaryOnly) return article;
+      const { content, ...summary } = article;
+      summary.summary ||= content?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 240);
+      return summary;
+    });
+    return { data, meta: { total, page, limit, totalPages: Math.max(1, Math.ceil(total / limit)) } };
   }
 
   static async getStats() {
