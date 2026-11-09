@@ -1,6 +1,7 @@
 const NewsModel = require('../models/news.model');
 const { NEWS_TYPES, NEWS_METADATA_FIELDS, NEWS_MAX_PAGE_SIZE, NEWS_SORTS, ABOUT_SETTINGS_TYPE, ABOUT_EDITABLE_FIELDS } = require('../constants/news');
 const AppError = require('../utils/AppError');
+const publicReads = require('../utils/publicReadCache')();
 const positiveId = (value) => {
   if (!/^[1-9]\d*$/.test(String(value)) || !Number.isSafeInteger(Number(value))) throw new AppError('INVALID_INPUT', 400, 'A positive integer ID is required');
   return Number(value);
@@ -43,7 +44,7 @@ const forwardError = (error, next) => next(error.code === 'P2025' ? new AppError
 
 exports.getNewsStats = async (req, res, next) => {
   try {
-    const stats = await NewsModel.getStats();
+    const stats = await publicReads.read('stats', () => NewsModel.getStats());
     res.json(stats);
   } catch (error) { next(error); }
 };
@@ -57,9 +58,37 @@ exports.getAllNews = async (req, res, next) => {
     const parsedYear = year && year !== 'all' ? positiveId(year) : undefined;
     const filteredCategory = category && category !== 'all' ? category : undefined;
     const docTypes = documentTypes ? documentTypes.split(',').filter(Boolean) : (documentType && documentType !== 'all' ? [documentType] : undefined);
-    const result = await NewsModel.getAll({ type, search, category: filteredCategory, documentTypes: docTypes, year: parsedYear, sort, page, limit, summaryOnly: view === 'summary' });
+    const params = { type, search, category: filteredCategory, documentTypes: docTypes, year: parsedYear, sort, page, limit, summaryOnly: view === 'summary' };
+    const load = () => NewsModel.getAll(params);
+    const cacheable = params.summaryOnly && page === 1 && limit <= 24 && !search && !req.headers.authorization;
+    const result = await (cacheable ? publicReads.read(JSON.stringify(params), load) : load());
     res.json(result);
   } catch (error) { next(error); }
+};
+
+const saveBase64Media = async (dataUri) => {
+  if (typeof dataUri !== 'string' || !dataUri.startsWith('data:')) return dataUri;
+  const match = dataUri.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) return dataUri;
+  const mimeType = match[1];
+  const buffer = Buffer.from(match[2], 'base64');
+  const ext = mimeType.split('/')[1]?.replace('jpeg', 'jpg') || 'jpg';
+  const { randomUUID } = require('node:crypto');
+  const filename = `${randomUUID()}.${ext}`;
+  try {
+    const { prisma } = require('../db');
+    await prisma.$executeRawUnsafe(
+      'INSERT INTO media_files (filename, mime_type, data, size) VALUES (?, ?, ?, ?)',
+      filename,
+      mimeType,
+      buffer,
+      buffer.length
+    );
+    return `/api/media/images/${filename}`;
+  } catch (err) {
+    console.error('Could not save base64 media:', err.message);
+    return dataUri;
+  }
 };
 
 exports.getNewsById = async (req, res, next) => {
@@ -72,14 +101,34 @@ exports.getNewsById = async (req, res, next) => {
 
 exports.createNews = async (req, res, next) => {
   try {
+    if (req.body?.thumbnail?.startsWith('data:')) {
+      req.body.thumbnail = await saveBase64Media(req.body.thumbnail);
+    }
+    if (req.body?.aboutSettings?.hqImage?.startsWith('data:')) {
+      req.body.aboutSettings.hqImage = await saveBase64Media(req.body.aboutSettings.hqImage);
+    }
+    if (req.body?.aboutSettings?.orgChartImage?.startsWith('data:')) {
+      req.body.aboutSettings.orgChartImage = await saveBase64Media(req.body.aboutSettings.orgChartImage);
+    }
     const article = await NewsModel.create({ ...payloadFrom(req.body), author_id: req.user.id });
+    publicReads.clear();
     res.status(201).json({ success: true, data: article });
   } catch (error) { forwardError(error, next); }
 };
 
 exports.updateNews = async (req, res, next) => {
   try {
+    if (req.body?.thumbnail?.startsWith('data:')) {
+      req.body.thumbnail = await saveBase64Media(req.body.thumbnail);
+    }
+    if (req.body?.aboutSettings?.hqImage?.startsWith('data:')) {
+      req.body.aboutSettings.hqImage = await saveBase64Media(req.body.aboutSettings.hqImage);
+    }
+    if (req.body?.aboutSettings?.orgChartImage?.startsWith('data:')) {
+      req.body.aboutSettings.orgChartImage = await saveBase64Media(req.body.aboutSettings.orgChartImage);
+    }
     const article = await NewsModel.update(positiveId(req.params.id), payloadFrom(req.body));
+    publicReads.clear();
     res.json({ success: true, data: article });
   } catch (error) { forwardError(error, next); }
 };
@@ -88,6 +137,7 @@ exports.deleteNews = async (req, res, next) => {
   try {
     const id = positiveId(req.params.id);
     await NewsModel.delete(id);
+    publicReads.clear();
     res.json({ success: true, id });
   } catch (error) { forwardError(error, next); }
 };

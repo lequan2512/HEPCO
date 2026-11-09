@@ -27,6 +27,7 @@ model News {
   metadata   Json?
   created_at DateTime @default(now())
 
+  @@index([type, created_at], map: "news_type_created_at_idx")
   @@map("news")
 }
 
@@ -300,5 +301,16 @@ model Gallery {
   article_id     Int?
   created_at     DateTime @default(now())
 
+  @@index([created_at, id], map: "gallery_created_at_id_idx")
+  @@index([category, created_at, id], map: "gallery_category_created_at_id_idx")
   @@map("gallery")
+}
+
+model MediaFile {
+  filename  String @id
+  mime_type String
+  data      Bytes  @db.LongBlob
+  size      Int
+
+  @@map("media_files")
 }

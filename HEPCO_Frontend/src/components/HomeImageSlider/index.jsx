@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useGetBanners } from '../../apis/banner';
 import { useGetGallery } from '../../apis/news';
-import { resolveAssetUrl } from '../../utils/assetUrl';
+import { resolveThumbnailUrl } from '../../utils/assetUrl';
 import { ROUTES } from '../../constants/routes';
 
 const HomeImageSlider = () => {
@@ -167,7 +167,7 @@ const HomeImageSlider = () => {
             const isAnimating = index === animatingSlide;
             if (!isCurrent && !isAnimating) return null;
 
-            const imageUrl = resolveAssetUrl(url);
+            const imageUrl = resolveThumbnailUrl(url);
 
             return (
               <div
@@ -189,7 +189,10 @@ const HomeImageSlider = () => {
                   src={imageUrl}
                   alt={slides[index]?.caption || `Slide ${index + 1}`}
                   className="relative z-10 w-full h-full object-cover object-center select-none pointer-events-none"
-                  onError={(e) => { e.target.onerror = null; e.target.src = "/uploads/images/HL-2_a07c11d6.jpg"; }}
+                  onError={(e) => {
+                    const fallback = resolveThumbnailUrl('/uploads/images/HL-2_a07c11d6.jpg');
+                    if (!e.currentTarget.src.endsWith(fallback)) e.currentTarget.src = fallback;
+                  }}
                 />
                 {/* Paper curl shadow effect during page flip */}
                 {isAnimating && (

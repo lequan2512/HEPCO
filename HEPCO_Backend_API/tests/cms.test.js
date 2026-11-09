@@ -172,6 +172,27 @@ test('summary lists omit full article content but retain attachment links', asyn
     await request(path, { method: 'DELETE', token });
   }
 });
+test('public summary reads reuse queries and a successful edit invalidates the cache', async () => {
+  const saved = await request('/api/news', { method: 'POST', token, body: article });
+  assert.equal(saved.status, 201);
+  const path = `/api/news/${saved.data.data.id}`;
+  const list = '/api/news?type=news&view=summary&sort=title_asc';
+  try {
+    const first = await request(list);
+    assert.equal(first.status, 200);
+    const firstQuery = lastQuery;
+    await request('/api/news?type=news&page=2');
+    const uncachedQuery = lastQuery;
+    assert.notEqual(uncachedQuery, firstQuery);
+    assert.deepEqual(await request(list), first);
+    assert.equal(lastQuery, uncachedQuery);
+    assert.equal((await request(path, { method: 'PUT', token, body: { ...article, title: 'Updated title' } })).status, 200);
+    const updated = await request(list);
+    assert.equal(updated.data.data.find(({ id }) => id === saved.data.data.id).title, 'Updated title');
+  } finally {
+    await request(path, { method: 'DELETE', token });
+  }
+});
 test('invalid IDs, pagination and ephemeral attachments are rejected', async () => {
   assert.equal((await request('/api/news/12junk')).status, 400);
   assert.equal((await request('/api/news?limit=1000')).status, 400);

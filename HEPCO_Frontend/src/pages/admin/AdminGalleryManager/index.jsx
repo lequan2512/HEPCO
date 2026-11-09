@@ -56,12 +56,12 @@ const AdminGalleryManager = () => {
   const updateMutation = useUpdateGallery();
   const deleteMutation = useDeleteGallery();
 
-  const { data: galleryResponse, isLoading } = useGetGallery({
+  const { data: galleryResponse, isLoading, isError, refetch } = useGetGallery({
     category,
     search,
     page,
     limit: 16
-  });
+  }, { serverOnly: true });
 
   const items = galleryResponse?.data || [];
   const meta = galleryResponse?.meta || { total: 0, page: 1, limit: 16, totalPages: 1 };
@@ -130,6 +130,8 @@ const AdminGalleryManager = () => {
     try {
       const payload = {
         ...formState,
+        title: formState.caption.trim(),
+        caption: formState.caption.trim(),
         categoryLabel: GALLERY_CATEGORY_LABELS[formState.category]?.label || 'Hoạt động công ty'
       };
 
@@ -145,8 +147,13 @@ const AdminGalleryManager = () => {
       }
       queryClient.invalidateQueries({ queryKey: ['gallery'] });
       setIsModalOpen(false);
-    } catch {
-      toast.error('Lỗi khi lưu hình ảnh');
+    } catch (error) {
+      const status = error.response?.status;
+      const detail = error.response?.data?.message;
+      toast.error(status === 403 ? 'Tài khoản hoặc IP hiện tại không được phép sửa ảnh.'
+        : status === 404 ? 'Ảnh này không còn tồn tại trên máy chủ. Hãy tải lại danh sách.'
+        : detail ? `Không lưu được ảnh: ${detail}`
+        : 'Máy chủ chưa xác nhận đã lưu ảnh. Kiểm tra kết nối rồi thử lại.');
     }
   };
 
@@ -234,6 +241,13 @@ const AdminGalleryManager = () => {
       {/* Grid Items */}
       {isLoading ? (
         <Loading message="Đang tải danh sách ảnh hoạt động..." />
+      ) : isError ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-800">
+          <p>Không tải được thư viện ảnh từ máy chủ. Kiểm tra kết nối API để tiếp tục chỉnh sửa.</p>
+          <button type="button" className="mt-2 font-semibold underline" onClick={() => refetch()}>
+            Thử lại
+          </button>
+        </div>
       ) : items.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
           <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />

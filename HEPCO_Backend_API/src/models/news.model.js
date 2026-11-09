@@ -12,7 +12,8 @@ const toArticle = (record) => {
 class NewsModel {
   static async getAll({ type, page, limit, search, category, documentTypes, year, sort, summaryOnly }) {
     const where = {};
-    if (type && type !== 'all') where.type = type;
+    if (type === 'news' && summaryOnly) where.type = { in: ['news', 'announcement'] };
+    else if (type && type !== 'all') where.type = type;
     else where.OR = [{ type: null }, { type: { not: ABOUT_SETTINGS_TYPE } }];
     const conditions = [];
     if (search) conditions.push({ title: { contains: search } });
@@ -49,6 +50,7 @@ class NewsModel {
 
   static async getStats() {
     const all = await prisma.news.findMany({
+      where: { type: { in: ['news', 'announcement', 'shareholders'] } },
       select: { type: true, metadata: true }
     });
     const newsStats = { total: 0, countsByCategory: {}, countsByYear: {}, years: [] };
@@ -59,7 +61,7 @@ class NewsModel {
     for (const item of all) {
       const meta = item.metadata || {};
       const year = meta.publishYear;
-      if (item.type === 'news') {
+      if (item.type === 'news' || item.type === 'announcement') {
         newsStats.total++;
         if (meta.category) {
           newsStats.countsByCategory[meta.category] = (newsStats.countsByCategory[meta.category] || 0) + 1;

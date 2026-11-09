@@ -40,11 +40,7 @@ async function main() {
     ...(raw.about || []).map((i) => ({ ...i, type: 'about' }))
   ];
 
-  console.log(`Xóa dữ liệu cũ và nạp lại ${allArticles.length} bài viết với timestamp chính xác...`);
-  await prisma.news.deleteMany();
-
-  let inserted = 0;
-  for (const item of allArticles) {
+  const rows = allArticles.map((item) => {
     const title = (item.title || 'Untitled').trim().slice(0, 255);
     const date = (item.date || item.publishDate || '01-01-2026').trim().slice(0, 20);
     const content = item.content || '';
@@ -62,19 +58,29 @@ async function main() {
       slug: item.slug || ''
     };
 
-    await prisma.news.create({
-      data: {
-        title,
-        date,
-        content,
-        thumbnail,
-        type,
-        metadata,
-        created_at: createdAt
-      }
+    return {
+      title,
+      date,
+      content,
+      thumbnail,
+      type,
+      metadata,
+      created_at: createdAt
+    };
+  });
+  const inserted = await prisma.$transaction(async (tx) => {
+    const types = [...new Set(rows.map(({ type }) => type))];
+    const existing = await tx.news.findMany({
+      where: { type: { in: types } }, distinct: ['type'], select: { type: true }
     });
-    inserted++;
-  }
+    const populatedTypes = new Set(existing.map(({ type }) => type));
+    const missing = rows.filter(({ type }) => !populatedTypes.has(type));
+    let count = 0;
+    for (let i = 0; i < missing.length; i += 25) {
+      count += (await tx.news.createMany({ data: missing.slice(i, i + 25) })).count;
+    }
+    return count;
+  }, { isolationLevel: 'Serializable', timeout: 30000 });
 
   console.log(`Đã nạp thành công ${inserted} bài viết vào CSDL!`);
 }

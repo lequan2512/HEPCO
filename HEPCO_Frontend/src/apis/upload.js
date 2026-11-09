@@ -14,16 +14,15 @@ export const useUploadImage = () =>
         if (
           response?.data?.success === true &&
           typeof response.data.url === 'string' &&
-          (response.data.url.startsWith('https://') ||
-            /^\/api\/media\/images\/[a-f0-9-]+\.(png|jpg|gif|webp)$/.test(response.data.url))
+          response.data.url.trim().length > 0
         ) {
           return response.data;
         }
-      } catch {
-        // Fallback when server is offline: convert file to local Data URL
+      } catch (err) {
+        console.warn('Direct upload via /api/upload failed, trying fallback:', err.message);
       }
 
-      const file = formData?.get?.('image');
+      const file = formData?.get?.('image') || formData?.get?.('file');
       if (file && typeof FileReader !== 'undefined') {
         const dataUrl = await new Promise((resolve, reject) => {
           const reader = new FileReader();

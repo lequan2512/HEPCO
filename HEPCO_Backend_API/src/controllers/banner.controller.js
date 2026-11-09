@@ -13,12 +13,15 @@ exports.getAllBanners = async (req, res, next) => {
 };
 
 exports.createBanner = async (req, res, next) => {
-  if (!req.file) {
-    return next(new AppError('NO_FILE_UPLOADED', 400, 'No file was uploaded'));
-  }
-  
   try {
-    const url = await imageUploadService.uploadImage(req.file);
+    let url;
+    if (req.file) {
+      url = await imageUploadService.uploadImage(req.file);
+    } else if (req.body?.url && typeof req.body.url === 'string' && req.body.url.trim()) {
+      url = req.body.url.trim();
+    } else {
+      return next(new AppError('NO_FILE_UPLOADED', 400, 'Vui lòng chọn tệp ảnh hoặc nhập URL'));
+    }
     await BannerModel.create(url);
     res.status(201).json({ success: true, url });
   } catch (error) {

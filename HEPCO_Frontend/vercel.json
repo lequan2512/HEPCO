@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/media/:path*",
+      "destination": "https://hepco-api-self.vercel.app/api/media/:path*"
+    },
+    {
       "source": "/Public/Upload/files/:path(.+\\.[pP][dD][fF])",
       "destination": "https://www.hepco.com.vn/Public/Upload/files/:path"
     },

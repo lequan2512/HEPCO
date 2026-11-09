@@ -28,6 +28,30 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // Static media and upload paths
 app.use('/uploads', express.static(path.join(__dirname, '../uploads'), { setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff') }));
+
+// Database-backed media endpoint for permanent file and image serving
+app.get('/api/media/:subFolder/:filename', async (req, res, next) => {
+  const { filename } = req.params;
+  try {
+    const { prisma } = require('./db');
+    const rows = await prisma.$queryRawUnsafe(
+      'SELECT mime_type, data, size FROM media_files WHERE filename = ? LIMIT 1',
+      filename
+    );
+    if (rows && rows.length > 0) {
+      const file = rows[0];
+      res.setHeader('Content-Type', file.mime_type || 'application/octet-stream');
+      res.setHeader('Content-Length', file.size || Buffer.byteLength(file.data));
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      return res.end(Buffer.from(file.data));
+    }
+  } catch (err) {
+    console.error('Error fetching media from database:', err.message);
+  }
+  next();
+});
+
 if (process.env.UPLOAD_STORAGE === 'local' && !process.env.VERCEL && process.env.NODE_ENV !== 'production') {
   app.use('/api/media', express.static(require('./constants/upload').LOCAL_MEDIA_DIRECTORY, { setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff') }));
 }

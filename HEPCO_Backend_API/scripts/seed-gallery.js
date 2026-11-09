@@ -38,8 +38,6 @@ async function main() {
   const gallery = raw.gallery || [];
   console.log(`Bắt đầu xử lý ${gallery.length} ảnh thư viện...`);
 
-  await prisma.gallery.deleteMany();
-
   const clean = gallery.filter((item) => {
     const u = (item.url || '').toLowerCase();
     if (!u) return false;
@@ -49,9 +47,7 @@ async function main() {
 
   console.log(`Lọc còn ${clean.length} ảnh hoạt động chất lượng cao...`);
 
-  let inserted = 0;
-  for (let i = 0; i < clean.length; i++) {
-    const item = clean[i];
+  const rows = clean.map((item, i) => {
     let createdAt;
     if (i < 10) {
       // 10 ảnh hoạt động nổi bật nhất năm 2026
@@ -60,22 +56,25 @@ async function main() {
       createdAt = parseDateStrToDate(item.date, 2025);
     }
 
-    await prisma.gallery.create({
-      data: {
-        url: item.url,
-        original_url: item.originalUrl || '',
-        title: item.title || '',
-        caption: item.caption || item.title || '',
-        category: item.category || 'company',
-        category_label: item.categoryLabel || 'Hoạt động công ty',
-        date: item.date || (i < 10 ? '2026' : '2025'),
-        article_id: item.articleId || null,
-        created_at: createdAt
-      }
-    });
-    inserted++;
+    return {
+      url: item.url,
+      original_url: item.originalUrl || '',
+      title: item.title || '',
+      caption: item.caption || item.title || '',
+      category: item.category || 'company',
+      category_label: item.categoryLabel || 'Hoạt động công ty',
+      date: item.date || (i < 10 ? '2026' : '2025'),
+      article_id: item.articleId || null,
+      created_at: createdAt
+    };
+  });
+  const existing = await prisma.gallery.count();
+  if (existing > 0) {
+    console.log(`Gallery already contains ${existing} photos.`);
+    return;
   }
-  console.log(`Đã nạp thành công ${inserted} ảnh vào bảng gallery với timestamp chính xác!`);
+  const result = await prisma.gallery.createMany({ data: rows });
+  console.log(`Đã nạp thành công ${result.count} ảnh vào bảng gallery!`);
 }
 
 main()

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import axiosInstance from '../utils/axios';
+import { apiContractError } from '../services/apiErrors';
 import { getNewsList, getNewsCategoryStats, getShareholderStats, getGalleryList, getArticleById } from '../services/news.service';
 
 export const useGetNews = (params, { enabled = true } = {}) => {
@@ -42,18 +43,20 @@ export const useGetNewsStats = ({ enabled = true } = {}) => {
   });
 };
 
-export const useGetGallery = (params, { enabled = true } = {}) => {
+export const useGetGallery = (params, { enabled = true, serverOnly = false } = {}) => {
   return useQuery({
-    queryKey: ['gallery', params],
+    queryKey: ['gallery', params, serverOnly],
     enabled,
+    retry: serverOnly ? false : undefined,
     queryFn: async ({ signal }) => {
       try {
         const response = await axiosInstance.get('/api/gallery', { params, signal, timeout: 3500 });
         if (Array.isArray(response?.data?.data)) {
           return response.data;
         }
+        if (serverOnly) throw apiContractError('INVALID_SERVER_RESPONSE', 'Invalid gallery response');
       } catch (error) {
-        if (signal.aborted) throw error;
+        if (signal.aborted || serverOnly) throw error;
         // Fall back to rich gallery dataset
       }
       return getGalleryList(params);
@@ -145,7 +148,10 @@ export const useCreateGallery = () => {
 export const useUpdateGallery = () => {
   return useMutation({
     mutationFn: async ({ id, ...data }) => {
-      const response = await axiosInstance.put(`/api/gallery/${id}`, data);
+      const response = await axiosInstance.put(`/api/gallery/${id}`, data, { timeout: 10000 });
+      if (response.data?.success !== true || response.data?.data?.id !== id) {
+        throw apiContractError('INVALID_SERVER_RESPONSE', 'The server did not confirm the gallery update');
+      }
       return response.data;
     }
   });
