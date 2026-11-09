@@ -14,6 +14,9 @@ exports.getGallery = async (req, res, next) => {
     };
     const load = () => GalleryModel.getAll(params);
     const cacheable = params.page === 1 && params.limit <= 24 && !search && !req.headers.authorization;
+    if (!req.headers.authorization) {
+      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
+    }
     const result = await (cacheable ? publicReads.read(JSON.stringify(params), load) : load());
     res.json(result);
   } catch (error) {

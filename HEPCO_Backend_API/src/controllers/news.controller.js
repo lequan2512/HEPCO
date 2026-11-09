@@ -44,6 +44,7 @@ const forwardError = (error, next) => next(error.code === 'P2025' ? new AppError
 
 exports.getNewsStats = async (req, res, next) => {
   try {
+    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
     const stats = await publicReads.read('stats', () => NewsModel.getStats());
     res.json(stats);
   } catch (error) { next(error); }
@@ -61,6 +62,9 @@ exports.getAllNews = async (req, res, next) => {
     const params = { type, search, category: filteredCategory, documentTypes: docTypes, year: parsedYear, sort, page, limit, summaryOnly: view === 'summary' };
     const load = () => NewsModel.getAll(params);
     const cacheable = params.summaryOnly && page === 1 && limit <= 24 && !search && !req.headers.authorization;
+    if (!req.headers.authorization) {
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    }
     const result = await (cacheable ? publicReads.read(JSON.stringify(params), load) : load());
     res.json(result);
   } catch (error) { next(error); }
@@ -93,6 +97,9 @@ const saveBase64Media = async (dataUri) => {
 
 exports.getNewsById = async (req, res, next) => {
   try {
+    if (!req.headers.authorization) {
+      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
+    }
     const article = await NewsModel.getById(positiveId(req.params.id));
     if (!article) throw new AppError('ARTICLE_NOT_FOUND', 404, 'Article not found');
     res.json(article);
