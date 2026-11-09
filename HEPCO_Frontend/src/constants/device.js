@@ -1,0 +1,64 @@
+export const DEVICE_CATEGORY_CODES = {
+  PC: 'PC',
+  CPU: 'CPU',
+  RAM: 'RAM',
+  VGA: 'VGA',
+  MAINBOARD: 'MAINBOARD',
+  PSU: 'PSU',
+  CASE: 'CASE',
+  DRIVE: 'DRIVE',
+  NETWORK_CARD: 'NETWORK_CARD',
+  SOUND_CARD: 'SOUND_CARD',
+  COOLER: 'COOLER',
+  MONITOR: 'MONITOR',
+  KEYBOARD: 'KEYBOARD',
+  MOUSE: 'MOUSE',
+  SPEAKER: 'SPEAKER',
+  PRINTER: 'PRINTER',
+  OTHER: 'OTHER'
+};
+
+export const PC_COMPONENTS = [
+  DEVICE_CATEGORY_CODES.CPU,
+  DEVICE_CATEGORY_CODES.RAM,
+  DEVICE_CATEGORY_CODES.VGA,
+  DEVICE_CATEGORY_CODES.MAINBOARD,
+  DEVICE_CATEGORY_CODES.PSU,
+  DEVICE_CATEGORY_CODES.CASE,
+  DEVICE_CATEGORY_CODES.DRIVE,
+  DEVICE_CATEGORY_CODES.NETWORK_CARD,
+  DEVICE_CATEGORY_CODES.SOUND_CARD,
+  DEVICE_CATEGORY_CODES.COOLER,
+  DEVICE_CATEGORY_CODES.MONITOR,
+  DEVICE_CATEGORY_CODES.KEYBOARD,
+  DEVICE_CATEGORY_CODES.MOUSE,
+  DEVICE_CATEGORY_CODES.SPEAKER
+];
+
+export const DEVICE_STATUS = {
+  IN_STOCK: 'in_stock',
+  IN_USE: 'in_use',
+  BROKEN: 'broken',
+  RETIRED: 'retired'
+};
+
+export const DEVICE_STATUS_LABELS = {
+  [DEVICE_STATUS.IN_STOCK]: { value: DEVICE_STATUS.IN_STOCK, label: 'Tồn kho', bg: 'bg-green-100 text-green-700' },
+  [DEVICE_STATUS.IN_USE]: { value: DEVICE_STATUS.IN_USE, label: 'Đang sử dụng', bg: 'bg-blue-100 text-blue-700' },
+  [DEVICE_STATUS.BROKEN]: { value: DEVICE_STATUS.BROKEN, label: 'Hỏng', bg: 'bg-red-100 text-red-700' },
+  [DEVICE_STATUS.RETIRED]: { value: DEVICE_STATUS.RETIRED, label: 'Đã thanh lý', bg: 'bg-gray-100 text-gray-700' }
+};
+
+export const DEVICE_STATUS_OPTIONS = Object.values(DEVICE_STATUS_LABELS);
+
+export const ASSIGNMENT_STATUS = {
+  IN_USE: 'in_use',
+  RETURNED: 'returned'
+};
+
+export const ASSIGNMENT_STATUS_LABELS = {
+  [ASSIGNMENT_STATUS.IN_USE]: { value: ASSIGNMENT_STATUS.IN_USE, label: 'Đang sử dụng', bg: 'bg-blue-100 text-blue-700 border-blue-200' },
+  [ASSIGNMENT_STATUS.RETURNED]: { value: ASSIGNMENT_STATUS.RETURNED, label: 'Đã trả', bg: 'bg-gray-100 text-gray-600 border-gray-200' }
+};
+
+export const ASSIGNMENT_STATUS_OPTIONS = Object.values(ASSIGNMENT_STATUS_LABELS);

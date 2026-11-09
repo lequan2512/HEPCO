@@ -1,0 +1,110 @@
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/user/Home';
+import About from './pages/user/About';
+import Services from './pages/user/Services';
+import News from './pages/user/News';
+import ArticleDetail from './pages/user/ArticleDetail';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminLayout from './components/AdminLayout';
+import AdminCmsOverview from './pages/admin/AdminCmsOverview';
+import AdminNewsManager from './pages/admin/AdminNewsManager';
+import AdminAboutManager from './pages/admin/AdminAboutManager';
+import AdminShowcaseManager from './pages/admin/AdminShowcaseManager';
+import AdminGalleryManager from './pages/admin/AdminGalleryManager';
+import AdminBannerManager from './pages/admin/AdminBannerManager';
+import AdminUserManager from './pages/admin/AdminUserManager';
+import { ROUTES } from './constants/routes';
+
+import { Toaster } from 'react-hot-toast';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000
+    }
+  }
+});
+
+const AppRoutes = () => {
+  const location = useLocation();
+  const isAdminRoute =
+    location.pathname.startsWith('/admin-dashboard') || location.pathname === ROUTES.ADMIN;
+  const isLoginRoute = location.pathname === ROUTES.ADMIN_LOGIN || location.pathname === '/admin-login';
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  if (isAdminRoute) {
+    return (
+      <Routes>
+        <Route path={ROUTES.ADMIN} element={<Navigate to={ROUTES.ADMIN_OVERVIEW} replace />} />
+        <Route path="/admin-dashboard" element={<AdminLayout />}>
+          <Route index element={<Navigate to="overview" replace />} />
+          <Route path="overview" element={<AdminCmsOverview />} />
+          
+          {/* Quản lý Nội dung Cốt lõi: Tin tức, Thông báo, Cổ đông, Dịch vụ */}
+          <Route path="news" element={<AdminNewsManager type="news" />} />
+          <Route path="announcements" element={<AdminNewsManager type="announcement" />} />
+          <Route path="shareholders" element={<AdminNewsManager type="shareholders" />} />
+          <Route path="services" element={<AdminNewsManager type="service" />} />
+          
+          {/* Chỉnh sửa Thông tin trên Web: Giới thiệu & Thư ngỏ, Showcase 2026, Banner, Gallery */}
+          <Route path="about" element={<AdminAboutManager />} />
+          <Route path="showcase" element={<AdminShowcaseManager />} />
+          <Route path="banners" element={<AdminBannerManager />} />
+          <Route path="gallery" element={<AdminGalleryManager />} />
+          <Route path="users" element={<AdminUserManager />} />
+        </Route>
+      </Routes>
+    );
+  }
+
+  if (isLoginRoute) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+        <Routes>
+          <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLogin />} />
+          <Route path="/admin-login" element={<Navigate to={ROUTES.ADMIN_LOGIN} replace />} />
+        </Routes>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+      <Header />
+      <main className="flex-grow flex flex-col">
+        <Routes>
+          <Route path={ROUTES.HOME} element={<Home />} />
+          <Route path={ROUTES.ABOUT} element={<About />} />
+          <Route path={ROUTES.SERVICES} element={<Services />} />
+          <Route path={ROUTES.NEWS} element={<News pageType="news" />} />
+          <Route path={ROUTES.ANNOUNCEMENTS} element={<News pageType="announcements" />} />
+          <Route path={ROUTES.SHAREHOLDERS} element={<News pageType="shareholders" />} />
+          <Route path={ROUTES.ARTICLE_DETAIL} element={<ArticleDetail />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Toaster position="top-right" />
+        <AppRoutes />
+      </Router>
+    </QueryClientProvider>
+  );
+}
+
+export default App;

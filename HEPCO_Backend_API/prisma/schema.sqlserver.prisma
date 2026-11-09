@@ -1,0 +1,96 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique @db.NVarChar(100)
+  password   String   @db.NVarChar(255)
+  role       String?  @default("admin") @db.NVarChar(50)
+  created_at DateTime @default(now())
+
+  @@map("users")
+}
+
+model News {
+  id         Int      @id @default(autoincrement())
+  title      String   @db.NVarChar(500)
+  date       String   @db.NVarChar(50)
+  content    String?  @db.NVarChar(Max)
+  thumbnail  String?  @db.NVarChar(500)
+  type       String?  @default("news") @db.NVarChar(50)
+  author_id  Int?
+  metadata   String?  @db.NVarChar(Max)
+  created_at DateTime @default(now())
+
+  @@index([type])
+  @@index([created_at])
+  @@map("news")
+}
+
+model Banner {
+  id    Int     @id @default(autoincrement())
+  url   String  @db.NVarChar(500)
+  title String? @db.NVarChar(255)
+  order Int?    @default(0) @map("order")
+
+  @@map("banners")
+}
+
+model HomeShowcase {
+  id         Int      @id
+  data       String   @db.NVarChar(Max)
+  version    Int      @default(1)
+  updated_at DateTime @updatedAt
+
+  @@map("home_showcases")
+}
+
+model HomeSection {
+  id         String   @id @db.NVarChar(100)
+  label      String   @db.NVarChar(255)
+  order      Int      @default(0)
+  visible    Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("home_sections")
+}
+
+model Gallery {
+  id             Int      @id @default(autoincrement())
+  url            String   @db.NVarChar(500)
+  original_url   String?  @db.NVarChar(500)
+  title          String?  @db.NVarChar(255)
+  caption        String?  @db.NVarChar(500)
+  category       String?  @default("company") @db.NVarChar(50)
+  category_label String?  @db.NVarChar(100)
+  date           String?  @db.NVarChar(50)
+  article_id     Int?
+  created_at     DateTime @default(now())
+
+  @@index([category])
+  @@map("gallery")
+}
+
+model WebConfig {
+  id         String   @id @db.NVarChar(100)
+  value      String   @db.NVarChar(Max)
+  updated_at DateTime @updatedAt
+
+  @@map("web_configs")
+}
+
+model IpWhitelist {
+  id          Int     @id @default(autoincrement())
+  ip          String  @unique @db.NVarChar(100)
+  description String? @db.NVarChar(255)
+
+  @@map("ip_whitelists")
+}
