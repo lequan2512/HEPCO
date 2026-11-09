@@ -47,9 +47,18 @@ const BADGE_COLORS = [
   'bg-teal-50 text-teal-800 border-teal-200'
 ];
 
-// Helper to bind the last 2 words with non-breaking space, preventing single orphan words on newline
+// Helper to format heading with no orphan words
 const formatHeadingBalanced = (str) => {
   if (!str || typeof str !== 'string') return str;
+  // If default title, return pre-balanced markup
+  if (str === 'Lĩnh Vực Hoạt Động & Phục Vụ Đa Dạng') {
+    return (
+      <>
+        Lĩnh Vực Hoạt Động &amp;{' '}
+        <span className="inline-block whitespace-nowrap">Phục Vụ Đa Dạng</span>
+      </>
+    );
+  }
   const trimmed = str.trim();
   const lastSpace = trimmed.lastIndexOf(' ');
   if (lastSpace === -1) return trimmed;
@@ -71,7 +80,7 @@ const HomeOccasions = ({ config }) => {
     <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#f8fafc] border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
-        <div className="max-w-4xl mb-12 sm:mb-16 md:mb-20">
+        <div className="max-w-5xl mb-12 sm:mb-16 md:mb-20">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
             {formatHeadingBalanced(title)}
           </h2>
