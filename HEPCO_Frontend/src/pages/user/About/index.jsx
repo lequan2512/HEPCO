@@ -19,8 +19,10 @@ import {
 import PageBanner from '../../../components/PageBanner';
 import SubNav from '../../../components/SubNav';
 import PdfFlipbook from '../../../components/PdfFlipbook';
-import { getAboutPages, getAboutSettings } from '../../../services/news.service';
+import { getAboutPages, getPublicAboutDefaults } from '../../../services/news.service';
 import { sanitizeLegacyHtml, resolveAssetUrl } from '../../../utils/assetUrl';
+
+import { useAboutSettings } from '../../../apis/about';
 
 const About = () => {
   const location = useLocation();
@@ -31,7 +33,8 @@ const About = () => {
   const [pdfModal, setPdfModal] = useState(null); // { url, fileName, title, subtitle }
   const subNavItems = ['Về Hepco', 'Chức năng - Giấy phép', 'Sơ đồ tổ chức', 'Hồ sơ năng lực'];
 
-  const aboutConfig = getAboutSettings();
+  const { data: savedAbout } = useAboutSettings();
+  const aboutConfig = savedAbout?.settings ?? getPublicAboutDefaults();
   const aboutPages = getAboutPages();
   const historyPage = aboutPages.find((p) => Number(p.id) === 49) || aboutPages[1];
   const functionsPage = aboutPages.find((p) => Number(p.id) === 48) || aboutPages[0];
@@ -416,6 +419,7 @@ const About = () => {
                 pdfUrl={resolveAssetUrl(aboutConfig.capabilityPdfUrl || '/pdf/HoSoNangLuc2026.pdf')}
                 fileName={aboutConfig.capabilityPdfName || 'Hồ_Sơ_Năng_Lực_HEPCO_2026.pdf'}
                 title="Hồ sơ năng lực HEPCO 2026"
+                singlePage
                 hideDownload={true}
                 hideExternalLink={true}
               />

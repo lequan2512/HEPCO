@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import {
   ZoomIn,
   ZoomOut,
@@ -15,20 +16,20 @@ import {
   ChevronsRight,
   BookOpen,
   Scroll,
-  RotateCcw,
   X
 } from 'lucide-react';
 
 // Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
-const PdfFlipbook = ({
-  pdfUrl = '/pdf/HoSoNangLuc2026.pdf',
+const PdfReader = ({
+  pdfUrl,
   fileName = 'HoSoNangLuc2026.pdf',
   title = '',
   hideDownload = false,
   hideExternalLink = false,
-  onClose = null
+  onClose = null,
+  singlePage = false
 }) => {
   const displayTitle = title || (fileName.includes('HoSoNangLuc') ? 'Hồ sơ năng lực HEPCO' : fileName);
   const containerRef = useRef(null);
@@ -44,10 +45,13 @@ const PdfFlipbook = ({
   const [viewMode, setViewMode] = useState('flip');
   const [currentPage, setCurrentPage] = useState(1);
   const [scale, setScale] = useState(1.0);
+  const [bookSize, setBookSize] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState('next'); // 'next' or 'prev'
+  const useSinglePage = singlePage || isMobile;
+  const isSpread = viewMode === 'flip' && !useSinglePage && currentPage > 1;
 
   // Canvases for Flipbook mode
   const singleCanvasRef = useRef(null);
@@ -56,7 +60,7 @@ const PdfFlipbook = ({
 
   // Canvases for Continuous Scroll mode
   const scrollCanvasRefs = useRef({});
-  const renderTasksRef = useRef({});
+  const renderTasksRef = useRef(new WeakMap());
 
   // Touch Swipe tracking for Mobile
   const touchStartX = useRef(0);
@@ -77,18 +81,26 @@ const PdfFlipbook = ({
     };
   }, []);
 
+  useEffect(() => {
+    const container = bookContainerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver(([{ contentRect }]) => {
+      setBookSize({ width: contentRect.width, height: contentRect.height });
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
   // Load PDF Document when pdfUrl changes
   useEffect(() => {
-    setCurrentPage(1);
-    setScale(1.0);
-    setLoading(true);
-    setError(null);
-    setPdfDoc(null);
-    setNumPages(0);
-    setLoadingProgress(0);
-
     let isMounted = true;
-    const loadingTask = pdfjsLib.getDocument(pdfUrl);
+    const source = new URL(pdfUrl, window.location.href);
+    const isLegacyFile = ['hepco.com.vn', 'www.hepco.com.vn'].includes(source.hostname)
+      && source.pathname.startsWith('/Public/Upload/files/')
+      && /\.pdf$/i.test(source.pathname);
+    const readerUrl = isLegacyFile ? source.pathname + source.search : pdfUrl;
+    const loadingTask = pdfjsLib.getDocument(readerUrl);
 
     loadingTask.onProgress = (progress) => {
       if (progress.total > 0 && isMounted) {
@@ -105,48 +117,48 @@ const PdfFlipbook = ({
         }
       })
       .catch((err) => {
-        console.error('Error loading PDF:', err);
         if (isMounted) {
-          setError('Không thể mở trực tiếp tệp PDF trong trình đọc. Vui lòng thử lại sau.');
+          console.error('Error loading PDF:', err);
+          setError('Không thể mở tệp PDF trong trình đọc.');
           setLoading(false);
         }
       });
 
     return () => {
       isMounted = false;
-      try {
-        loadingTask.destroy();
-      } catch {}
+      loadingTask.destroy().catch((err) => console.error('Error closing PDF:', err));
     };
   }, [pdfUrl]);
 
   // Page rendering helper with high DPI and crisp canvas sizing
   const renderPageToCanvas = useCallback(async (pNum, canvas, targetScale = 1.0) => {
-    if (!pdfDoc || !canvas || pNum < 1 || pNum > pdfDoc.numPages) return;
+    if (!pdfDoc || !canvas || !bookSize || pNum < 1 || pNum > pdfDoc.numPages) return;
 
-    const taskId = `task_${pNum}_${canvas.dataset?.id || 'c'}`;
-    if (renderTasksRef.current[taskId]) {
-      try {
-        renderTasksRef.current[taskId].cancel();
-      } catch {}
-      delete renderTasksRef.current[taskId];
-    }
+    const tasks = renderTasksRef.current;
+    tasks.get(canvas)?.task?.cancel();
+    const pending = { task: null };
+    tasks.set(canvas, pending);
 
     try {
       const page = await pdfDoc.getPage(pNum);
+      if (tasks.get(canvas) !== pending || !canvas.isConnected) return;
       const pixelRatio = window.devicePixelRatio || 1;
       const baseViewport = page.getViewport({ scale: 1 });
 
-      // Calculate fit scale based on container height
+      // Fit both axes at 100%, reserving room for the spine and captions.
       let renderScale = targetScale;
-      if (bookContainerRef.current) {
-        const availableHeight = bookContainerRef.current.clientHeight - (window.innerWidth < 640 ? 20 : 40);
-        if (availableHeight > 180) {
-          renderScale = (availableHeight / baseViewport.height) * targetScale;
-        }
+      if (bookSize?.width > 24 && bookSize.height > 40) {
+        const availableWidth = viewMode === 'scroll'
+          ? Math.min(766, Math.max(1, bookSize.width - 50))
+          : (bookSize.width - 24) / (isSpread ? 2 : 1);
+        const availableHeight = bookSize.height - 40;
+        renderScale = Math.min(
+          availableWidth / baseViewport.width,
+          availableHeight / baseViewport.height
+        ) * targetScale;
       }
 
-      const viewport = page.getViewport({ scale: Math.max(0.5, renderScale) });
+      const viewport = page.getViewport({ scale: renderScale });
       const context = canvas.getContext('2d');
 
       canvas.height = viewport.height * pixelRatio;
@@ -156,23 +168,22 @@ const PdfFlipbook = ({
 
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
-      const renderTask = page.render({ canvasContext: context, viewport });
-      renderTasksRef.current[taskId] = renderTask;
-
-      await renderTask.promise;
-      delete renderTasksRef.current[taskId];
+      pending.task = page.render({ canvasContext: context, viewport });
+      await pending.task.promise;
     } catch (err) {
       if (err?.name !== 'RenderingCancelledException') {
         console.error(`Error rendering page ${pNum}:`, err);
       }
+    } finally {
+      if (tasks.get(canvas) === pending) tasks.delete(canvas);
     }
-  }, [pdfDoc]);
+  }, [pdfDoc, bookSize, viewMode, isSpread]);
 
   // Render Flipbook mode canvases
   useEffect(() => {
     if (!pdfDoc || viewMode !== 'flip') return;
 
-    if (isMobile || currentPage === 1) {
+    if (useSinglePage || currentPage === 1) {
       if (singleCanvasRef.current) {
         renderPageToCanvas(currentPage, singleCanvasRef.current, scale);
       }
@@ -187,7 +198,7 @@ const PdfFlipbook = ({
         renderPageToCanvas(rightPageNum, rightCanvasRef.current, scale);
       }
     }
-  }, [pdfDoc, currentPage, scale, viewMode, isMobile, numPages, renderPageToCanvas]);
+  }, [pdfDoc, currentPage, scale, viewMode, useSinglePage, numPages, renderPageToCanvas]);
 
   // Render Continuous Scroll mode canvases
   useEffect(() => {
@@ -200,6 +211,49 @@ const PdfFlipbook = ({
       }
     });
   }, [pdfDoc, viewMode, scale, numPages, renderPageToCanvas]);
+
+  // Flip Actions with smooth animation trigger
+  const triggerFlipAnimation = (direction) => {
+    setFlipDirection(direction);
+    setIsFlipping(true);
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 350);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage <= 1) return;
+    triggerFlipAnimation('prev');
+    if (useSinglePage) {
+      setCurrentPage((p) => Math.max(1, p - 1));
+    } else {
+      if (currentPage === 2) {
+        setCurrentPage(1);
+      } else {
+        setCurrentPage((p) => Math.max(1, p - 2));
+      }
+    }
+  };
+
+  const handleNextPage = () => {
+    if (useSinglePage) {
+      if (currentPage < numPages) {
+        triggerFlipAnimation('next');
+        setCurrentPage((p) => Math.min(numPages, p + 1));
+      }
+    } else {
+      if (currentPage === 1) {
+        triggerFlipAnimation('next');
+        setCurrentPage(2);
+      } else if (currentPage + 2 <= numPages) {
+        triggerFlipAnimation('next');
+        setCurrentPage((p) => p + 2);
+      } else if (currentPage + 1 <= numPages) {
+        triggerFlipAnimation('next');
+        setCurrentPage((p) => p + 1);
+      }
+    }
+  };
 
   // Touch Swipe detection for Mobile
   const handleTouchStart = (e) => {
@@ -244,49 +298,6 @@ const PdfFlipbook = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   });
 
-  // Flip Actions with smooth animation trigger
-  const triggerFlipAnimation = (direction) => {
-    setFlipDirection(direction);
-    setIsFlipping(true);
-    setTimeout(() => {
-      setIsFlipping(false);
-    }, 350);
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage <= 1) return;
-    triggerFlipAnimation('prev');
-    if (isMobile) {
-      setCurrentPage((p) => Math.max(1, p - 1));
-    } else {
-      if (currentPage === 2) {
-        setCurrentPage(1);
-      } else {
-        setCurrentPage((p) => Math.max(1, p - 2));
-      }
-    }
-  };
-
-  const handleNextPage = () => {
-    if (isMobile) {
-      if (currentPage < numPages) {
-        triggerFlipAnimation('next');
-        setCurrentPage((p) => Math.min(numPages, p + 1));
-      }
-    } else {
-      if (currentPage === 1) {
-        triggerFlipAnimation('next');
-        setCurrentPage(2);
-      } else if (currentPage + 2 <= numPages) {
-        triggerFlipAnimation('next');
-        setCurrentPage((p) => p + 2);
-      } else if (currentPage + 1 <= numPages) {
-        triggerFlipAnimation('next');
-        setCurrentPage((p) => p + 1);
-      }
-    }
-  };
-
   const handleJumpToFirst = () => {
     triggerFlipAnimation('prev');
     setCurrentPage(1);
@@ -294,7 +305,7 @@ const PdfFlipbook = ({
 
   const handleJumpToLast = () => {
     triggerFlipAnimation('next');
-    if (isMobile) {
+    if (useSinglePage) {
       setCurrentPage(numPages);
     } else {
       const lastSpread = numPages % 2 === 0 ? numPages - 1 : numPages;
@@ -317,7 +328,7 @@ const PdfFlipbook = ({
   const resetZoom = () => setScale(1.0);
 
   // Spread text
-  const currentSpreadText = isMobile || currentPage === 1
+  const currentSpreadText = useSinglePage || currentPage === 1
     ? `Trang ${currentPage} / ${numPages || 1}`
     : `Trang ${currentPage}${currentPage + 1 <= numPages ? ` - ${currentPage + 1}` : ''} / ${numPages || 1}`;
 
@@ -479,18 +490,27 @@ const PdfFlipbook = ({
           <div className="flex flex-col items-center justify-center gap-4 text-center p-6 bg-gray-900/90 rounded-2xl border border-gray-800 max-w-md mx-auto my-8 z-30">
             <FileText className="w-10 h-10 text-rose-400" />
             <p className="text-xs sm:text-sm text-gray-300">{error}</p>
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold hover:bg-emerald-600"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Mở PDF gốc trong tab mới
+            </a>
           </div>
         )}
 
         {/* ================= VIEW MODE 1: FLIPBOOK ================= */}
         {!loading && !error && pdfDoc && viewMode === 'flip' && (
-          <div className="w-full h-full flex items-center justify-center relative overflow-auto custom-scrollbar">
+          <div className="w-full min-w-0 h-full flex relative overflow-auto custom-scrollbar">
             {/* Left Big Flip Button */}
             <button
               type="button"
               onClick={handlePrevPage}
               disabled={currentPage <= 1}
-              className="absolute left-1 sm:left-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/65 hover:bg-emerald-600 disabled:opacity-10 disabled:hover:bg-black/65 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
+              className="absolute top-1/2 -translate-y-1/2 left-1 sm:left-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/65 hover:bg-emerald-600 disabled:opacity-10 disabled:hover:bg-black/65 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
               title="Lật trang trước (hoặc vuốt sang phải)"
             >
               <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 group-hover:-translate-x-0.5 transition-transform" />
@@ -501,11 +521,11 @@ const PdfFlipbook = ({
               type="button"
               onClick={handleNextPage}
               disabled={
-                isMobile
+                useSinglePage
                   ? currentPage >= numPages
                   : currentPage >= numPages || (currentPage === 1 ? numPages <= 1 : currentPage + 2 > numPages && currentPage + 1 > numPages)
               }
-              className="absolute right-1 sm:right-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/65 hover:bg-emerald-600 disabled:opacity-10 disabled:hover:bg-black/65 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
+              className="absolute top-1/2 -translate-y-1/2 right-1 sm:right-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/65 hover:bg-emerald-600 disabled:opacity-10 disabled:hover:bg-black/65 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
               title="Lật trang tiếp (hoặc vuốt sang trái)"
             >
               <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-0.5 transition-transform" />
@@ -513,7 +533,7 @@ const PdfFlipbook = ({
 
             {/* Book Display Container */}
             <div
-              className={`flex items-center justify-center transition-all duration-300 max-h-full ${
+              className={`m-auto flex shrink-0 items-center justify-center transition-all duration-300 ${
                 isFlipping
                   ? flipDirection === 'next'
                     ? 'opacity-85 translate-x-[-4px] scale-[0.995]'
@@ -521,20 +541,20 @@ const PdfFlipbook = ({
                   : 'opacity-100 translate-x-0 scale-100'
               }`}
             >
-              {isMobile || currentPage === 1 ? (
+              {useSinglePage || currentPage === 1 ? (
                 /* Single Page (Mobile view or Book Cover) */
-                <div className="relative bg-white rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden border border-gray-400/30 max-h-full max-w-full">
-                  <canvas ref={singleCanvasRef} className="block w-auto h-auto max-h-[75vh] max-w-[92vw] object-contain" />
+                <div className="relative bg-white rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden border border-gray-400/30">
+                  <canvas ref={singleCanvasRef} className="block" />
                   <div className="bg-gray-100 text-gray-700 text-[11px] font-bold text-center py-1 border-t border-gray-200">
                     {currentPage === 1 ? 'Bìa trước' : `Trang ${currentPage}`}
                   </div>
                 </div>
               ) : (
                 /* Two-Page Open Book Spread (Desktop Reading Spread) */
-                <div className="relative flex items-center justify-center bg-white rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] border border-gray-600/40 overflow-hidden max-h-full">
+                <div className="relative flex items-center justify-center bg-white rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] border border-gray-600/40 overflow-hidden">
                   {/* Left Page (Even Page) */}
                   <div className="relative overflow-hidden border-r border-gray-300 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06)] bg-[#fafafa]">
-                    <canvas ref={leftCanvasRef} data-id="left" className="block w-auto h-auto max-h-[75vh]" />
+                    <canvas ref={leftCanvasRef} data-id="left" className="block" />
                     <div className="bg-gray-100 text-gray-600 text-[11px] font-semibold text-center py-1 border-t border-gray-200">
                       Trang {currentPage}
                     </div>
@@ -547,13 +567,13 @@ const PdfFlipbook = ({
                   <div className="relative overflow-hidden shadow-[inset_8px_0_12px_rgba(0,0,0,0.06)] bg-[#fafafa]">
                     {currentPage + 1 <= numPages ? (
                       <>
-                        <canvas ref={rightCanvasRef} data-id="right" className="block w-auto h-auto max-h-[75vh]" />
+                        <canvas ref={rightCanvasRef} data-id="right" className="block" />
                         <div className="bg-gray-100 text-gray-600 text-[11px] font-semibold text-center py-1 border-t border-gray-200">
                           Trang {currentPage + 1}
                         </div>
                       </>
                     ) : (
-                      <div className="w-[300px] h-[400px] flex items-center justify-center text-gray-400 text-xs italic bg-gray-50">
+                      <div className="p-4 flex items-center justify-center text-gray-400 text-xs italic bg-gray-50">
                         (Hết tài liệu)
                       </div>
                     )}
@@ -566,11 +586,11 @@ const PdfFlipbook = ({
 
         {/* ================= VIEW MODE 2: CONTINUOUS SCROLL ================= */}
         {!loading && !error && pdfDoc && viewMode === 'scroll' && (
-          <div className="w-full h-full overflow-y-auto px-2 sm:px-6 py-4 space-y-6 custom-scrollbar">
+          <div className="w-full h-full overflow-auto px-2 sm:px-6 py-4 space-y-6 custom-scrollbar">
             {Array.from({ length: numPages }, (_, i) => i + 1).map((pNum) => (
               <div
                 key={pNum}
-                className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-3xl mx-auto border border-gray-300 relative"
+                className="bg-white rounded-2xl shadow-xl overflow-hidden w-max mx-auto border border-gray-300 relative"
               >
                 <canvas
                   ref={(el) => {
@@ -623,7 +643,7 @@ const PdfFlipbook = ({
               type="button"
               onClick={handleNextPage}
               disabled={
-                isMobile
+                useSinglePage
                   ? currentPage >= numPages
                   : currentPage >= numPages || (currentPage === 1 ? numPages <= 1 : currentPage + 2 > numPages && currentPage + 1 > numPages)
               }
@@ -650,5 +670,9 @@ const PdfFlipbook = ({
     </div>
   );
 };
+
+const PdfFlipbook = ({ pdfUrl = '/pdf/HoSoNangLuc2026.pdf', ...props }) => (
+  <PdfReader key={pdfUrl} pdfUrl={pdfUrl} {...props} />
+);
 
 export default PdfFlipbook;

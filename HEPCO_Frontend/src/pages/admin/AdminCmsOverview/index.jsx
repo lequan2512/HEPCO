@@ -16,7 +16,8 @@ import {
   RotateCcw,
   CheckCircle2,
   ArrowRight,
-  Plus
+  Plus,
+  Users
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ROUTES } from '../../../constants/routes';

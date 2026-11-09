@@ -1,5 +1,5 @@
 const NewsModel = require('../models/news.model');
-const { NEWS_TYPES, NEWS_METADATA_FIELDS, NEWS_MAX_PAGE_SIZE, NEWS_SORTS } = require('../constants/news');
+const { NEWS_TYPES, NEWS_METADATA_FIELDS, NEWS_MAX_PAGE_SIZE, NEWS_SORTS, ABOUT_SETTINGS_TYPE, ABOUT_EDITABLE_FIELDS } = require('../constants/news');
 const AppError = require('../utils/AppError');
 const positiveId = (value) => {
   if (!/^[1-9]\d*$/.test(String(value)) || !Number.isSafeInteger(Number(value))) throw new AppError('INVALID_INPUT', 400, 'A positive integer ID is required');
@@ -26,6 +26,17 @@ const payloadFrom = (body) => {
   if (metadata.publishYear !== undefined && (!Number.isInteger(metadata.publishYear) || metadata.publishYear < 1900 || metadata.publishYear > 9999)) throw new AppError('INVALID_INPUT', 400, 'Invalid publication year');
   if (metadata.relatedIds !== undefined && (!Array.isArray(metadata.relatedIds) || metadata.relatedIds.length > 100 || metadata.relatedIds.some((id) => !Number.isSafeInteger(Number(id)) || Number(id) < 1))) throw new AppError('INVALID_INPUT', 400, 'Invalid related article IDs');
   if (metadata.attachments !== undefined && (!Array.isArray(metadata.attachments) || metadata.attachments.length > 100 || metadata.attachments.some((item) => !item || !validateUrl(item.fileUrl || item.url) || (item.downloadUrl && !validateUrl(item.downloadUrl))))) throw new AppError('PERMANENT_UPLOAD_REQUIRED', 400, 'Attachments must have permanent server URLs');
+  if (type === ABOUT_SETTINGS_TYPE || metadata.aboutSettings !== undefined) {
+    const settings = metadata.aboutSettings;
+    if (type !== ABOUT_SETTINGS_TYPE || !settings ||
+        typeof settings !== 'object' || Array.isArray(settings) ||
+        Object.entries(settings).some(([key, value]) =>
+          !ABOUT_EDITABLE_FIELDS.includes(key) || typeof value !== 'string' || value.length > 20000
+        ) ||
+        ['hqImage', 'orgChartImage', 'capabilityPdfUrl'].some((key) => settings[key] && !validateUrl(settings[key]))) {
+      throw new AppError('INVALID_INPUT', 400, 'Invalid About page settings');
+    }
+  }
   return { title: title.trim(), content, thumbnail: thumbnail || '', type, date, metadata };
 };
 const forwardError = (error, next) => next(error.code === 'P2025' ? new AppError('ARTICLE_NOT_FOUND', 404, 'Article not found') : error);

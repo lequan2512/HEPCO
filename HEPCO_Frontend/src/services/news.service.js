@@ -673,16 +673,6 @@ export const getAboutSettings = () => {
   };
 };
 
-export const updateAboutSettings = (newSettings) => {
-  const overrides = loadLocalOverrides();
-  overrides.aboutSettings = {
-    ...getAboutSettings(),
-    ...newSettings
-  };
-  saveLocalOverrides(overrides);
-  return overrides.aboutSettings;
-};
-
 export const getMigratedBanners = async () => {
   const overrides = loadLocalOverrides();
   if (Array.isArray(overrides.banners)) {
@@ -838,39 +828,29 @@ export const getCmsOverviewCounts = () => {
 };
 
 
-export const saveAboutSettingsServer = async (newSettings) => {
-  const overrides = loadLocalOverrides();
-  overrides.aboutSettings = {
-    ...getAboutSettings(),
-    ...newSettings
-  };
-  saveLocalOverrides(overrides);
+const ABOUT_SETTINGS_TYPE = 'about_settings';
+const ABOUT_EDITABLE_FIELDS = [
+  'bannerDescription', 'openLetterTitle', 'hqTitle', 'hqAddress', 'openLetterParagraph1',
+  'openLetterParagraph2', 'openLetterHighlight', 'hqImage', 'orgChartImage',
+  'capabilityPdfUrl', 'capabilityPdfName'
+];
 
-  try {
-    const listRes = await axiosInstance.get('/api/news', { params: { type: 'about', limit: 20 }, timeout: 4000 });
-    const articles = listRes.data?.data || [];
-    const configArticle = articles.find(
-      (a) => a.slug === 'about_settings' || a.metadata?.slug === 'about_settings' || a.title === 'Cấu hình thông tin Giới thiệu HEPCO'
-    );
-    const payload = {
-      title: 'Cấu hình thông tin Giới thiệu HEPCO',
-      date: new Date().toLocaleDateString('vi-VN'),
-      type: 'about',
-      content: newSettings.openLetterParagraph1 || 'Cấu hình trang giới thiệu',
-      thumbnail: newSettings.hqImage || '/images/cover.png',
-      metadata: {
-        slug: 'about_settings',
-        ...newSettings
-      }
-    };
-    if (configArticle) {
-      await axiosInstance.put(`/api/news/${configArticle.id}`, payload);
-    } else {
-      await axiosInstance.post('/api/news', payload);
-    }
-  } catch (err) {
-    console.warn('Server sync for about settings failed, saved locally:', err);
-    throw err;
-  }
-  return overrides.aboutSettings;
+export const getPublicAboutDefaults = () => ({ ...DEFAULT_ABOUT_SETTINGS });
+
+export const getAboutSettingsServer = async () => {
+  const { data } = await getServerArticles({ type: ABOUT_SETTINGS_TYPE, limit: 1 });
+  const record = data[0];
+  return { id: record?.id, settings: { ...DEFAULT_ABOUT_SETTINGS, ...record?.aboutSettings } };
+};
+
+export const saveAboutSettingsServer = async (values, id) => {
+  const aboutSettings = Object.fromEntries(ABOUT_EDITABLE_FIELDS.map((key) => [key, values[key] ?? '']));
+  const payload = {
+    title: 'Cấu hình thông tin Giới thiệu HEPCO',
+    date: new Date().toLocaleDateString('vi-VN'),
+    type: ABOUT_SETTINGS_TYPE,
+    content: 'Cấu hình trang Giới thiệu',
+    aboutSettings
+  };
+  return id ? updateServerArticle(id, payload) : createServerArticle(payload);
 };

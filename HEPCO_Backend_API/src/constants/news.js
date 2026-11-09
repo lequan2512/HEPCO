@@ -1,5 +1,13 @@
+const ABOUT_SETTINGS_TYPE = 'about_settings';
+
 module.exports = {
-  NEWS_TYPES: ['news', 'announcement', 'shareholders', 'service', 'about'],
+  NEWS_TYPES: ['news', 'announcement', 'shareholders', 'service', 'about', ABOUT_SETTINGS_TYPE],
+  ABOUT_SETTINGS_TYPE,
+  ABOUT_EDITABLE_FIELDS: [
+    'bannerDescription', 'openLetterTitle', 'hqTitle', 'hqAddress', 'openLetterParagraph1',
+    'openLetterParagraph2', 'openLetterHighlight', 'hqImage', 'orgChartImage',
+    'capabilityPdfUrl', 'capabilityPdfName'
+  ],
   NEWS_METADATA_FIELDS: [
     'summary',
     'category',
@@ -12,7 +20,8 @@ module.exports = {
     'featured',
     'docCode',
     'issuedDate',
-    'images'
+    'images',
+    'aboutSettings'
   ],
   NEWS_MAX_PAGE_SIZE: 100,
   NEWS_SORTS: {

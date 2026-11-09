@@ -1,5 +1,5 @@
 const { prisma } = require('../db');
-const { NEWS_SORTS, NEWS_METADATA_FIELDS } = require('../constants/news');
+const { NEWS_SORTS, NEWS_METADATA_FIELDS, ABOUT_SETTINGS_TYPE } = require('../constants/news');
 
 const toArticle = (record) => {
   if (!record) return null;
@@ -13,6 +13,7 @@ class NewsModel {
   static async getAll({ type, page, limit, search, category, documentTypes, year, sort }) {
     const where = {};
     if (type && type !== 'all') where.type = type;
+    else where.OR = [{ type: null }, { type: { not: ABOUT_SETTINGS_TYPE } }];
     const conditions = [];
     if (search) conditions.push({ title: { contains: search } });
     if (category && category !== 'all') {

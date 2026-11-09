@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/Public/Upload/files/:path(.+\\.[pP][dD][fF])",
+      "destination": "https://www.hepco.com.vn/Public/Upload/files/:path"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

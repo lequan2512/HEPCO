@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user.model');
 const { assertAllowedIp } = require('./ip.middleware');
-const { getJwtSecret, getCmsAdminIds } = require('../utils/authConfig');
+const { getJwtSecret, canManageContent, canManageAccounts } = require('../utils/authConfig');
 const { AUTH } = require('../constants/auth');
 const { isPasswordHash, credentialVersion } = require('../utils/password');
 const AppError = require('../utils/AppError');
@@ -22,14 +22,21 @@ exports.verifyToken = async (req, res, next) => {
     const user = await UserModel.findById(decoded.id);
     if (!user || !isPasswordHash(user.password) || user.username !== decoded.username || credentialVersion(user.password) !== decoded.credentialVersion) throw new AppError('TOKEN_INVALID_OR_EXPIRED', 401, 'Authentication session is no longer valid');
     await assertAllowedIp(req);
-    req.user = { id: user.id, username: user.username, role: user.role || 'admin' };
+    req.user = { id: user.id, username: user.username, role: user.role };
     next();
   } catch (error) { next(error); }
 };
 
 exports.requireCmsAdmin = (req, res, next) => {
-  if (!req.user || (!getCmsAdminIds().has(req.user.id) && req.user.role !== 'super_admin' && req.user.role !== 'admin' && req.user.role !== 'editor')) {
+  if (!canManageContent(req.user)) {
     return next(new AppError('CMS_ACCESS_DENIED', 403, 'CMS access is not allowed for this account'));
+  }
+  next();
+};
+
+exports.requireAccountAdmin = (req, res, next) => {
+  if (!canManageAccounts(req.user)) {
+    return next(new AppError('CMS_ACCESS_DENIED', 403, 'Account administration is not allowed for this account'));
   }
   next();
 };

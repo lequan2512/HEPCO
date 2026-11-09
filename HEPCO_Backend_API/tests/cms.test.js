@@ -36,6 +36,7 @@ let token;
 before(async () => {
   process.env.JWT_SECRET = 'unit-test-secret-with-more-than-32-bytes';
   process.env.CMS_ADMIN_USER_IDS = '1';
+  process.env.ENABLE_IP_WHITELIST = 'true';
   users.set(1, { id: 1, username: credentials.username, password: await hashPassword(credentials.password) });
   users.set(2, { id: 2, username: 'reader', password: await hashPassword(credentials.password) });
   users.set(3, { id: 3, username: 'legacy', password: credentials.password });
@@ -46,6 +47,8 @@ before(async () => {
   app.use('/api/news', require('../src/routes/news.routes'));
   app.use('/api/upload', require('../src/middlewares/auth.middleware').verifyToken, require('../src/routes/upload.routes'));
   app.use('/api/banner', require('../src/routes/banner.routes'));
+  app.use('/api/users', require('../src/routes/user.routes'));
+  app.use('/api/ip', require('../src/routes/ip.routes'));
   app.use((error, req, res, next) => res.status(error instanceof AppError ? error.statusCode : 500).json({ errorCode: error.errorCode || 'INTERNAL_ERROR' }));
   server = await new Promise((resolve) => { const value = app.listen(0, '127.0.0.1', () => resolve(value)); });
   base = `http://127.0.0.1:${server.address().port}`;
@@ -95,6 +98,19 @@ test('authenticated users without explicit CMS permission cannot write', async (
   assert.equal((await request('/api/upload', { method: 'POST', token: reader.data.token, body: {} })).status, 403);
   assert.equal((await request('/api/banner/example.jpg', { method: 'DELETE', token: reader.data.token })).status, 403);
 });
+test('editors can manage content but cannot administer accounts or IPs', async () => {
+  const user = users.get(2);
+  user.role = 'editor';
+  try {
+    const reader = await request('/api/login', { method: 'POST', body: { username: 'reader', password: credentials.password } });
+    const token = reader.data.token;
+    assert.equal((await request('/api/session', { token })).data.canManageContent, true);
+    assert.equal((await request('/api/users', { token })).status, 403);
+    assert.equal((await request('/api/ip', { token })).status, 403);
+  } finally {
+    delete user.role;
+  }
+});
 test('create, read, update and delete use the same server ID and persist metadata', async () => {
   const created = await request('/api/news', { method: 'POST', token, body: article });
   assert.equal(created.status, 201);
@@ -120,6 +136,26 @@ test('database failure never returns success for create, update or delete', asyn
       assert.equal(result.status, 500); assert.notEqual(result.data.success, true);
     }
   } finally { failWrite = false; }
+});
+test('About settings persist and can be read without a CMS session', async () => {
+  const body = {
+    ...article,
+    type: 'about_settings',
+    aboutSettings: { hqTitle: 'Trụ sở mới', capabilityPdfUrl: '/pdf/profile.pdf' }
+  };
+  const saved = await request('/api/news', { method: 'POST', token, body });
+  assert.equal(saved.status, 201);
+  const path = `/api/news/${saved.data.data.id}`;
+  try {
+    const updated = { ...body, aboutSettings: { ...body.aboutSettings, hqTitle: 'HEPCO' } };
+    assert.equal((await request(path, { method: 'PUT', token, body: updated })).status, 200);
+    assert.deepEqual((await request(path)).data.aboutSettings, updated.aboutSettings);
+    assert.equal((await request(path, { method: 'PUT', token, body: {
+      ...updated, aboutSettings: { stats: 'invalid' }
+    } })).status, 400);
+  } finally {
+    await request(path, { method: 'DELETE', token });
+  }
 });
 test('invalid IDs, pagination and ephemeral attachments are rejected', async () => {
   assert.equal((await request('/api/news/12junk')).status, 400);

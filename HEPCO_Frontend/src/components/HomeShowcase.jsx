@@ -1,7 +1,7 @@
 import { useShowcase } from '../apis/showcase';
 import HomeShowcaseView from './HomeShowcaseView';
 
-export const SHOWCASE_2026_DEFAULT = {
+const SHOWCASE_2026_DEFAULT = {
   title: 'Hoạt Động & Dự Án Trọng Điểm 2026',
   description: 'Hình ảnh công tác thực tế của đội ngũ cán bộ công nhân viên HEPCO trên khắp các nẻo đường Cố đô Huế năm 2026.',
   linkLabel: 'Thư Viện Hình Ảnh & Hoạt Động',

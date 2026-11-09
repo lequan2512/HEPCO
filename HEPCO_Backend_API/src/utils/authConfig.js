@@ -9,4 +9,11 @@ const getJwtSecret = () => {
   return secret;
 };
 const getCmsAdminIds = () => new Set((process.env.CMS_ADMIN_USER_IDS || '').split(',').filter((id) => /^[1-9]\d*$/.test(id.trim())).map(Number));
-module.exports = { getJwtSecret, getCmsAdminIds };
+const canManageAccounts = (user) => Boolean(user && (
+  user.role === 'super_admin' || user.role === 'admin' ||
+  (!user.role && getCmsAdminIds().has(user.id))
+));
+const canManageContent = (user) => Boolean(user && (
+  canManageAccounts(user) || user.role === 'editor' || getCmsAdminIds().has(user.id)
+));
+module.exports = { getJwtSecret, canManageContent, canManageAccounts };

@@ -17,7 +17,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  ShieldCheck,
   Users
 } from 'lucide-react';
 
@@ -117,11 +116,23 @@ const AdminLayout = () => {
   };
 
   // Immediate redirect if not authenticated (prevents blank screen)
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !token) {
     return <Navigate to={ROUTES.ADMIN_LOGIN} replace />;
   }
 
-  const currentUser = session?.data?.user || { username: 'admin', role: 'Quản trị viên' };
+  if (session.isPending || session.isError || !session.data?.canManageContent) {
+    return (
+      <main className="min-h-screen grid place-content-center gap-4 p-6 text-center">
+        <p>{session.isPending ? 'Đang xác thực phiên đăng nhập…' : session.isError
+          ? 'Không thể xác thực phiên. Kiểm tra kết nối tới máy chủ.'
+          : 'Tài khoản này không có quyền quản trị nội dung.'}</p>
+        {session.isError && <button type="button" onClick={() => session.refetch()}>Thử lại</button>}
+        <button type="button" onClick={handleLogout}>Đăng xuất</button>
+      </main>
+    );
+  }
+
+  const currentUser = session.data.user;
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans w-full overflow-hidden relative">

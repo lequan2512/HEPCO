@@ -1,8 +1,5 @@
 require('dotenv').config();
-if (!process.env.DATABASE_URL) process.env.DATABASE_URL = 'file:./dev.db';
 if (!process.env.PORT) process.env.PORT = '3000';
-if (!process.env.JWT_SECRET) process.env.JWT_SECRET = 'hepco-secret-key-2026-very-secure-jwt-secret-token';
-if (!process.env.CMS_ADMIN_USER_IDS) process.env.CMS_ADMIN_USER_IDS = '1,2';
 if (!process.env.UPLOAD_STORAGE) process.env.UPLOAD_STORAGE = 'local';
 
 const express = require('express');
@@ -40,7 +37,7 @@ app.get('/', (req, res) => {
     name: 'HEPCO Website & CMS API',
     version: '2026.1',
     status: 'running',
-    database: 'connected'
+    health: '/api/health'
   });
 });
 
@@ -64,15 +61,14 @@ app.use('/api/upload', authMiddleware.verifyToken, uploadRoutes);
 
 const errorHandler = require('./middlewares/errorHandler');
 
-prisma.$connect().then(() => {
-  console.log(`Database connected successfully (${process.env.DATABASE_URL.startsWith('sqlserver') ? 'SQL Server' : 'SQLite'})!`);
-  if (!process.env.VERCEL) {
-    app.listen(PORT, () => {
-      console.log(`HEPCO API Server is running at http://localhost:${PORT}`);
-    });
-  }
+if (!process.env.VERCEL) prisma.$connect().then(() => {
+  console.log('MySQL database connected');
+  app.listen(PORT, () => {
+    console.log(`HEPCO API Server is running at http://localhost:${PORT}`);
+  });
 }).catch(err => {
-  console.error('Failed to start server due to database connection error:', err.message);
+  console.error('Check DATABASE_URL in .env. A reachable MySQL database is required.', err.message);
+  process.exitCode = 1;
 });
 
 // Error handling middleware MUST be the last middleware

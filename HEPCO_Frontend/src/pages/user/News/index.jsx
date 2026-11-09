@@ -6,8 +6,7 @@ import {
   X,
   Tag,
   FileText,
-  Download,
-  Eye,
+  BookOpen,
   ArrowRight,
   Paperclip,
   Image as ImageIcon,
@@ -18,13 +17,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  ChevronUp,
   Check,
   ArrowUpDown,
   RotateCcw,
   ZoomIn,
   ZoomOut,
-  ExternalLink
 } from 'lucide-react';
 import PageBanner from '../../../components/PageBanner';
 import Loading from '../../../components/Loading';
@@ -46,11 +43,9 @@ import {
 } from '../../../constants/news';
 import { useGetNews, useGetNewsStats, useGetGallery } from '../../../apis/news';
 import {
-  getShareholderStats,
-  getNewsCategoryStats,
   getGalleryList
 } from '../../../services/news.service';
-import { resolveAssetUrl, formatFileSize } from '../../../utils/assetUrl';
+import { resolveAssetUrl } from '../../../utils/assetUrl';
 
 const stripHtml = (html) => {
   if (typeof html !== 'string') return '';
@@ -85,11 +80,11 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   const categoryParam = searchParams.get('category');
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || initialCategory || 'all');
 
-  useEffect(() => {
-    if (initialCategory && initialCategory !== 'all') {
-      setSelectedCategory(initialCategory);
-    }
-  }, [initialCategory]);
+  const [previousInitialCategory, setPreviousInitialCategory] = useState(initialCategory);
+  if (initialCategory !== previousInitialCategory) {
+    setPreviousInitialCategory(initialCategory);
+    if (initialCategory && initialCategory !== 'all') setSelectedCategory(initialCategory);
+  }
   const [selectedYear, setSelectedYear] = useState('all');
   const [sortOption, setSortOption] = useState('created_at_desc');
   const [page, setPage] = useState(1);
@@ -101,7 +96,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   const typeDropdownRef = useRef(null);
 
   // Expanded attachments tracking for Shareholder items with many files
-  const [expandedDocs, setExpandedDocs] = useState({});
 
   // Gallery state
   const [galleryCategory, setGalleryCategory] = useState(GALLERY_CATEGORY.ALL);

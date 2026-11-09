@@ -11,23 +11,12 @@ const getClientIp = (req) => {
   return raw.startsWith('::ffff:') ? raw.slice(7) : raw;
 };
 
-const isPrivateIp = (ip) => {
-  return (
-    ip === '127.0.0.1' ||
-    ip === '::1' ||
-    ip.startsWith('10.') ||
-    ip.startsWith('192.168.') ||
-    /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip)
-  );
-};
-
 const assertAllowedIp = async (req) => {
   if (process.env.ENABLE_IP_WHITELIST !== 'true') return;
   const ip = getClientIp(req);
-  if (isPrivateIp(ip)) return;
   if (!net.isIP(ip) || !(await IpWhitelistModel.checkIp(ip))) {
     throw new AppError('IP_NOT_WHITELISTED', 403, 'Access from this IP is not allowed');
   }
 };
 
-module.exports = { getClientIp, assertAllowedIp, isPrivateIp };
+module.exports = { getClientIp, assertAllowedIp };

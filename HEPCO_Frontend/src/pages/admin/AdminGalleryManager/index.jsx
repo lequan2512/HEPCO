@@ -8,7 +8,6 @@ import {
   Image as ImageIcon,
   X,
   Upload,
-  Calendar,
   Save
 } from 'lucide-react';
 import toast from 'react-hot-toast';

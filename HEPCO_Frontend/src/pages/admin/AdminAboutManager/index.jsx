@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import {
@@ -9,12 +10,13 @@ import {
   ExternalLink
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getAboutSettings, updateAboutSettings, saveAboutSettingsServer } from '../../../services/news.service';
+import { getAboutSettings, getPublicAboutDefaults, saveAboutSettingsServer } from '../../../services/news.service';
 import { useUploadImage } from '../../../apis/upload';
 import { resolveAssetUrl } from '../../../utils/assetUrl';
 import { ROUTES } from '../../../constants/routes';
 import AdminNewsManager from '../AdminNewsManager';
 import Loading from '../../../components/Loading';
+import { ABOUT_SETTINGS_KEY, useAboutSettings } from '../../../apis/about';
 
 const AdminAboutManager = () => {
   const [activeTab, setActiveTab] = useState('general'); // 'general' | 'articles'
@@ -23,14 +25,25 @@ const AdminAboutManager = () => {
   const hqImageRef = useRef(null);
   const uploadMutation = useUploadImage();
 
-  const initialAbout = getAboutSettings();
+  const queryClient = useQueryClient();
+  const aboutQuery = useAboutSettings();
+  const initialAbout = aboutQuery.data?.id ? aboutQuery.data.settings
+    : aboutQuery.data ? getAboutSettings() : getPublicAboutDefaults();
 
   const formik = useFormik({
     initialValues: initialAbout,
     enableReinitialize: true,
-    onSubmit: (values) => {
-      updateAboutSettings(values);
-      toast.success('Đã lưu cấu hình trang Giới thiệu thành công!');
+    onSubmit: async (values) => {
+      try {
+        const saved = await saveAboutSettingsServer(values, aboutQuery.data?.id);
+        queryClient.setQueryData(ABOUT_SETTINGS_KEY, {
+          id: saved.id,
+          settings: { ...getPublicAboutDefaults(), ...saved.aboutSettings }
+        });
+        toast.success('Đã lưu cấu hình trang Giới thiệu thành công!');
+      } catch {
+        toast.error('Không lưu được cấu hình lên máy chủ. Vui lòng thử lại.');
+      }
     }
   });
 
@@ -108,7 +121,11 @@ const AdminAboutManager = () => {
         </div>
       </div>
 
-      {activeTab === 'general' ? (
+      {activeTab === 'general' && aboutQuery.isPending ? (
+        <Loading message="Đang tải cấu hình Giới thiệu..." />
+      ) : activeTab === 'general' && aboutQuery.isError ? (
+        <button type="button" onClick={() => aboutQuery.refetch()}>Không tải được cấu hình. Thử lại</button>
+      ) : activeTab === 'general' ? (
         <form
           onSubmit={formik.handleSubmit}
           className="bg-white rounded-2xl shadow-xs border border-gray-100 p-5 sm:p-7 space-y-6"
@@ -330,6 +347,7 @@ const AdminAboutManager = () => {
           <div className="flex justify-end pt-3 border-t border-gray-100">
             <button
               type="submit"
+              disabled={formik.isSubmitting || uploadMutation.isPending}
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-hepco-green hover:bg-emerald-700 text-white text-sm font-bold shadow-sm transition-colors cursor-pointer"
             >
               <Save className="w-4 h-4" />

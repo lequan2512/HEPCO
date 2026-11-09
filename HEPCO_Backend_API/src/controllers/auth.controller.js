@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user.model');
 const { assertAllowedIp } = require('../middlewares/ip.middleware');
-const { getJwtSecret, getCmsAdminIds } = require('../utils/authConfig');
+const { getJwtSecret, canManageContent } = require('../utils/authConfig');
 const { verifyPassword, credentialVersion } = require('../utils/password');
 const { AUTH } = require('../constants/auth');
 const AppError = require('../utils/AppError');
@@ -18,7 +18,8 @@ exports.login = async (req, res, next) => {
     res.json({ success: true, user: { id: user.id, username: user.username }, token });
   } catch (error) { next(error); }
 };
-exports.getSession = (req, res) => {
-  const isCmsAdmin = getCmsAdminIds().has(req.user.id) || req.user.role === 'super_admin' || req.user.role === 'admin' || req.user.role === 'editor';
-  res.json({ success: true, user: req.user, canManageContent: isCmsAdmin });
-};
+exports.getSession = (req, res) => res.json({
+  success: true,
+  user: req.user,
+  canManageContent: canManageContent(req.user)
+});
