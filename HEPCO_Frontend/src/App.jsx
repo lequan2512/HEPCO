@@ -64,11 +64,14 @@ const AppRoutes = () => {
           <Route path={ROUTES.HOME} element={<Home />} />
           <Route path={ROUTES.ABOUT} element={<About />} />
           <Route path={ROUTES.SERVICES} element={<Services />} />
+          <Route path={ROUTES.NEWS_AND_ANNOUNCEMENTS} element={<News pageType="news" />} />
           <Route path={ROUTES.NEWS} element={<News pageType="news" />} />
-          <Route path={ROUTES.ANNOUNCEMENTS} element={<News pageType="announcements" />} />
+          <Route path={ROUTES.ANNOUNCEMENTS} element={<News pageType="news" initialCategory="announcement" />} />
           <Route path={ROUTES.SHAREHOLDERS} element={<News pageType="shareholders" />} />
+          <Route path="/quan-he-co-dong" element={<News pageType="shareholders" />} />
           <Route path={ROUTES.ARTICLE_DETAIL} element={<ArticleDetail />} />
           <Route path="/tin-tuc/:id" element={<ArticleDetail />} />
+          <Route path="/thong-bao/:id" element={<ArticleDetail />} />
           <Route path="/quan-he-co-dong/:id" element={<ArticleDetail />} />
         </Route>
 

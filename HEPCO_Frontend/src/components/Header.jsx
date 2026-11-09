@@ -46,8 +46,11 @@ const Header = () => {
     { name: 'Trang Chủ', path: ROUTES.HOME },
     { name: 'Giới Thiệu', path: ROUTES.ABOUT },
     { name: 'Dịch Vụ', path: ROUTES.SERVICES },
-    { name: 'Tin Tức', path: ROUTES.NEWS },
-    { name: 'Thông Báo', path: ROUTES.ANNOUNCEMENTS },
+    {
+      name: 'Tin Tức & Thông Báo',
+      path: ROUTES.NEWS_AND_ANNOUNCEMENTS,
+      matchPaths: [ROUTES.NEWS_AND_ANNOUNCEMENTS, ROUTES.NEWS, ROUTES.ANNOUNCEMENTS]
+    },
     { name: 'Quan Hệ Cổ Đông', path: ROUTES.SHAREHOLDERS },
     {
       name: 'Hóa Đơn Điện Tử',
@@ -92,7 +95,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation (1024px+): Strictly single-line with whitespace-nowrap */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 shrink-0">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink-0">
             {navItems.map((item, index) => {
               if (item.isExternal) {
                 return (
@@ -101,7 +104,7 @@ const Header = () => {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2 xl:px-3 py-2 rounded-xl text-[12.5px] xl:text-[13.5px] font-bold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 transition-all duration-200 group"
+                    className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2.5 xl:px-3.5 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 transition-all duration-200 group"
                   >
                     <span>{item.name}</span>
                     <ExternalLink className="w-3.5 h-3.5 text-emerald-600 shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
@@ -109,17 +112,19 @@ const Header = () => {
                 );
               }
 
+              const isItemActive = item.matchPaths
+                ? item.matchPaths.some((p) => location.pathname === p || location.pathname.startsWith(p + '/'))
+                : location.pathname === item.path;
+
               return (
                 <NavLink
                   key={index}
                   to={item.path}
-                  className={({ isActive }) =>
-                    `whitespace-nowrap shrink-0 px-2 xl:px-3 py-2 rounded-xl text-[12.5px] xl:text-[13.5px] font-bold transition-all duration-200 ${
-                      isActive
-                        ? 'text-emerald-700 bg-emerald-50/90 shadow-2xs font-extrabold'
-                        : 'text-gray-700 hover:text-[#10243b] hover:bg-gray-100/80'
-                    }`
-                  }
+                  className={`whitespace-nowrap shrink-0 px-2.5 xl:px-3.5 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold transition-all duration-200 ${
+                    isItemActive
+                      ? 'text-emerald-700 bg-emerald-50/90 shadow-2xs font-extrabold'
+                      : 'text-gray-700 hover:text-[#10243b] hover:bg-gray-100/80'
+                  }`}
                 >
                   {item.name}
                 </NavLink>
@@ -171,20 +176,20 @@ const Header = () => {
               </a>
             )}
 
-            {/* Mobile & Tablet Menu Toggle Button (< 1024px) */}
+            {/* Mobile Hamburger Toggle Button (< 1024px) */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-gray-700 hover:text-[#10243b] hover:bg-gray-100 active:scale-95 transition-all focus:outline-hidden shrink-0"
-              aria-label={isMenuOpen ? 'Đóng danh mục điều hướng' : 'Mở danh mục điều hướng'}
+              className="lg:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 active:scale-95 transition-all focus:outline-none cursor-pointer"
+              aria-label={isMenuOpen ? 'Đóng menu' : 'Mở menu'}
             >
-              {isMenuOpen ? <X className="w-6 h-6 text-[#10243b]" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? <X className="w-6 h-6 text-gray-800" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile & Tablet Backdrop Overlay */}
+      {/* Backdrop overlay for mobile drawer */}
       {isMenuOpen && (
         <div
           className="lg:hidden absolute top-full left-0 w-full h-[100dvh] bg-black/50 backdrop-blur-[2px] z-40 transition-opacity"
@@ -219,18 +224,20 @@ const Header = () => {
                 );
               }
 
+              const isItemActive = item.matchPaths
+                ? item.matchPaths.some((p) => location.pathname === p || location.pathname.startsWith(p + '/'))
+                : location.pathname === item.path;
+
               return (
                 <NavLink
                   key={index}
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                      isActive
-                        ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
-                        : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
-                    }`
-                  }
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isItemActive
+                      ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
+                      : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
+                  }`}
                 >
                   <span>{item.name}</span>
                 </NavLink>
@@ -244,27 +251,21 @@ const Header = () => {
               href="tel:1900969669"
               className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                <Phone className="w-4 h-4 fill-current" />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider leading-none">
-                  Tổng Đài Trực 24/7
-                </span>
-                <span className="text-base font-black text-white leading-tight mt-0.5">
-                  1900 969669
-                </span>
-              </div>
+              <Phone className="w-4 h-4 text-emerald-400 fill-current" />
+              <span>Hotline Tư Vấn 24/7: 1900 969669</span>
             </a>
 
-            <Link
-              to={ROUTES.ADMIN_OVERVIEW}
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-colors"
-            >
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Đăng nhập Quản trị CMS</span>
-            </Link>
+            <div className="flex items-center justify-between text-xs text-gray-500 px-1 pt-1">
+              <span>Địa chỉ: 46 Trần Phú, TP. Huế</span>
+              <Link
+                to={ROUTES.ADMIN_OVERVIEW}
+                onClick={() => setIsMenuOpen(false)}
+                className="font-bold text-emerald-700 hover:underline inline-flex items-center gap-1"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Cổng CMS</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

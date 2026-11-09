@@ -415,6 +415,9 @@ const About = () => {
               <PdfFlipbook
                 pdfUrl={resolveAssetUrl(aboutConfig.capabilityPdfUrl || '/pdf/HoSoNangLuc2026.pdf')}
                 fileName={aboutConfig.capabilityPdfName || 'Hồ_Sơ_Năng_Lực_HEPCO_2026.pdf'}
+                title="Hồ sơ năng lực HEPCO 2026"
+                hideDownload={true}
+                hideExternalLink={true}
               />
             </div>
           </div>

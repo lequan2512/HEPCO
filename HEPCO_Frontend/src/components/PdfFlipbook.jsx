@@ -15,7 +15,8 @@ import {
   ChevronsRight,
   BookOpen,
   Scroll,
-  RotateCcw
+  RotateCcw,
+  X
 } from 'lucide-react';
 
 // Configure PDF.js worker
@@ -24,7 +25,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLi
 const PdfFlipbook = ({
   pdfUrl = '/pdf/HoSoNangLuc2026.pdf',
   fileName = 'HoSoNangLuc2026.pdf',
-  title = ''
+  title = '',
+  hideDownload = false,
+  hideExternalLink = false,
+  onClose = null
 }) => {
   const displayTitle = title || (fileName.includes('HoSoNangLuc') ? 'Hồ sơ năng lực HEPCO' : fileName);
   const containerRef = useRef(null);
@@ -36,12 +40,14 @@ const PdfFlipbook = ({
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState(null);
 
-  // View modes: 'flip' (interactive book flip reader) or 'scroll' (continuous vertical scroll)
+  // View modes: 'flip' (book flip reading) or 'scroll' (continuous vertical scroll)
   const [viewMode, setViewMode] = useState('flip');
   const [currentPage, setCurrentPage] = useState(1);
   const [scale, setScale] = useState(1.0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState('next'); // 'next' or 'prev'
 
   // Canvases for Flipbook mode
   const singleCanvasRef = useRef(null);
@@ -52,16 +58,26 @@ const PdfFlipbook = ({
   const scrollCanvasRefs = useRef({});
   const renderTasksRef = useRef({});
 
-  // Detect mobile resize
+  // Touch Swipe tracking for Mobile
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  // Detect mobile resize and orientation change WITHOUT resetting currentPage
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      // Note: currentPage is intentionally preserved across orientation changes
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
-  // Reset when pdfUrl changes
+  // Load PDF Document when pdfUrl changes
   useEffect(() => {
     setCurrentPage(1);
     setScale(1.0);
@@ -91,7 +107,7 @@ const PdfFlipbook = ({
       .catch((err) => {
         console.error('Error loading PDF:', err);
         if (isMounted) {
-          setError('Không thể mở trực tiếp tệp PDF trong trình đọc. Vui lòng mở trong tab mới hoặc tải về máy.');
+          setError('Không thể mở trực tiếp tệp PDF trong trình đọc. Vui lòng thử lại sau.');
           setLoading(false);
         }
       });
@@ -104,7 +120,7 @@ const PdfFlipbook = ({
     };
   }, [pdfUrl]);
 
-  // Generic page render helper
+  // Page rendering helper with high DPI and crisp canvas sizing
   const renderPageToCanvas = useCallback(async (pNum, canvas, targetScale = 1.0) => {
     if (!pdfDoc || !canvas || pNum < 1 || pNum > pdfDoc.numPages) return;
 
@@ -121,16 +137,16 @@ const PdfFlipbook = ({
       const pixelRatio = window.devicePixelRatio || 1;
       const baseViewport = page.getViewport({ scale: 1 });
 
-      // Determine fit scale based on container height
+      // Calculate fit scale based on container height
       let renderScale = targetScale;
       if (bookContainerRef.current) {
-        const availableHeight = bookContainerRef.current.clientHeight - 40;
-        if (availableHeight > 200) {
+        const availableHeight = bookContainerRef.current.clientHeight - (window.innerWidth < 640 ? 20 : 40);
+        if (availableHeight > 180) {
           renderScale = (availableHeight / baseViewport.height) * targetScale;
         }
       }
 
-      const viewport = page.getViewport({ scale: Math.max(0.6, renderScale) });
+      const viewport = page.getViewport({ scale: Math.max(0.5, renderScale) });
       const context = canvas.getContext('2d');
 
       canvas.height = viewport.height * pixelRatio;
@@ -152,17 +168,15 @@ const PdfFlipbook = ({
     }
   }, [pdfDoc]);
 
-  // Render Flipbook pages when currentPage, scale, or viewMode changes
+  // Render Flipbook mode canvases
   useEffect(() => {
     if (!pdfDoc || viewMode !== 'flip') return;
 
     if (isMobile || currentPage === 1) {
-      // Single Page (Mobile or Book Cover)
       if (singleCanvasRef.current) {
         renderPageToCanvas(currentPage, singleCanvasRef.current, scale);
       }
     } else {
-      // 2-Page Book Spread (Desktop: Left Page & Right Page)
       const leftPageNum = currentPage;
       const rightPageNum = currentPage + 1 <= numPages ? currentPage + 1 : null;
 
@@ -175,7 +189,7 @@ const PdfFlipbook = ({
     }
   }, [pdfDoc, currentPage, scale, viewMode, isMobile, numPages, renderPageToCanvas]);
 
-  // Render Scroll mode canvases
+  // Render Continuous Scroll mode canvases
   useEffect(() => {
     if (!pdfDoc || viewMode !== 'scroll') return;
 
@@ -187,7 +201,34 @@ const PdfFlipbook = ({
     });
   }, [pdfDoc, viewMode, scale, numPages, renderPageToCanvas]);
 
-  // Keyboard navigation for page flipping
+  // Touch Swipe detection for Mobile
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches.length === 1) {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartX.current) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const deltaX = endX - touchStartX.current;
+    const deltaY = endY - touchStartY.current;
+
+    // Detect intentional horizontal swipe (>40px horizontal, with horizontal dominant over vertical)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+      if (deltaX < 0) {
+        handleNextPage(); // Swiped left -> Next page
+      } else {
+        handlePrevPage(); // Swiped right -> Previous page
+      }
+    }
+    touchStartX.current = 0;
+    touchStartY.current = 0;
+  };
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (viewMode !== 'flip') return;
@@ -195,19 +236,29 @@ const PdfFlipbook = ({
         handleNextPage();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         handlePrevPage();
+      } else if (e.key === 'Escape' && onClose) {
+        onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   });
 
-  // Flip Actions
+  // Flip Actions with smooth animation trigger
+  const triggerFlipAnimation = (direction) => {
+    setFlipDirection(direction);
+    setIsFlipping(true);
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 350);
+  };
+
   const handlePrevPage = () => {
     if (currentPage <= 1) return;
+    triggerFlipAnimation('prev');
     if (isMobile) {
       setCurrentPage((p) => Math.max(1, p - 1));
     } else {
-      // Desktop: if currently on spread (e.g. 2 & 3), going back reaches cover (page 1)
       if (currentPage === 2) {
         setCurrentPage(1);
       } else {
@@ -219,26 +270,33 @@ const PdfFlipbook = ({
   const handleNextPage = () => {
     if (isMobile) {
       if (currentPage < numPages) {
+        triggerFlipAnimation('next');
         setCurrentPage((p) => Math.min(numPages, p + 1));
       }
     } else {
       if (currentPage === 1) {
-        // From cover to first 2-page spread
+        triggerFlipAnimation('next');
         setCurrentPage(2);
       } else if (currentPage + 2 <= numPages) {
+        triggerFlipAnimation('next');
         setCurrentPage((p) => p + 2);
       } else if (currentPage + 1 <= numPages) {
+        triggerFlipAnimation('next');
         setCurrentPage((p) => p + 1);
       }
     }
   };
 
-  const handleJumpToFirst = () => setCurrentPage(1);
+  const handleJumpToFirst = () => {
+    triggerFlipAnimation('prev');
+    setCurrentPage(1);
+  };
+
   const handleJumpToLast = () => {
+    triggerFlipAnimation('next');
     if (isMobile) {
       setCurrentPage(numPages);
     } else {
-      // Jump to last spread
       const lastSpread = numPages % 2 === 0 ? numPages - 1 : numPages;
       setCurrentPage(Math.max(1, lastSpread));
     }
@@ -254,11 +312,11 @@ const PdfFlipbook = ({
     }
   };
 
-  const zoomIn = () => setScale((s) => Math.min(1.8, +(s + 0.15).toFixed(2)));
-  const zoomOut = () => setScale((s) => Math.max(0.7, +(s - 0.15).toFixed(2)));
+  const zoomIn = () => setScale((s) => Math.min(2.5, +(s + 0.2).toFixed(2)));
+  const zoomOut = () => setScale((s) => Math.max(0.6, +(s - 0.2).toFixed(2)));
   const resetZoom = () => setScale(1.0);
 
-  // Current page display text
+  // Spread text
   const currentSpreadText = isMobile || currentPage === 1
     ? `Trang ${currentPage} / ${numPages || 1}`
     : `Trang ${currentPage}${currentPage + 1 <= numPages ? ` - ${currentPage + 1}` : ''} / ${numPages || 1}`;
@@ -270,9 +328,9 @@ const PdfFlipbook = ({
         isFullscreen ? 'fixed inset-0 z-50 rounded-none' : 'w-full h-[620px] sm:h-[680px] lg:h-[750px]'
       }`}
     >
-      {/* Top Main Toolbar */}
-      <div className="bg-gray-900/95 backdrop-blur-md px-3 sm:px-5 py-2.5 border-b border-gray-800 flex flex-wrap items-center justify-between gap-2.5 shrink-0 z-20">
-        {/* Document Title & Mode Pill */}
+      {/* Top Toolbar */}
+      <div className="bg-gray-900/95 backdrop-blur-md px-3 sm:px-5 py-2.5 border-b border-gray-800 flex items-center justify-between gap-2.5 shrink-0 z-20">
+        {/* Document Title & Icon */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
             <BookOpen className="w-4 h-4" />
@@ -282,12 +340,12 @@ const PdfFlipbook = ({
               {displayTitle}
             </h3>
             <p className="text-[10px] sm:text-xs text-gray-400 truncate">
-              Đọc sách lật trang trực tiếp • {numPages} trang
+              {viewMode === 'flip' ? 'Đọc sách lật trang trực tiếp' : 'Cuộn đọc liên tục'} • {numPages} trang
             </p>
           </div>
         </div>
 
-        {/* View Mode Toggle (Flipbook vs Continuous Scroll) */}
+        {/* View Mode Toggle: Flip vs Scroll */}
         <div className="flex items-center gap-1 bg-gray-800/90 p-1 rounded-xl border border-gray-700/60">
           <button
             type="button"
@@ -318,23 +376,23 @@ const PdfFlipbook = ({
           </button>
         </div>
 
-        {/* Quick Utilities: Zoom, External Link, Download, Fullscreen */}
+        {/* Action Controls */}
         <div className="flex items-center gap-1 sm:gap-2">
           {/* Zoom controls */}
-          <div className="hidden sm:flex items-center gap-1 bg-gray-800/80 px-1 py-0.5 rounded-xl border border-gray-700/60">
+          <div className="flex items-center gap-1 bg-gray-800/80 px-1 py-0.5 rounded-xl border border-gray-700/60 text-xs">
             <button
               type="button"
               onClick={zoomOut}
-              disabled={scale <= 0.7}
+              disabled={scale <= 0.6}
               className="p-1 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer rounded"
-              title="Thu nhỏ"
+              title="Thu nhỏ (-)"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={resetZoom}
-              className="text-[11px] font-bold px-1.5 min-w-[36px] text-center text-gray-300 hover:text-white"
+              className="text-[11px] font-bold px-1 min-w-[32px] sm:min-w-[38px] text-center text-gray-300 hover:text-white"
               title="Đặt lại kích thước chuẩn 100%"
             >
               {Math.round(scale * 100)}%
@@ -342,33 +400,40 @@ const PdfFlipbook = ({
             <button
               type="button"
               onClick={zoomIn}
-              disabled={scale >= 1.8}
+              disabled={scale >= 2.5}
               className="p-1 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer rounded"
-              title="Phóng to"
+              title="Phóng to (+)"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 hover:text-white transition-colors border border-gray-700/60"
-            title="Mở PDF trong tab mới"
-          >
-            <ExternalLink className="w-4 h-4" />
-          </a>
+          {/* Conditional External Link (hidden if hideExternalLink) */}
+          {!hideExternalLink && (
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 hover:text-white transition-colors border border-gray-700/60"
+              title="Mở PDF trong tab mới"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          )}
 
-          <a
-            href={pdfUrl}
-            download={fileName}
-            className="p-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 hover:text-white transition-colors border border-gray-700/60"
-            title="Tải xuống tệp PDF"
-          >
-            <Download className="w-4 h-4" />
-          </a>
+          {/* Conditional Download Button (hidden if hideDownload) */}
+          {!hideDownload && (
+            <a
+              href={pdfUrl}
+              download={fileName}
+              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 hover:text-white transition-colors border border-gray-700/60"
+              title="Tải xuống tệp PDF"
+            >
+              <Download className="w-4 h-4" />
+            </a>
+          )}
 
+          {/* Fullscreen */}
           <button
             type="button"
             onClick={toggleFullscreen}
@@ -377,59 +442,56 @@ const PdfFlipbook = ({
           >
             {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
           </button>
+
+          {/* Close button if onClose is provided */}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 bg-rose-900/40 hover:bg-rose-600 rounded-xl text-rose-300 hover:text-white transition-colors border border-rose-800/60 cursor-pointer ml-1"
+              title="Đóng trình xem"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Main Interactive Flipbook Stage */}
+      {/* Main Interactive Stage */}
       <div
         ref={bookContainerRef}
-        className="flex-1 relative overflow-hidden bg-gradient-to-b from-[#111827] via-[#0f172a] to-[#020617] flex items-center justify-center p-2 sm:p-4"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="flex-1 relative overflow-hidden bg-gradient-to-b from-[#111827] via-[#0f172a] to-[#020617] flex items-center justify-center p-2 sm:p-4 overscroll-contain"
       >
-        {/* Loading Spinner */}
+        {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center gap-3 text-emerald-400 py-20 z-30">
             <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
             <p className="text-xs sm:text-sm font-semibold text-gray-200">
-              Đang chuẩn bị sách lật trang... {loadingProgress > 0 && `${loadingProgress}%`}
+              Đang tải tài liệu... {loadingProgress > 0 && `${loadingProgress}%`}
             </p>
           </div>
         )}
 
-        {/* Error State */}
+        {/* Error */}
         {error && (
           <div className="flex flex-col items-center justify-center gap-4 text-center p-6 bg-gray-900/90 rounded-2xl border border-gray-800 max-w-md mx-auto my-8 z-30">
             <FileText className="w-10 h-10 text-rose-400" />
             <p className="text-xs sm:text-sm text-gray-300">{error}</p>
-            <div className="flex items-center gap-3">
-              <a
-                href={pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs rounded-xl shadow-md transition-colors border border-gray-700"
-              >
-                Mở tab mới
-              </a>
-              <a
-                href={pdfUrl}
-                download={fileName}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors"
-              >
-                Tải file về máy
-              </a>
-            </div>
           </div>
         )}
 
-        {/* ================= VIEW MODE 1: FLIPBOOK (BOOK-READING STYLE) ================= */}
+        {/* ================= VIEW MODE 1: FLIPBOOK ================= */}
         {!loading && !error && pdfDoc && viewMode === 'flip' && (
-          <div className="w-full h-full flex items-center justify-center relative">
+          <div className="w-full h-full flex items-center justify-center relative overflow-auto custom-scrollbar">
             {/* Left Big Flip Button */}
             <button
               type="button"
               onClick={handlePrevPage}
               disabled={currentPage <= 1}
-              className="absolute left-1 sm:left-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/60 hover:bg-emerald-600 disabled:opacity-15 disabled:hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
-              title="Lật trang trước (←)"
+              className="absolute left-1 sm:left-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/65 hover:bg-emerald-600 disabled:opacity-10 disabled:hover:bg-black/65 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
+              title="Lật trang trước (hoặc vuốt sang phải)"
             >
               <ChevronLeft className="w-6 h-6 sm:w-7 sm:h-7 group-hover:-translate-x-0.5 transition-transform" />
             </button>
@@ -443,28 +505,34 @@ const PdfFlipbook = ({
                   ? currentPage >= numPages
                   : currentPage >= numPages || (currentPage === 1 ? numPages <= 1 : currentPage + 2 > numPages && currentPage + 1 > numPages)
               }
-              className="absolute right-1 sm:right-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/60 hover:bg-emerald-600 disabled:opacity-15 disabled:hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
-              title="Lật trang tiếp (→)"
+              className="absolute right-1 sm:right-4 z-30 w-10 h-10 sm:w-13 sm:h-13 rounded-full bg-black/65 hover:bg-emerald-600 disabled:opacity-10 disabled:hover:bg-black/65 text-white flex items-center justify-center backdrop-blur-md border border-white/10 shadow-2xl transition-all active:scale-95 cursor-pointer group"
+              title="Lật trang tiếp (hoặc vuốt sang trái)"
             >
               <ChevronRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-0.5 transition-transform" />
             </button>
 
-            {/* Book Spine & Open Spread Frame */}
-            <div className="flex items-center justify-center transition-all duration-300 max-h-full">
+            {/* Book Display Container */}
+            <div
+              className={`flex items-center justify-center transition-all duration-300 max-h-full ${
+                isFlipping
+                  ? flipDirection === 'next'
+                    ? 'opacity-85 translate-x-[-4px] scale-[0.995]'
+                    : 'opacity-85 translate-x-[4px] scale-[0.995]'
+                  : 'opacity-100 translate-x-0 scale-100'
+              }`}
+            >
               {isMobile || currentPage === 1 ? (
-                /* Single Page (Book Cover or Mobile View) */
-                <div className="relative bg-white rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden border-2 border-amber-900/20 max-h-full">
-                  {/* Subtle Book Cover Sheen & Corner fold */}
-                  <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-white/30 to-transparent pointer-events-none z-10" />
-                  <canvas ref={singleCanvasRef} className="block w-auto h-auto max-h-[75vh]" />
+                /* Single Page (Mobile view or Book Cover) */
+                <div className="relative bg-white rounded-xl sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden border border-gray-400/30 max-h-full max-w-full">
+                  <canvas ref={singleCanvasRef} className="block w-auto h-auto max-h-[75vh] max-w-[92vw] object-contain" />
                   <div className="bg-gray-100 text-gray-700 text-[11px] font-bold text-center py-1 border-t border-gray-200">
                     {currentPage === 1 ? 'Bìa trước' : `Trang ${currentPage}`}
                   </div>
                 </div>
               ) : (
                 /* Two-Page Open Book Spread (Desktop Reading Spread) */
-                <div className="relative flex items-center justify-center bg-white rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.85)] border-2 border-gray-800/30 overflow-hidden max-h-full">
-                  {/* Left Page (Even Page in booklet spread) */}
+                <div className="relative flex items-center justify-center bg-white rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] border border-gray-600/40 overflow-hidden max-h-full">
+                  {/* Left Page (Even Page) */}
                   <div className="relative overflow-hidden border-r border-gray-300 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06)] bg-[#fafafa]">
                     <canvas ref={leftCanvasRef} data-id="left" className="block w-auto h-auto max-h-[75vh]" />
                     <div className="bg-gray-100 text-gray-600 text-[11px] font-semibold text-center py-1 border-t border-gray-200">
@@ -475,7 +543,7 @@ const PdfFlipbook = ({
                   {/* Center Book Crease / Spine Effect */}
                   <div className="w-1.5 sm:w-2 self-stretch bg-gradient-to-r from-gray-400 via-gray-700 to-gray-400 shadow-inner z-20 shrink-0" />
 
-                  {/* Right Page (Odd Page in booklet spread) */}
+                  {/* Right Page (Odd Page) */}
                   <div className="relative overflow-hidden shadow-[inset_8px_0_12px_rgba(0,0,0,0.06)] bg-[#fafafa]">
                     {currentPage + 1 <= numPages ? (
                       <>

@@ -3,12 +3,13 @@ export const ROUTES = {
   HOME: '/',
   ABOUT: '/gioi-thieu',
   SERVICES: '/dich-vu',
+  NEWS_AND_ANNOUNCEMENTS: '/tin-tuc-thong-bao',
   NEWS: '/tin-tuc',
   ANNOUNCEMENTS: '/thong-bao',
   SHAREHOLDERS: '/co-dong',
   ARTICLE_DETAIL: '/bai-viet/:id',
 
-  // Admin CMS Routes (Phần Quản trị Frontend - Chỉnh sửa thông tin web, tin tức, thông báo, cổ đông, dịch vụ, phân quyền tài khoản)
+  // Admin CMS Routes (Phần Quản trị Frontend)
   ADMIN: '/admin',
   ADMIN_LOGIN: '/admin/login',
   ADMIN_DASHBOARD: '/admin-dashboard',

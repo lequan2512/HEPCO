@@ -69,7 +69,7 @@ const SORT_OPTIONS = [
   { value: 'title_asc', label: 'Tiêu đề (A → Z)' }
 ];
 
-const News = ({ pageType = 'news' }) => {
+const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -82,11 +82,18 @@ const News = ({ pageType = 'news' }) => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const categoryParam = searchParams.get('category');
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam || initialCategory || 'all');
+
+  useEffect(() => {
+    if (initialCategory && initialCategory !== 'all') {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
   const [selectedYear, setSelectedYear] = useState('all');
   const [sortOption, setSortOption] = useState('created_at_desc');
   const [page, setPage] = useState(1);
-  const [shareholderViewMode, setShareholderViewMode] = useState('list');
+  const [shareholderViewMode, setShareholderViewMode] = useState('grid');
 
   // Searchable Category/Document Type Dropdown Popover state
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
@@ -105,6 +112,30 @@ const News = ({ pageType = 'news' }) => {
 
   // PDF Preview Modal state
   const [pdfModal, setPdfModal] = useState(null);
+  const scrollPosRef = useRef(0);
+
+  const handleOpenShareholderDoc = (doc) => {
+    scrollPosRef.current = window.scrollY;
+    const primaryPdf = (doc.attachments || []).find((a) => (a.ext || '').toLowerCase() === 'pdf') || doc.attachments?.[0];
+    if (primaryPdf) {
+      setPdfModal({
+        url: resolveAssetUrl(primaryPdf.fileUrl),
+        fileName: primaryPdf.fileName || `${doc.title}.pdf`,
+        title: primaryPdf.title || doc.title,
+        subtitle: `Năm ${doc.publishYear || ''} • Ngày công bố: ${doc.date} • ${doc.documentTypeLabel || 'Quan hệ cổ đông'}`
+      });
+    } else {
+      navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id));
+    }
+  };
+
+  const handleClosePdfModal = () => {
+    setPdfModal(null);
+    const targetY = scrollPosRef.current;
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: targetY, behavior: 'instant' });
+    });
+  };
 
   // Reset filters when pageType or tab query param changes
   const tabParam = searchParams.get('tab');
@@ -182,7 +213,7 @@ const News = ({ pageType = 'news' }) => {
   const bannerInfo =
     pageType === 'news'
       ? {
-          title: 'Tin tức & Sự kiện',
+          title: 'Tin tức & Thông báo',
           description:
             'Cập nhật những thông tin mới nhất về hoạt động sản xuất kinh doanh, bảo vệ môi trường, sự kiện đoàn thể và thông báo chính thức của HEPCO.'
         }
@@ -987,189 +1018,75 @@ const News = ({ pageType = 'news' }) => {
                 </div>
               ) : articles.length > 0 ? (
                 <>
-                  {/* SHAREHOLDERS SCIENTIFIC DOCUMENT LIST VIEW */}
-                  {pageType === 'shareholders' && shareholderViewMode === 'list' ? (
-                    <div className="space-y-4">
+                  {/* ================= SHAREHOLDERS DOCUMENT GRID ================= */}
+                  {pageType === 'shareholders' ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {articles.map((doc) => {
                         const docTypeMeta =
                           SHAREHOLDER_DOC_TYPE_LABELS[doc.documentType] ||
                           SHAREHOLDER_DOC_TYPE_LABELS[SHAREHOLDER_DOC_TYPE.OTHER_DOCUMENT];
                         const attachments = doc.attachments || [];
-                        const isExpanded = Boolean(expandedDocs[doc.id]);
-                        const visibleAttachments = isExpanded
-                          ? attachments
-                          : attachments.slice(0, 2);
-                        const hiddenCount = attachments.length - visibleAttachments.length;
 
                         return (
                           <div
                             key={doc.id}
-                            className="bg-white rounded-2xl shadow-xs hover:shadow-md border border-gray-200/80 p-5 sm:p-6 transition-all duration-200"
+                            onClick={() => handleOpenShareholderDoc(doc)}
+                            className="bg-white rounded-2xl p-5 border border-gray-200/90 shadow-xs hover:shadow-xl hover:border-emerald-500/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer group"
                           >
-                            <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                              <div className="flex items-start gap-4 flex-1 min-w-0">
-                                {/* Document Icon Box */}
-                                <div
-                                  onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id))}
-                                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex flex-col items-center justify-center text-hepco-green shrink-0 cursor-pointer hover:bg-hepco-green hover:text-white transition-colors"
-                                >
-                                  <FileText className="w-6 h-6" />
-                                  <span className="text-[9px] font-black uppercase mt-0.5">
+                            <div>
+                              {/* Top Bar: PDF Icon badge & Category / Year tags */}
+                              <div className="flex items-start justify-between gap-2.5 mb-3.5">
+                                <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col items-center justify-center text-emerald-700 shrink-0 group-hover:bg-hepco-green group-hover:text-white transition-colors duration-200 shadow-2xs">
+                                  <FileText className="w-5 h-5" />
+                                  <span className="text-[8px] font-black uppercase tracking-tighter">
                                     {doc.fileExt || 'PDF'}
                                   </span>
                                 </div>
 
-                                {/* Title & Metadata */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                                    <span
-                                      className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${docTypeMeta.bg}`}
-                                    >
-                                      {doc.documentTypeLabel || docTypeMeta.label}
+                                <div className="flex flex-wrap items-center justify-end gap-1.5 min-w-0">
+                                  {doc.publishYear && (
+                                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                                      Năm {doc.publishYear}
                                     </span>
-                                    {doc.publishYear && (
-                                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
-                                        Năm {doc.publishYear}
-                                      </span>
-                                    )}
-                                    <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
-                                      <Calendar className="w-3.5 h-3.5 text-hepco-green" />
-                                      <span>Ngày công bố: {doc.date}</span>
-                                    </span>
-                                  </div>
-
-                                  <h3
-                                    onClick={() => {
-                                      if (primaryPdf) {
-                                        setPdfModal({
-                                          url: resolveAssetUrl(primaryPdf.fileUrl),
-                                          fileName: primaryPdf.fileName || 'tai-lieu-co-dong.pdf',
-                                          title: primaryPdf.title || doc.title,
-                                          subtitle: `Ngày công bố: ${doc.date} • ${doc.documentTypeLabel || 'Quan hệ cổ đông'}`
-                                        });
-                                      } else {
-                                        navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id));
-                                      }
-                                    }}
-                                    className="text-base sm:text-lg font-bold text-[#10243b] hover:text-hepco-green transition-colors cursor-pointer leading-snug">
-                                    {doc.title}
-                                  </h3>
-
-                                  {/* Attachments List inside Shareholder Card (Collapsible if > 2 files) */}
-                                  {attachments.length > 0 && (
-                                    <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
-                                      {visibleAttachments.map((att) => {
-                                        const isPdf = (att.ext || '').toLowerCase() === 'pdf';
-                                        const resolvedUrl = resolveAssetUrl(att.fileUrl);
-                                        const sizeText = formatFileSize(att.size);
-                                        return (
-                                          <div
-                                            key={att.id}
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-gray-50/90 hover:bg-emerald-50/40 px-3.5 py-2.5 rounded-xl border border-gray-200/70 transition-colors"
-                                          >
-                                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                                              <Paperclip className="w-4 h-4 text-hepco-green shrink-0" />
-                                              <span
-                                                className="text-xs sm:text-sm font-semibold text-gray-800 truncate"
-                                                title={att.title}
-                                              >
-                                                {att.title}
-                                              </span>
-                                              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-white border border-gray-200 text-gray-600 shrink-0">
-                                                {att.ext || 'PDF'}
-                                              </span>
-                                              {sizeText && (
-                                                <span className="text-[11px] text-gray-400 shrink-0 hidden md:inline">
-                                                  ({sizeText})
-                                                </span>
-                                              )}
-                                            </div>
-
-                                            <div className="flex items-center justify-end gap-2 shrink-0 w-full sm:w-auto">
-                                              {isPdf && (
-                                                <button
-                                                  type="button"
-                                                  onClick={() =>
-                                                    setPdfModal({
-                                                      url: resolvedUrl,
-                                                      fileName: att.fileName || 'tai-lieu-co-dong.pdf',
-                                                      title: att.title || doc.title,
-                                                      subtitle: `Ngày công bố: ${doc.date} • ${doc.documentTypeLabel || 'Quan hệ cổ đông'}`
-                                                    })
-                                                  }
-                                                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 hover:border-emerald-600 transition-all cursor-pointer shadow-2xs"
-                                                >
-                                                  <Eye className="w-3.5 h-3.5" />
-                                                  <span>Xem PDF</span>
-                                                </button>
-                                              )}
-
-                                              <a
-                                                href={resolvedUrl}
-                                                download={att.fileName}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-hepco-green hover:bg-emerald-700 text-white transition-all shadow-2xs"
-                                              >
-                                                <Download className="w-3.5 h-3.5" />
-                                                <span>Tải về</span>
-                                              </a>
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
-
-                                      {attachments.length > 2 && (
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            setExpandedDocs((prev) => ({
-                                              ...prev,
-                                              [doc.id]: !prev[doc.id]
-                                            }))
-                                          }
-                                          className="inline-flex items-center gap-1.5 text-xs font-bold text-hepco-green hover:text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100/80 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-                                        >
-                                          {isExpanded ? (
-                                            <>
-                                              <ChevronUp className="w-3.5 h-3.5" />
-                                              <span>Thu gọn danh sách tệp</span>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <ChevronDown className="w-3.5 h-3.5" />
-                                              <span>Xem thêm {hiddenCount} tệp tài liệu đính kèm khác</span>
-                                            </>
-                                          )}
-                                        </button>
-                                      )}
-                                    </div>
                                   )}
+                                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border truncate max-w-[150px] ${docTypeMeta.bg}`}>
+                                    {doc.documentTypeLabel || docTypeMeta.label}
+                                  </span>
                                 </div>
                               </div>
 
-                              {/* Right Action: Xem trực tiếp PDF trên web */}
-                              <div className="flex lg:flex-col items-center lg:items-end justify-end gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-100">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (primaryPdf) {
-                                      setPdfModal({
-                                        url: resolveAssetUrl(primaryPdf.fileUrl),
-                                        fileName: primaryPdf.fileName || 'tai-lieu-co-dong.pdf',
-                                        title: primaryPdf.title || doc.title,
-                                        subtitle: `Ngày công bố: ${doc.date} • ${doc.documentTypeLabel || 'Quan hệ cổ đông'}`
-                                      });
-                                    } else {
-                                      navigate(ROUTES.ARTICLE_DETAIL.replace(':id', doc.id));
-                                    }
-                                  }}
-                                  className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all cursor-pointer shadow-xs active:scale-95"
-                                  title="Xem ngay tệp PDF trên website"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                  <span>Xem tài liệu</span>
-                                </button>
+                              {/* Document Title */}
+                              <h3
+                                className="text-sm sm:text-base font-bold text-[#10243b] group-hover:text-hepco-green transition-colors leading-snug line-clamp-3 mb-3"
+                                title={doc.title}
+                              >
+                                {doc.title}
+                              </h3>
+                            </div>
+
+                            {/* Bottom metadata & reading indicator */}
+                            <div className="pt-3 border-t border-gray-100/90 flex flex-col gap-2">
+                              <div className="flex items-center justify-between text-xs text-gray-500">
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-hepco-green shrink-0" />
+                                  <span>{doc.date}</span>
+                                </span>
+                                {attachments.length > 1 && (
+                                  <span className="flex items-center gap-1 text-[11px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md">
+                                    <Paperclip className="w-3 h-3 text-emerald-600" />
+                                    {attachments.length} tệp
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center justify-between pt-1">
+                                <span className="text-[11px] font-bold text-emerald-700 group-hover:text-hepco-orange transition-colors flex items-center gap-1">
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                  <span>Xem trực tiếp PDF</span>
+                                </span>
+                                <span className="text-gray-300 group-hover:text-hepco-green group-hover:translate-x-1 transition-all">
+                                  →
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -1177,13 +1094,10 @@ const News = ({ pageType = 'news' }) => {
                       })}
                     </div>
                   ) : (
-                    /* STANDARD 3-COLUMN CARD GRID (FOR NEWS AND SHAREHOLDERS GRID MODE) */
+                    /* ================= NEWS AND ANNOUNCEMENTS CARD GRID ================= */
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 xl:gap-8">
                       {articles.map((article) => {
-                        const catBadge =
-                          pageType === 'shareholders'
-                            ? SHAREHOLDER_DOC_TYPE_LABELS[article.documentType]
-                            : NEWS_CATEGORY_LABELS[article.category];
+                        const catBadge = NEWS_CATEGORY_LABELS[article.category];
                         const attCount = article.attachments?.length || 0;
                         const primaryPdf = (article.attachments || []).find(
                           (a) => (a.ext || '').toLowerCase() === 'pdf'
@@ -1192,13 +1106,11 @@ const News = ({ pageType = 'news' }) => {
                         return (
                           <div
                             key={article.id}
-                            className="bg-white rounded-2xl shadow-lg border border-gray-100/80 overflow-hidden flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                            onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', article.id))}
+                            className="bg-white rounded-2xl shadow-lg border border-gray-100/80 overflow-hidden flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                           >
                             {/* Image Section */}
-                            <div
-                              className="h-48 sm:h-52 lg:h-56 bg-gray-100 relative overflow-hidden cursor-pointer"
-                              onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', article.id))}
-                            >
+                            <div className="h-48 sm:h-52 lg:h-56 bg-gray-100 relative overflow-hidden">
                               <img
                                 src={resolveAssetUrl(article.thumbnail)}
                                 alt={article.title}
@@ -1231,28 +1143,20 @@ const News = ({ pageType = 'news' }) => {
                             <div className="p-4 sm:p-6 flex-grow flex flex-col justify-between">
                               <div>
                                 {/* Metadata */}
-                                <div className="flex items-center justify-between gap-2 text-gray-400 text-xs mb-3">
-                                  <div className="flex items-center gap-1.5">
-                                    <Calendar className="w-3.5 h-3.5 text-hepco-green" />
-                                    <span>{article.date}</span>
-                                  </div>
-                                  {article.publishYear && pageType === 'shareholders' && (
-                                    <span className="font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
-                                      Năm {article.publishYear}
-                                    </span>
-                                  )}
+                                <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-3">
+                                  <Calendar className="w-3.5 h-3.5 text-hepco-green" />
+                                  <span>{article.date}</span>
                                 </div>
 
                                 {/* Title */}
                                 <h3
-                                  className="text-gray-900 font-bold text-lg mb-3 line-clamp-2 leading-snug cursor-pointer group-hover:text-hepco-orange transition-colors"
-                                  onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', article.id))}
+                                  className="text-gray-900 font-bold text-lg mb-3 line-clamp-2 leading-snug group-hover:text-hepco-orange transition-colors"
                                   title={article.title}
                                 >
                                   {article.title}
                                 </h3>
 
-                                {/* Short Description */}
+                                {/* Excerpt */}
                                 <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
                                   {article.summary ||
                                     (typeof article.content === 'string'
@@ -1261,13 +1165,13 @@ const News = ({ pageType = 'news' }) => {
                                 </p>
                               </div>
 
-                              {/* Footer Actions: Chỉ hiển thị nút Xem PDF nếu có đính kèm */}
                               {primaryPdf && (
-                                <div className="pt-3.5 border-t border-gray-100 flex items-center justify-between gap-2 w-full">
+                                <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
                                   <button
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      scrollPosRef.current = window.scrollY;
                                       setPdfModal({
                                         url: resolveAssetUrl(primaryPdf.fileUrl),
                                         fileName: primaryPdf.fileName || 'tai-lieu.pdf',
@@ -1275,22 +1179,11 @@ const News = ({ pageType = 'news' }) => {
                                         subtitle: `Ngày đăng: ${article.date}`
                                       });
                                     }}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors cursor-pointer shadow-2xs"
-                                    title="Xem ngay PDF trực tiếp trên web"
+                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                                   >
-                                    <Eye className="w-3.5 h-3.5" />
-                                    <span>Xem PDF</span>
+                                    <FileText className="w-3.5 h-3.5" />
+                                    <span>Xem tệp PDF</span>
                                   </button>
-                                  <a
-                                    href={resolveAssetUrl(primaryPdf.downloadUrl || primaryPdf.fileUrl)}
-                                    download={primaryPdf.fileName}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-                                    title="Tải tệp PDF về máy"
-                                  >
-                                    <Download className="w-3.5 h-3.5" />
-                                    <span>Tải về</span>
-                                  </a>
                                 </div>
                               )}
                             </div>
@@ -1332,10 +1225,10 @@ const News = ({ pageType = 'news' }) => {
       {pdfModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4"
-          onClick={() => setPdfModal(null)}
+          onClick={handleClosePdfModal}
         >
           <div
-            className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="relative w-full max-w-6xl max-h-[96vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-b border-gray-200 bg-gray-50 shrink-0 gap-4">
@@ -1348,27 +1241,11 @@ const News = ({ pageType = 'news' }) => {
                 )}
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={pdfModal.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-gray-900 transition-colors bg-white px-3 py-1.5 rounded-lg border border-gray-300"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Mở tab mới
-                </a>
-                <a
-                  href={pdfModal.url}
-                  download={pdfModal.fileName}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-hepco-green hover:text-emerald-700 transition-colors bg-green-50 px-3 py-1.5 rounded-lg border border-green-200"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Tải xuống
-                </a>
                 <button
                   type="button"
-                  onClick={() => setPdfModal(null)}
+                  onClick={handleClosePdfModal}
                   className="p-1.5 rounded-full hover:bg-gray-200 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                  title="Đóng trình xem (Esc)"
                 >
                   <X className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
@@ -1379,6 +1256,9 @@ const News = ({ pageType = 'news' }) => {
                 pdfUrl={pdfModal.url}
                 fileName={pdfModal.fileName}
                 title={pdfModal.title}
+                hideDownload={true}
+                hideExternalLink={true}
+                onClose={handleClosePdfModal}
               />
             </div>
           </div>
