@@ -2,31 +2,9 @@ const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
 
-const prisma = new PrismaClient();
+const { parseDisplayDate } = require('../src/utils/parseDisplayDate');
 
-function parseDateStrToDate(dStr, fallbackYear = 2026) {
-  if (!dStr) return new Date(`${fallbackYear}-01-01T00:00:00Z`);
-  const cleanStr = String(dStr).trim();
-  if (/^\d{4}$/.test(cleanStr)) {
-    return new Date(`${cleanStr}-01-01T00:00:00Z`);
-  }
-  const [datePart, timePart = '00:00:00'] = cleanStr.split(' ');
-  const parts = datePart.split(/[-/]/);
-  if (parts.length === 3) {
-    if (parts[0].length === 4) {
-      const d = new Date(`${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}T${timePart}`);
-      if (!isNaN(d.getTime())) return d;
-    } else {
-      const day = parts[0].padStart(2, '0');
-      const month = parts[1].padStart(2, '0');
-      const year = parts[2];
-      const d = new Date(`${year}-${month}-${day}T${timePart}`);
-      if (!isNaN(d.getTime())) return d;
-    }
-  }
-  const d = new Date(dStr);
-  return isNaN(d.getTime()) ? new Date(`${fallbackYear}-01-01T00:00:00Z`) : d;
-}
+const prisma = new PrismaClient();
 
 async function main() {
   const jsonPath = path.join(__dirname, '../../HEPCO_Frontend/src/data/migratedData.json');
@@ -48,13 +26,12 @@ async function main() {
   console.log(`Lọc còn ${clean.length} ảnh hoạt động chất lượng cao...`);
 
   const rows = clean.map((item, i) => {
-    let createdAt;
-    if (i < 10) {
-      // 10 ảnh hoạt động nổi bật nhất năm 2026
-      createdAt = new Date(`2026-06-${String(30 - i).padStart(2, '0')}T12:00:00Z`);
-    } else {
-      createdAt = parseDateStrToDate(item.date, 2025);
-    }
+    // Sort key follows the real display date, so the list reads newest (2026) -> oldest.
+    // Year-only dates tie, so offset by position to keep their listed order.
+    const parsed = parseDisplayDate(item.date) || new Date(Date.UTC(2025, 11, 31));
+    const createdAt = /^\d{4}$/.test(String(item.date || '').trim())
+      ? new Date(parsed.getTime() - i * 1000)
+      : parsed;
 
     return {
       url: item.url,

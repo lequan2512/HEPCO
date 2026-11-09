@@ -1,5 +1,6 @@
 const { prisma } = require('../db');
 const { GALLERY_CATEGORY, GALLERY_CATEGORY_LABELS, GALLERY_LIMITS } = require('../constants/gallery');
+const { parseDisplayDate } = require('../utils/parseDisplayDate');
 
 class GalleryModel {
   static async getAll({ category, search, page = GALLERY_LIMITS.DEFAULT_PAGE, limit = GALLERY_LIMITS.DEFAULT_LIMIT } = {}) {
@@ -56,7 +57,8 @@ class GalleryModel {
         category,
         category_label: categoryLabel,
         date: data.date || new Date().getFullYear().toString(),
-        article_id: data.articleId ? Number(data.articleId) : null
+        article_id: data.articleId ? Number(data.articleId) : null,
+        ...(parseDisplayDate(data.date) ? { created_at: parseDisplayDate(data.date) } : {})
       }
     });
     return {
@@ -82,7 +84,8 @@ class GalleryModel {
         title: data.title || data.caption,
         category,
         category_label: categoryLabel,
-        date: data.date
+        date: data.date,
+        ...(parseDisplayDate(data.date) ? { created_at: parseDisplayDate(data.date) } : {})
       }
     });
     return row;

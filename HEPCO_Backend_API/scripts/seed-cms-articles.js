@@ -2,27 +2,12 @@ const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
 
+const { parseDisplayDate } = require('../src/utils/parseDisplayDate');
+
 const prisma = new PrismaClient();
 
 function parseDateStrToDate(dStr) {
-  if (!dStr) return new Date();
-  const cleanStr = String(dStr).trim();
-  const [datePart, timePart = '00:00:00'] = cleanStr.split(' ');
-  const parts = datePart.split(/[-/]/);
-  if (parts.length === 3) {
-    if (parts[0].length === 4) {
-      const d = new Date(`${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}T${timePart}`);
-      if (!isNaN(d.getTime())) return d;
-    } else {
-      const day = parts[0].padStart(2, '0');
-      const month = parts[1].padStart(2, '0');
-      const year = parts[2];
-      const d = new Date(`${year}-${month}-${day}T${timePart}`);
-      if (!isNaN(d.getTime())) return d;
-    }
-  }
-  const d = new Date(dStr);
-  return isNaN(d.getTime()) ? new Date() : d;
+  return parseDisplayDate(dStr) || new Date();
 }
 
 async function main() {

@@ -27,7 +27,7 @@ module.exports = {
   NEWS_SORTS: {
     title_asc: { title: 'asc' },
     title_desc: { title: 'desc' },
-    created_at_asc: { created_at: 'asc' },
-    created_at_desc: { created_at: 'desc' }
+    created_at_asc: [{ created_at: 'asc' }, { id: 'asc' }],
+    created_at_desc: [{ created_at: 'desc' }, { id: 'desc' }]
   },
 };

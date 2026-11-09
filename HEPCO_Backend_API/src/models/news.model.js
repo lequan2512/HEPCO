@@ -1,5 +1,6 @@
 const { prisma } = require('../db');
 const { NEWS_SORTS, NEWS_METADATA_FIELDS, ABOUT_SETTINGS_TYPE } = require('../constants/news');
+const { parseDisplayDate } = require('../utils/parseDisplayDate');
 
 const toArticle = (record) => {
   if (!record) return null;
@@ -86,8 +87,13 @@ class NewsModel {
   }
 
   static async getById(id) { return toArticle(await prisma.news.findUnique({ where: { id } })); }
-  static async create(data) { return toArticle(await prisma.news.create({ data })); }
-  static async update(id, data) { return toArticle(await prisma.news.update({ where: { id }, data })); }
+  // Keep created_at (the sort key) in step with the displayed article date.
+  static withSortDate(data) {
+    const sortDate = parseDisplayDate(data.date);
+    return sortDate ? { ...data, created_at: sortDate } : data;
+  }
+  static async create(data) { return toArticle(await prisma.news.create({ data: NewsModel.withSortDate(data) })); }
+  static async update(id, data) { return toArticle(await prisma.news.update({ where: { id }, data: NewsModel.withSortDate(data) })); }
   static async delete(id) { return toArticle(await prisma.news.delete({ where: { id } })); }
 }
 
