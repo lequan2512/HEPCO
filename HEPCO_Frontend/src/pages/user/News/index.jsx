@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import {
   Search,
   Calendar,
@@ -23,7 +23,6 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import PageBanner from '../../../components/PageBanner';
 import Loading from '../../../components/Loading';
 import Pagination from '../../../components/Pagination';
 import PdfFlipbook from '../../../components/PdfFlipbook';
@@ -308,9 +307,23 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
 
   return (
     <div className="bg-gray-50 pb-20 flex-grow min-h-screen">
-      <PageBanner title={bannerInfo.title} description={bannerInfo.description} />
+      <header className="relative overflow-hidden bg-[#102f26] text-white">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-[radial-gradient(ellipse_at_right,#256447_0%,transparent_65%)]" />
+        <div className="relative mx-auto max-w-[1320px] px-4 py-10 sm:px-8 sm:py-14 lg:py-16">
+          <p className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-emerald-200">
+            <span aria-hidden="true" className="h-px w-7 bg-hepco-orange" />
+            {pageType === 'news' ? 'Truyền thông HEPCO' : 'Công bố thông tin'}
+          </p>
+          <h1 className="max-w-4xl text-balance text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            {bannerInfo.title}
+          </h1>
+          <p className="mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-emerald-50/90 sm:text-base">
+            {bannerInfo.description}
+          </p>
+        </div>
+      </header>
 
-      <div className="container mx-auto px-2.5 sm:px-4 max-w-8xl mt-6 sm:mt-8 md:mt-10">
+      <div className="mx-auto mt-6 max-w-[1320px] px-4 sm:mt-8 sm:px-8">
         {/* Sub-view Switcher for News Page: Articles vs Photo Gallery */}
         {pageType === 'news' && (
           <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
@@ -465,9 +478,9 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                           setLightboxZoom(false);
                           setLightboxIndex(globalIdx);
                         }}
-                        className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden flex flex-col group cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                        className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md"
                       >
-                        <div className="h-52 bg-gray-100 relative overflow-hidden">
+                        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                           <img
                             src={resolveThumbnailUrl(imgItem.url)}
                             alt={imgItem.caption || imgItem.title}
@@ -555,7 +568,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <h2 className="text-xl font-bold text-[#10243b]">{bannerInfo.title}</h2>
+                    <h2 className="text-xl font-bold text-[#10243b]">{pageType === 'shareholders' ? 'Tra cứu tài liệu' : 'Bài viết mới nhất'}</h2>
                     <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                       {meta.total} {pageType === 'shareholders' ? 'tài liệu công bố' : 'bài viết'}
                     </span>
@@ -1025,8 +1038,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                         return (
                           <div
                             key={doc.id}
-                            onClick={() => handleOpenShareholderDoc(doc)}
-                            className="bg-white rounded-2xl p-5 border border-gray-200/90 shadow-xs hover:shadow-xl hover:border-emerald-500/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer group"
+                            className="group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 transition-colors hover:border-emerald-500 focus-within:border-emerald-600"
                           >
                             <div>
                               {/* Top Bar: PDF Icon badge & Category / Year tags */}
@@ -1077,7 +1089,14 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                               <div className="flex items-center justify-between pt-1">
                                 <span className="text-[11px] font-bold text-emerald-700 group-hover:text-hepco-orange transition-colors flex items-center gap-1">
                                   <BookOpen className="w-3.5 h-3.5" />
-                                  <span>Xem trực tiếp PDF</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenShareholderDoc(doc)}
+                                    aria-label={"Mở tài liệu " + doc.title}
+                                    className="cursor-pointer after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700"
+                                  >
+                                    {attachments.length > 0 ? 'Xem tài liệu' : 'Xem chi tiết'}
+                                  </button>
                                 </span>
                                 <span className="text-gray-300 group-hover:text-hepco-green group-hover:translate-x-1 transition-all">
                                   →
@@ -1101,11 +1120,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                         return (
                           <div
                             key={article.id}
-                            onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', article.id))}
-                            className="bg-white rounded-2xl shadow-lg border border-gray-100/80 overflow-hidden flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                            className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-emerald-700"
                           >
                             {/* Image Section */}
-                            <div className="h-48 sm:h-52 lg:h-56 bg-gray-100 relative overflow-hidden">
+                            <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
                               <img
                                 src={resolveThumbnailUrl(article.thumbnail)}
                                 alt={article.title}
@@ -1149,7 +1167,12 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                   className="text-gray-900 font-bold text-lg mb-3 line-clamp-2 leading-snug group-hover:text-hepco-orange transition-colors"
                                   title={article.title}
                                 >
-                                  {article.title}
+                                  <Link
+                                    to={ROUTES.ARTICLE_DETAIL.replace(':id', article.id)}
+                                    className="after:absolute after:inset-0 focus-visible:outline-none"
+                                  >
+                                    {article.title}
+                                  </Link>
                                 </h3>
 
                                 {/* Excerpt */}
@@ -1175,7 +1198,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                         subtitle: `Ngày đăng: ${article.date}`
                                       });
                                     }}
-                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                    className="relative z-10 inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-emerald-50 px-3 text-xs font-bold text-emerald-800 transition-colors hover:bg-emerald-100"
                                   >
                                     <FileText className="w-3.5 h-3.5" />
                                     <span>Xem tệp PDF</span>
