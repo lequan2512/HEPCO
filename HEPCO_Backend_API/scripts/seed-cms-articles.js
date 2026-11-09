@@ -80,7 +80,7 @@ async function main() {
       count += (await tx.news.createMany({ data: missing.slice(i, i + 25) })).count;
     }
     return count;
-  }, { isolationLevel: 'Serializable', timeout: 30000 });
+  }, { timeout: 60000 });
 
   console.log(`Đã nạp thành công ${inserted} bài viết vào CSDL!`);
 }

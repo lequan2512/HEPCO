@@ -20,7 +20,7 @@ model News {
   id         Int      @id @default(autoincrement())
   title      String
   date       String
-  content    String?
+  content    String?  @db.LongText
   thumbnail  String?
   type       String?  @default("news")
   author_id  Int?
