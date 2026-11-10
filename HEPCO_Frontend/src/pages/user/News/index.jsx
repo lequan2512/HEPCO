@@ -345,12 +345,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               >
                 <Newspaper className="w-4 h-4 shrink-0" />
                 <span className="truncate">Tin tức &amp; Thông báo</span>
-                <span
-                  className={`text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-extrabold shrink-0 ${activeSubView === 'articles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                  {newsStats.total}
-                </span>
               </button>
 
               <button
@@ -380,9 +374,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 <div>
                   <div className="flex items-center gap-2.5 flex-wrap">
                     <h2 className="text-xl font-bold text-gray-800">Thư viện Hình ảnh Hoạt động</h2>
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      {galleryMeta.total} hình ảnh
-                    </span>
                   </div>
                   <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                     Hình ảnh thực tế về hoạt động công ty, vệ sinh môi trường, phương tiện thiết bị và các công trình dự án của HEPCO.
@@ -569,9 +560,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 <div>
                   <div className="flex items-center gap-2.5 flex-wrap">
                     <h2 className="text-xl font-bold text-[#10243b]">{pageType === 'shareholders' ? 'Tra cứu tài liệu' : 'Bài viết mới nhất'}</h2>
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      {meta.total} {pageType === 'shareholders' ? 'tài liệu công bố' : 'bài viết'}
-                    </span>
                   </div>
                   {pageType === 'shareholders' && (
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -700,14 +688,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                               ? 'Tất cả loại tài liệu'
                               : 'Tất cả chuyên mục'}
                           </span>
-                          <span
-                            className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'all'
-                                ? 'bg-white/20 text-white'
-                                : 'bg-gray-100 text-gray-600'
-                              }`}
-                          >
-                            {pageType === 'shareholders' ? shareholderStats.total : newsStats.total}
-                          </span>
                         </button>
 
                         {pageType === 'shareholders' ? (
@@ -716,7 +696,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                             (grp) => grp.value !== SHAREHOLDER_DOC_GROUP.ALL
                           ).map((grp) => {
                             const matchingTypes = grp.types || [];
-                            const grpCount = shareholderStats.countsByGroup?.[grp.value] || 0;
                             const isGrpSelected = selectedCategory === grp.value;
 
                             return (
@@ -734,9 +713,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                     }`}
                                 >
                                   <span>{grp.label}</span>
-                                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white text-emerald-700 border border-emerald-200">
-                                    {grpCount}
-                                  </span>
                                 </button>
 
                                 <div className="mt-1 pl-2 space-y-0.5 border-l-2 border-emerald-100 ml-2">
@@ -763,14 +739,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                           {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
                                           <span className="truncate">{opt.label}</span>
                                         </span>
-                                        <span
-                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0 ${isSelected
-                                              ? 'bg-white/20 text-white'
-                                              : 'bg-gray-100 text-gray-600'
-                                            }`}
-                                        >
-                                          {count}
-                                        </span>
                                       </button>
                                     );
                                   })}
@@ -783,7 +751,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                           NEWS_CATEGORY_OPTIONS.filter(
                             (opt) => opt.value !== NEWS_CATEGORY.ALL
                           ).map((opt) => {
-                            const count = newsStats.countsByCategory?.[opt.value] || 0;
                             const isSelected = selectedCategory === opt.value;
                             return (
                               <button
@@ -802,14 +769,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                 <span className="flex items-center gap-1.5 truncate">
                                   {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
                                   <span className="truncate">{opt.label}</span>
-                                </span>
-                                <span
-                                  className={`text-[11px] px-2 py-0.5 rounded-full ${isSelected
-                                      ? 'bg-white/20 text-white'
-                                      : 'bg-gray-100 text-gray-600'
-                                    }`}
-                                >
-                                  {count}
                                 </span>
                               </button>
                             );
@@ -835,17 +794,13 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                       }`}
                   >
                     <option value="all">
-                      Tất cả các năm ({pageType === 'shareholders' ? shareholderStats.total : newsStats.total})
+                      Tất cả các năm
                     </option>
                     {(pageType === 'shareholders' ? shareholderStats.years : newsStats.years || []).map(
                       (yr) => {
-                        const yrCount =
-                          pageType === 'shareholders'
-                            ? shareholderStats.countsByYear?.[yr] || 0
-                            : newsStats.countsByYear?.[yr] || 0;
                         return (
                           <option key={yr} value={String(yr)}>
-                            Năm {yr} ({yrCount})
+                            Năm {yr}
                           </option>
                         );
                       }
