@@ -44,22 +44,23 @@ const HomeServices = () => {
   const displayServices = rawServices.length > 0 ? rawServices : FALLBACK_SERVICES;
 
   return (
-    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-white border-b border-gray-200/80">
+    <section className="home-services-section py-14 sm:py-20 md:py-24 lg:py-28 bg-white border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-14 md:mb-16 gap-6">
           <div className="max-w-4xl">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
-              Giải Pháp Môi Trường &amp; <span className="inline-block whitespace-nowrap">Hạ Tầng Đô Thị</span>
+              <span className="sm:hidden">Dịch vụ nổi bật</span>
+              <span className="hidden sm:inline">Giải Pháp Môi Trường &amp; <span className="inline-block whitespace-nowrap">Hạ Tầng Đô Thị</span></span>
             </h2>
-            <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
+            <p className="home-services-description mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
               Đáp ứng trọn gói nhu cầu của người dân, cơ quan, doanh nghiệp và các sự kiện lớn trên địa bàn tỉnh Thừa Thiên Huế.
             </p>
           </div>
 
           <Link
             to={ROUTES.SERVICES}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
+            className="home-services-all-link inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
           >
             <span>Tất Cả Dịch Vụ</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

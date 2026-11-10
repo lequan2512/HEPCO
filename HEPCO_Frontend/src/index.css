@@ -439,6 +439,86 @@ body {
 
 /* Mobile home page: keep section rhythm compact and make card collections swipeable. */
 @media (max-width: 639px) {
+  .home-quick-services-group {
+    margin: 0 1rem 1.5rem;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    background: #f8fafc;
+  }
+
+  .home-quick-services-group .home-quick-links-section,
+  .home-quick-services-group .home-services-section {
+    padding-block: 1.25rem;
+    border: 0;
+    background: transparent;
+  }
+
+  .home-quick-services-group .home-quick-links-section > .container > div:first-child {
+    margin-bottom: 0.75rem;
+  }
+
+  .home-quick-services-group .home-quick-links-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
+  }
+
+  .home-quick-services-group .home-quick-links-grid > a {
+    min-height: 8.75rem;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+    box-shadow: none;
+  }
+
+  .home-quick-services-group .home-quick-links-grid > a > div:first-child > div:first-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .home-quick-services-group .home-quick-links-grid > a > div:first-child > div:first-child > span {
+    display: none;
+  }
+
+  .home-quick-services-group .home-quick-links-grid > a > div:first-child > div:first-child > div {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.75rem;
+  }
+
+  .home-quick-services-group .home-quick-links-grid > a > div:first-child > p {
+    display: none;
+  }
+
+  .home-quick-services-group .home-quick-links-grid > a > div:last-child {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    font-size: 0.6875rem;
+  }
+
+  .home-quick-services-group .home-quick-links-section h2 {
+    font-size: 1.2rem;
+    line-height: 1.35;
+  }
+
+  .home-quick-services-group .home-quick-links-description,
+  .home-quick-services-group .home-services-description {
+    display: none;
+  }
+
+  .home-quick-services-group .home-services-section > .container > div:first-child {
+    margin-bottom: 0.75rem;
+  }
+
+  .home-quick-services-group .home-services-section h2 {
+    font-size: 1.2rem;
+    line-height: 1.35;
+  }
+
+  .home-quick-services-group .home-services-all-link {
+    padding: 0;
+    min-height: 2.5rem;
+    border: 0;
+  }
+
   .home-mobile-rail {
     display: flex !important;
     flex-wrap: nowrap;

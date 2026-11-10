@@ -67,7 +67,7 @@ const CoreValues = ({ config }) => {
     : DEFAULT_UTILITIES;
 
   return (
-    <section className="py-16 md:py-20 bg-[#fafafa] border-b border-gray-200/80">
+    <section className="home-quick-links-section py-16 md:py-20 bg-[#fafafa] border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -75,14 +75,14 @@ const CoreValues = ({ config }) => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#10243b] tracking-tight">
               Tra Cứu &amp; Dịch Vụ Nhanh
             </h2>
-            <p className="mt-2 text-sm sm:text-base text-gray-600 font-normal">
+            <p className="home-quick-links-description mt-2 text-sm sm:text-base text-gray-600 font-normal">
               Cổng tiện ích trực tuyến phục vụ người dân, hộ gia đình và cơ quan, doanh nghiệp tại TP. Huế.
             </p>
           </div>
         </div>
 
         {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="home-quick-links-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {utilities.map((item, idx) => {
             const IconComponent = item.icon || Calendar;
             const targetUrl = item.link || item.href || '/tin-tuc';

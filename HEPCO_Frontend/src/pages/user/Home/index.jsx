@@ -35,10 +35,34 @@ const Home = () => {
   const { data } = useShowcase();
   const homeConfig = data?.data || {};
   const sections = homeConfig.sections ?? defaultSections;
+  const quickServicesIndexes = sections.reduce((indexes, section, index) => {
+    if (section?.visible && (section.id === 'utilities' || section.id === 'services')) {
+      indexes[section.id] = index;
+    }
+    return indexes;
+  }, {});
+  const canGroupQuickServices = Number.isInteger(quickServicesIndexes.utilities)
+    && Number.isInteger(quickServicesIndexes.services);
+  const quickServicesStart = canGroupQuickServices
+    ? Math.min(quickServicesIndexes.utilities, quickServicesIndexes.services)
+    : -1;
 
   return (
     <div className="w-full bg-white overflow-hidden">
-      {sections.map(({ id, visible }) => {
+      {sections.map(({ id, visible }, index) => {
+        if (canGroupQuickServices && (id === 'utilities' || id === 'services')) {
+          if (index !== quickServicesStart) return null;
+          return (
+            <div className="home-quick-services-group" key="home-quick-services">
+              <ScrollAnimation animation="fade-up">
+                <CoreValues config={homeConfig.utilities} />
+              </ScrollAnimation>
+              <ScrollAnimation animation="fade-up">
+                <HomeServices />
+              </ScrollAnimation>
+            </div>
+          );
+        }
         const Section = components[id];
         if (!visible || !Section) return null;
         const sectionProps = {
