@@ -136,7 +136,7 @@ const HomeImageSlider = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 md:mb-10">
           <div className="max-w-4xl">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance">
               Hình Ảnh Hoạt Động
             </h2>
             <p className="mt-3 text-base sm:text-lg text-gray-600 leading-relaxed font-normal">

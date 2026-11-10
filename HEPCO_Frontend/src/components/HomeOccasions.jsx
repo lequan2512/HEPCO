@@ -17,7 +17,7 @@ const DEFAULT_OCCASIONS = [
       'Thu gom, vận chuyển chất thải công nghiệp thông thường, hút bùn thải và cung cấp dịch vụ vệ sinh chuyên sâu cho doanh nghiệp.',
     icon: Factory,
     tag: 'Doanh nghiệp',
-    badgeColor: 'bg-blue-50 text-blue-800 border-blue-200',
+    badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
   {
     title: 'Lễ Hội & Sự Kiện Tầm Cỡ',
@@ -26,7 +26,7 @@ const DEFAULT_OCCASIONS = [
       'Phương án ứng trực vệ sinh 24/7, cung ứng nhà vệ sinh lưu động cao cấp và thu dọn hiện trường cho Festival Huế và các lễ hội văn hóa.',
     icon: PartyPopper,
     tag: 'Sự kiện & Du lịch',
-    badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+    badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
   {
     title: 'Cảnh Quan & Công Trình Xanh',
@@ -35,16 +35,16 @@ const DEFAULT_OCCASIONS = [
       'Chăm sóc hệ thống công viên bờ sông Hương, cắt tỉa cành cây phòng chống bão lũ và vận hành mạng lưới chiếu sáng công cộng hiện đại.',
     icon: Trees,
     tag: 'Cảnh quan di sản',
-    badgeColor: 'bg-teal-50 text-teal-800 border-teal-200',
+    badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
 ];
 
 const ICONS = [Building2, Factory, PartyPopper, Trees];
 const BADGE_COLORS = [
   'bg-emerald-50 text-emerald-800 border-emerald-200',
-  'bg-blue-50 text-blue-800 border-blue-200',
-  'bg-amber-50 text-amber-800 border-amber-200',
-  'bg-teal-50 text-teal-800 border-teal-200'
+  'bg-emerald-50 text-emerald-800 border-emerald-200',
+  'bg-emerald-50 text-emerald-800 border-emerald-200',
+  'bg-emerald-50 text-emerald-800 border-emerald-200'
 ];
 
 // Helper to format heading with no orphan words
@@ -77,11 +77,11 @@ const HomeOccasions = ({ config }) => {
     : DEFAULT_OCCASIONS;
 
   return (
-    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#f8fafc] border-b border-gray-200/80">
+    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-white border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
         <div className="max-w-5xl mb-12 sm:mb-16 md:mb-20">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance mb-4">
             {formatHeadingBalanced(title)}
           </h2>
           <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
@@ -112,7 +112,7 @@ const HomeOccasions = ({ config }) => {
                     )}
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-2 text-balance leading-snug">
+                  <h3 className="text-lg sm:text-xl font-black text-black group-hover:text-emerald-700 transition-colors mb-2 text-balance leading-snug">
                     {item.title}
                   </h3>
                   {item.subtitle && (

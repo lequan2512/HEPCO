@@ -32,11 +32,11 @@ const HomeTestimonials = ({ config }) => {
     : DEFAULT_TESTIMONIALS;
 
   return (
-    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#fafafa] border-b border-gray-200/80">
+    <section className="py-14 sm:py-20 md:py-24 lg:py-28 bg-white border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Header */}
         <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16 md:mb-20">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance mb-4">
             {title}
           </h2>
           <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-2xl mx-auto">
@@ -53,7 +53,7 @@ const HomeTestimonials = ({ config }) => {
             >
               <div>
                 {/* 5 Stars Rating */}
-                <div className="flex gap-1 text-amber-400 mb-5 sm:mb-6">
+                <div className="flex gap-1 text-emerald-400 mb-5 sm:mb-6">
                   {[...Array(Number(item.rating) || 5)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                   ))}
@@ -71,7 +71,7 @@ const HomeTestimonials = ({ config }) => {
                   {item.author ? item.author.charAt(0) : 'H'}
                 </div>
                 <div>
-                  <div className="font-black text-[#10243b] text-sm">
+                  <div className="font-black text-black text-sm">
                     {item.author}
                   </div>
                   <div className="text-xs text-gray-500 font-medium">

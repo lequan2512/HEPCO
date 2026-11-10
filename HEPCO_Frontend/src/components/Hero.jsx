@@ -25,7 +25,7 @@ const Hero = ({ config }) => {
       <div className="container mx-auto px-3.5 sm:px-6 lg:px-8 max-w-7xl">
         {/* Main Display Headline */}
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-3 sm:mb-6 md:mb-8">
-          {(heroConfig.headlinePrefix || heroConfig.headlineHighlight) && <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#10243b] leading-[1.2] sm:leading-[1.15] text-balance mb-4 empty:hidden sm:mb-6 drop-shadow-2xs">
+          {(heroConfig.headlinePrefix || heroConfig.headlineHighlight) && <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-black leading-[1.2] sm:leading-[1.15] text-balance mb-4 empty:hidden sm:mb-6 drop-shadow-2xs">
             <span className="block" style={{ color: heroConfig.headlinePrefixColor || undefined }}>{heroConfig.headlinePrefix}</span>
             <span className="block text-hepco-green mt-1 sm:mt-2" style={{ color: heroConfig.headlineHighlightColor || undefined }}>
               {heroConfig.headlineHighlight}
@@ -41,7 +41,7 @@ const Hero = ({ config }) => {
         {/* Hero Showcase Frame - Centered and perfectly proportioned */}
         <div className="relative sm:mt-6 md:mt-8 max-w-5xl mx-auto w-full">
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200/90 shadow-2xl bg-white/80 sm:backdrop-blur-md p-1.5 sm:p-3 flex items-center justify-center">
-            <div className="relative w-full flex flex-col sm:flex-row items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-b from-gray-900/5 to-gray-900/10 sm:min-h-[420px] md:min-h-[520px]">
+            <div className="relative w-full flex flex-col sm:flex-row items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-b from-emerald-900/5 to-emerald-900/10 sm:min-h-[420px] md:min-h-[520px]">
               {/* Ambient blur behind image */}
               <div
                 className="hidden sm:block absolute inset-0 w-full h-full bg-cover bg-center blur-3xl opacity-25 scale-110 pointer-events-none"
@@ -63,7 +63,7 @@ const Hero = ({ config }) => {
                 <button
                   type="button"
                   onClick={() => setShowVideo(true)}
-                  className="flex min-h-11 items-center gap-2 sm:gap-3 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white/95 hover:bg-white text-[#10243b] font-bold text-xs sm:text-sm shadow-xl backdrop-blur-md hover:scale-105 active:scale-95 transition-all duration-300 border border-gray-200/80 group/btn cursor-pointer"
+                  className="flex min-h-11 items-center gap-2 sm:gap-3 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white/95 hover:bg-white text-black font-bold text-xs sm:text-sm shadow-xl backdrop-blur-md hover:scale-105 active:scale-95 transition-all duration-300 border border-gray-200/80 group/btn cursor-pointer"
                   title="Xem video giới thiệu HEPCO"
                 >
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-md group-hover/btn:bg-emerald-700 transition-colors shrink-0">

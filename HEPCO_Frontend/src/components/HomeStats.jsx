@@ -51,7 +51,7 @@ const HomeStats = ({ config }) => {
                 whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }}
                 viewport={{ once: true }}
                 transition={{ type: 'spring', visualDuration: 0.4, bounce: 0.3, delay: idx * 0.08 }}
-                className="home-stat-card flex min-w-0 flex-col items-center rounded-xl bg-slate-50 px-2 py-4 text-center sm:px-4 lg:rounded-none lg:bg-transparent lg:py-0"
+                className="home-stat-card flex min-w-0 flex-col items-center rounded-xl bg-white px-2 py-4 text-center sm:px-4 lg:rounded-none lg:bg-transparent lg:py-0"
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 6 }}
@@ -60,7 +60,7 @@ const HomeStats = ({ config }) => {
                 >
                   <IconComponent className="w-6 h-6 stroke-[2.2]" />
                 </motion.div>
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight mb-1 tabular-nums">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-black tracking-tight mb-1 tabular-nums">
                   {item.value}
                 </div>
                 <div className="min-h-8 sm:min-h-10 flex items-start justify-center text-xs sm:text-sm leading-4 sm:leading-5 font-bold text-emerald-800 tracking-wide mb-2 uppercase">

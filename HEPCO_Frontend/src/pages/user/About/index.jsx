@@ -95,7 +95,7 @@ const About = () => {
                 <div className="relative z-10">
                   <h2 className="text-xl sm:text-3xl font-extrabold text-green-900 uppercase relative inline-block pb-3">
                     {aboutConfig.openLetterTitle || 'Thư Ngỏ'}
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-orange rounded-full"></div>
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-green rounded-full"></div>
                   </h2>
 
                   <div className="prose prose-sm sm:prose-base md:prose-lg text-gray-700 space-y-4 sm:space-y-6 text-pretty">
@@ -207,7 +207,7 @@ const About = () => {
               <div className="text-center mb-6 sm:mb-8">
                 <h2 className="text-xl sm:text-3xl font-extrabold text-green-900 uppercase relative inline-block pb-3">
                   Chức năng - Giấy phép hoạt động
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-orange rounded-full"></div>
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-green rounded-full"></div>
                 </h2>
                 <p className="text-gray-600 mt-3 max-w-3xl mx-auto text-xs sm:text-sm md:text-base px-2">
                   Công ty Cổ phần Môi trường và Công trình Đô thị Huế (HEPCO) được cấp đầy đủ các giấy phép môi trường theo quy định của pháp luật, đảm bảo hoạt động hợp pháp và tuân thủ nghiêm ngặt các tiêu chuẩn về bảo vệ môi trường.
@@ -247,24 +247,24 @@ const About = () => {
                 {/* Card 2: GPMT 48 */}
                 <div
                   onClick={() => setPdfModal({ url: '/pdf/7. 48-GP-UBND_Signed (TTH).pdf', fileName: '48-GPMT-UBND.pdf', title: 'Giấy phép Môi trường số 48/GPMT-UBND', subtitle: 'UBND thành phố Huế' })}
-                  className="group bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-4 sm:p-6 border border-blue-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+                  className="group bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl p-4 sm:p-6 border border-emerald-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
                 >
                   <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl shadow-sm flex items-center justify-center border border-blue-200 group-hover:bg-blue-600 group-hover:border-blue-600 transition-colors duration-300">
-                      <FileCheck className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600 group-hover:text-white transition-colors duration-300" />
+                    <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl shadow-sm flex items-center justify-center border border-emerald-200 group-hover:bg-emerald-600 group-hover:border-emerald-600 transition-colors duration-300">
+                      <FileCheck className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600 group-hover:text-white transition-colors duration-300" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm sm:text-base font-extrabold text-green-900 mb-1">Giấy phép Môi trường</h3>
-                      <p className="text-lg sm:text-xl font-black text-blue-600">Số 48/GPMT-UBND</p>
+                      <p className="text-lg sm:text-xl font-black text-emerald-600">Số 48/GPMT-UBND</p>
                       <p className="text-xs sm:text-sm text-gray-600 mt-1.5">Cấp bởi: <span className="font-semibold text-gray-800">UBND thành phố Huế</span></p>
                     </div>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-blue-200/60 flex items-center gap-4 flex-wrap">
+                  <div className="mt-4 pt-3 border-t border-emerald-200/60 flex items-center gap-4 flex-wrap">
                     <a
                       href="/pdf/7. 48-GP-UBND_Signed (TTH).pdf"
                       download="48-GPMT-UBND.pdf"
                       onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                      className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
                     >
                       <Download className="w-4 h-4" />
                       Tải xuống
@@ -339,7 +339,7 @@ const About = () => {
             <div className="text-center mb-4 sm:mb-8">
               <h2 className="text-xl sm:text-3xl font-extrabold text-green-900 uppercase relative inline-block pb-3">
                 Sơ đồ bộ máy tổ chức HEPCO
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-orange rounded-full"></div>
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-green rounded-full"></div>
               </h2>
               <p className="text-gray-600 mt-2 sm:mt-3 max-w-2xl mx-auto text-xs sm:text-sm md:text-base px-2">
                 Cấu trúc sơ đồ tổ chức bộ máy điều hành, các phòng nghiệp vụ và các đơn vị xí nghiệp trực thuộc Công ty Cổ phần Môi trường và Công trình Đô thị Huế.
@@ -354,7 +354,7 @@ const About = () => {
               </span>
               <button
                 onClick={() => setIsImageModalOpen(true)}
-                className="flex items-center gap-1 text-hepco-orange hover:underline font-bold"
+                className="flex items-center gap-1 text-hepco-green hover:underline font-bold"
               >
                 <ZoomIn className="w-4 h-4" /> Phóng to
               </button>
@@ -412,7 +412,7 @@ const About = () => {
               <div className="text-center mb-4 sm:mb-5">
                 <h2 className="text-xl sm:text-3xl font-extrabold text-green-900 uppercase relative inline-block pb-3">
                   HỒ SƠ NĂNG LỰC HEPCO
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-orange rounded-full"></div>
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-green rounded-full"></div>
                 </h2>
               </div>
 

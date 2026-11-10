@@ -84,11 +84,11 @@ const FaqContact = ({ config }) => {
   });
 
   return (
-    <section id="faq-contact-section" className="py-14 sm:py-20 md:py-24 lg:py-28 bg-[#f8fafc] border-b border-gray-200/80 scroll-mt-20">
+    <section id="faq-contact-section" className="py-14 sm:py-20 md:py-24 lg:py-28 bg-white border-b border-gray-200/80 scroll-mt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
         <div className="max-w-4xl mx-auto text-center mb-10 sm:mb-14 md:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance mb-4">
             {title}
           </h2>
           <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-2xl mx-auto">
@@ -108,7 +108,7 @@ const FaqContact = ({ config }) => {
                   onClick={() => setActiveTab('faq')}
                   className={`relative flex items-center gap-2 pb-3.5 px-3 text-sm sm:text-base font-bold transition-colors cursor-pointer ${
                     activeTab === 'faq'
-                      ? 'text-[#10243b]'
+                      ? 'text-black'
                       : 'text-gray-400 hover:text-gray-700'
                   }`}
                 >
@@ -117,7 +117,7 @@ const FaqContact = ({ config }) => {
                   {activeTab === 'faq' && (
                     <motion.div
                       layoutId="faqTabUnderline"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#10243b]"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-hepco-green"
                       transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.15 }}
                     />
                   )}
@@ -127,7 +127,7 @@ const FaqContact = ({ config }) => {
                   onClick={() => setActiveTab('contact')}
                   className={`relative flex items-center gap-2 pb-3.5 px-3 text-sm sm:text-base font-bold transition-colors cursor-pointer ${
                     activeTab === 'contact'
-                      ? 'text-[#10243b]'
+                      ? 'text-black'
                       : 'text-gray-400 hover:text-gray-700'
                   }`}
                 >
@@ -136,7 +136,7 @@ const FaqContact = ({ config }) => {
                   {activeTab === 'contact' && (
                     <motion.div
                       layoutId="faqTabUnderline"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#10243b]"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-hepco-green"
                       transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.15 }}
                     />
                   )}
@@ -149,7 +149,7 @@ const FaqContact = ({ config }) => {
                   {items.map((item, index) => (
                     <div
                       key={index}
-                      className="border border-gray-200/80 rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:border-emerald-600/40 bg-[#fafafa]"
+                      className="border border-gray-200/80 rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:border-emerald-600/40 bg-white"
                     >
                       <button
                         type="button"
@@ -157,7 +157,7 @@ const FaqContact = ({ config }) => {
                         onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
                       >
                         <span className={`text-sm sm:text-base font-bold pr-4 transition-colors ${
-                          openFaq === index ? 'text-emerald-700' : 'text-[#10243b] group-hover:text-emerald-700'
+                          openFaq === index ? 'text-emerald-700' : 'text-black group-hover:text-emerald-700'
                         }`}>
                           {item.question}
                         </span>
@@ -306,13 +306,13 @@ const FaqContact = ({ config }) => {
           </div>
 
           {/* Right Side: Map & Contact Info */}
-          <div className="lg:col-span-5 bg-[#fafafa] p-7 sm:p-10 flex flex-col justify-between">
+          <div className="lg:col-span-5 bg-white p-7 sm:p-10 flex flex-col justify-between">
             <div className="space-y-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
                   {office.officeLabel}
                 </span>
-                <h3 className="text-xl sm:text-2xl font-black text-[#10243b] mt-1 mb-2">
+                <h3 className="text-xl sm:text-2xl font-black text-black mt-1 mb-2">
                   {office.officeName}
                 </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">

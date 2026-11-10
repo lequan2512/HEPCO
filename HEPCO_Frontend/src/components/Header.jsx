@@ -90,7 +90,7 @@ const Header = () => {
               />
             </div>
             <div className="flex flex-col whitespace-nowrap">
-              <span className="text-base sm:text-lg xl:text-xl font-black tracking-tight text-[#10243b] leading-none group-hover:text-emerald-700 transition-colors">
+              <span className="text-base sm:text-lg xl:text-xl font-black tracking-tight text-black leading-none group-hover:text-emerald-700 transition-colors">
                 HEPCO
               </span>
               <span className="text-[9px] sm:text-[10px] xl:text-[10.5px] font-bold text-emerald-700 tracking-wider uppercase leading-none mt-1">
@@ -127,7 +127,7 @@ const Header = () => {
                   to={item.path}
                   className={`whitespace-nowrap shrink-0 px-2.5 xl:px-3.5 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold transition-all duration-200 ${isItemActive
                     ? 'text-emerald-700 bg-emerald-50/90 shadow-2xs font-extrabold'
-                    : 'text-gray-700 hover:text-[#10243b] hover:bg-gray-100/80'
+                    : 'text-gray-700 hover:text-black hover:bg-gray-100/80'
                     }`}
                 >
                   {item.name}
@@ -141,7 +141,7 @@ const Header = () => {
             {/* Tablet & Desktop Hotline Pill Button */}
             <a
               href="tel:1900969669"
-              className="hidden sm:inline-flex whitespace-nowrap shrink-0 items-center gap-2 xl:gap-2.5 px-3 xl:px-4 py-2 rounded-full bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-xs xl:text-sm shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all duration-200 group"
+              className="hidden sm:inline-flex whitespace-nowrap shrink-0 items-center gap-2 xl:gap-2.5 px-3 xl:px-4 py-2 rounded-full bg-hepco-green hover:bg-emerald-700 text-white font-bold text-xs xl:text-sm shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all duration-200 group"
               title="Tổng đài hỗ trợ 24/7 HEPCO 1900 969669"
             >
               <div className="w-5 h-5 xl:w-6 xl:h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-emerald-700 transition-all">
@@ -160,7 +160,7 @@ const Header = () => {
             {/* Mobile Call Button (< 640px) */}
             <a
               href="tel:1900969669"
-              className="sm:hidden whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#10243b] text-white font-bold text-[11px] shadow-2xs"
+              className="sm:hidden whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-hepco-green text-white font-bold text-[11px] shadow-2xs"
               title="Gọi hotline 1900 969669"
             >
               <Phone className="w-3 h-3 text-emerald-400 fill-current shrink-0" />
@@ -239,7 +239,7 @@ const Header = () => {
                         onClick={() => setIsMenuOpen(false)}
                         className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${isItemActive
                           ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
-                          : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
+                          : 'text-gray-800 hover:text-black hover:bg-gray-50'
                           }`}
                       >
                         <span>{item.name}</span>
@@ -252,7 +252,7 @@ const Header = () => {
                 <div className="pt-3 mt-2 border-t border-gray-200/80 space-y-2">
                   <a
                     href="tel:1900969669"
-                    className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors"
+                    className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-hepco-green hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors"
                   >
                     <Phone className="w-4 h-4 text-emerald-400 fill-current" />
                     <span>Hotline Tư Vấn 24/7: 1900 969669</span>

@@ -80,7 +80,7 @@ const Services = () => {
               <div className="text-center mb-6 sm:mb-8">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-green-900 uppercase relative inline-block pb-3">
                   {currentService.title}
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-orange rounded-full" />
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 sm:w-24 h-1 bg-hepco-green rounded-full" />
                 </h2>
               </div>
 

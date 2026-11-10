@@ -227,7 +227,7 @@ const ArticleDetail = () => {
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#10243b] leading-snug sm:leading-tight mb-4 sm:mb-6 text-balance">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black leading-snug sm:leading-tight mb-4 sm:mb-6 text-balance">
               {article.title}
             </h1>
 
@@ -275,7 +275,7 @@ const ArticleDetail = () => {
           {article.thumbnail && article.type !== 'shareholders' && (
             <div
               onClick={() => setLightboxImgIdx(0)}
-              className="w-full max-h-[520px] bg-gray-100 relative overflow-hidden cursor-zoom-in"
+              className="w-full max-h-[min(70vh,520px)] bg-white relative overflow-hidden cursor-zoom-in flex justify-center"
             >
               <img
                 src={resolveAssetUrl(article.thumbnail)}
@@ -284,7 +284,7 @@ const ArticleDetail = () => {
                   e.target.onerror = null;
                   e.target.src = '/images/cover.png';
                 }}
-                className="w-full h-full max-h-[520px] object-cover"
+                className="max-w-full max-h-[min(70vh,520px)] h-auto w-auto object-contain object-center"
               />
             </div>
           )}
@@ -293,7 +293,7 @@ const ArticleDetail = () => {
           {attachments.length > 0 && (
             <div className="p-4 sm:p-6 md:p-8 bg-emerald-50/40 border-b border-gray-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-4">
-                <h3 className="text-base sm:text-lg font-extrabold text-[#10243b] flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-extrabold text-black flex items-center gap-2">
                   <Paperclip className="w-5 h-5 text-hepco-green shrink-0" />
                   <span>Tài liệu đính kèm ({attachments.length})</span>
                 </h3>
@@ -351,7 +351,7 @@ const ArticleDetail = () => {
                             }}
                             className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                               isSelected
-                                ? 'bg-[#10243b] text-white border-[#10243b]'
+                                ? 'bg-hepco-green text-white border-hepco-green'
                                 : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
                             }`}
                           >
@@ -429,7 +429,7 @@ const ArticleDetail = () => {
                   className="prose prose-lg max-w-none [word-break:normal] [overflow-wrap:break-word]
                     prose-p:mb-6
                     prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mt-10 prose-headings:mb-4
-                    prose-a:text-hepco-green hover:prose-a:text-hepco-orange prose-a:font-semibold
+                    prose-a:text-hepco-green hover:prose-a:text-hepco-green prose-a:font-semibold
                     prose-strong:text-gray-900
                     prose-img:rounded-2xl prose-img:shadow-md prose-img:mx-auto prose-img:my-6
                     [&_table]:max-sm:block [&_table]:max-sm:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto prose-table:border-collapse prose-table:w-full prose-td:border prose-td:border-gray-300 prose-td:p-2.5 prose-th:border prose-th:border-gray-300 prose-th:p-2.5 prose-th:bg-gray-50
@@ -543,7 +543,7 @@ const ArticleDetail = () => {
         {relatedArticles.length > 0 && (
           <div className="mt-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl sm:text-2xl font-extrabold text-[#10243b]">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-black">
                 {article.type === 'shareholders'
                   ? 'Tài liệu cổ đông liên quan'
                   : 'Bài viết liên quan'}
@@ -555,7 +555,7 @@ const ArticleDetail = () => {
                     article.type === 'shareholders' ? ROUTES.SHAREHOLDERS : ROUTES.NEWS
                   )
                 }
-                className="text-xs sm:text-sm font-bold text-hepco-green hover:text-hepco-orange flex items-center gap-1 cursor-pointer"
+                className="text-xs sm:text-sm font-bold text-hepco-green hover:text-hepco-green flex items-center gap-1 cursor-pointer"
               >
                 <span>Xem tất cả</span>
                 <ArrowRight className="w-4 h-4" />

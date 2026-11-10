@@ -181,7 +181,7 @@ const NewsPartnersAwards = () => {
           <div className="mb-24">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 md:mb-16 gap-6">
               <div className="max-w-4xl">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance">
                   Tin Tức &amp; Sự Kiện Mới Nhất
                 </h2>
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
@@ -192,7 +192,7 @@ const NewsPartnersAwards = () => {
               <button
                 type="button"
                 onClick={() => navigate(ROUTES.NEWS)}
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gray-100 hover:bg-hepco-green text-black hover:text-white font-bold text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto cursor-pointer"
               >
                 <span>Xem Tất Cả Tin Tức</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -227,7 +227,7 @@ const NewsPartnersAwards = () => {
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity" />
 
-                      <span className="absolute top-3.5 right-3.5 backdrop-blur-md font-bold text-[11px] px-3 py-1 rounded-full shadow-xs z-10 bg-white/90 text-[#10243b]">
+                      <span className="absolute top-3.5 right-3.5 backdrop-blur-md font-bold text-[11px] px-3 py-1 rounded-full shadow-xs z-10 bg-white/90 text-black">
                         {categoryLabel}
                       </span>
                     </div>
@@ -241,7 +241,7 @@ const NewsPartnersAwards = () => {
                           </div>
                         )}
 
-                        <h3 className="text-base sm:text-lg font-bold text-[#10243b] group-hover:text-emerald-700 transition-colors mb-2 line-clamp-2 leading-snug text-balance">
+                        <h3 className="text-base sm:text-lg font-bold text-black group-hover:text-emerald-700 transition-colors mb-2 line-clamp-2 leading-snug text-balance">
                           {item.title}
                         </h3>
 
@@ -250,7 +250,7 @@ const NewsPartnersAwards = () => {
                         </p>
                       </div>
 
-                      <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#10243b] group-hover:text-emerald-700">
+                      <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-black group-hover:text-emerald-700">
                         <span>Đọc tiếp</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
@@ -265,7 +265,7 @@ const NewsPartnersAwards = () => {
         {/* Partners Section */}
         <div className="mb-20 pt-10 border-t border-gray-100">
           <div className="max-w-2xl mx-auto text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#10243b] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight">
               Đồng Hành &amp; Phát Triển
             </h2>
           </div>
@@ -299,7 +299,7 @@ const NewsPartnersAwards = () => {
         {/* Awards Section */}
         <div className="pt-10 border-t border-gray-100">
           <div className="max-w-2xl mx-auto text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#10243b] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight">
               Thành Tích &amp; Khen Thưởng
             </h2>
           </div>

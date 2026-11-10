@@ -111,7 +111,7 @@ const Footer = () => {
                 href={footer.facebook || undefined}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-hepco-orange transition-all hover:scale-110 shadow-md border border-white/5"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-hepco-green transition-all hover:scale-110 shadow-md border border-white/5"
                 title="Facebook"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@ const Footer = () => {
                 href={footer.email ? "mailto:" + footer.email : undefined}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-hepco-orange transition-all hover:scale-110 shadow-md border border-white/5"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-hepco-green transition-all hover:scale-110 shadow-md border border-white/5"
                 title="Gửi Email"
               >
                 <Mail className="w-4 h-4" />
@@ -134,20 +134,20 @@ const Footer = () => {
           <div className="col-span-1">
             <h3 className="text-lg font-bold mb-5 relative inline-block text-white">
               {footer.contactTitle}
-              <div className="absolute -bottom-2 left-0 w-12 h-1 bg-hepco-orange rounded-full"></div>
+              <div className="absolute -bottom-2 left-0 w-12 h-1 bg-hepco-green rounded-full"></div>
             </h3>
             <div className="space-y-4 text-sm text-green-50">
               <p className="font-extrabold uppercase leading-snug text-white">
                 {footer.companyName}
               </p>
               <div className="flex gap-3 items-start group">
-                <div className="bg-white/10 p-1.5 rounded-md group-hover:bg-hepco-orange transition-colors">
+                <div className="bg-white/10 p-1.5 rounded-md group-hover:bg-hepco-green transition-colors">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
                 <p>{footer.address}</p>
               </div>
               <div className="flex gap-3 items-start group">
-                <div className="bg-white/10 p-1.5 rounded-md group-hover:bg-hepco-orange transition-colors">
+                <div className="bg-white/10 p-1.5 rounded-md group-hover:bg-hepco-green transition-colors">
                   <Phone className="w-4 h-4 text-white" />
                 </div>
                 <p>

@@ -2,7 +2,6 @@
 
 @theme {
   --color-hepco-green: #3f9e4d;
-  --color-hepco-orange: #f26522;
   --font-sans: 'Roboto', Arial, sans-serif;
   --font-serif: 'Roboto', Arial, sans-serif;
   --font-display: 'Roboto', Arial, sans-serif;
@@ -17,7 +16,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0;
-  color: #1f2937;
+  color: #000;
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
 }
@@ -85,7 +84,7 @@ body {
     font-size: 1rem;
     line-height: 1.75;
     letter-spacing: 0.005em;
-    color: #1f2937;
+    color: #000;
   }
 
   @media (min-width: 768px) {
@@ -112,7 +111,7 @@ body {
     letter-spacing: -0.01em;
     margin-top: 1.5em;
     margin-bottom: 0.65em;
-    color: #10243b;
+    color: #000;
   }
 
   .prose h1 {
@@ -149,8 +148,12 @@ body {
   }
 
   .prose img {
+    display: block;
+    width: auto !important;
     max-width: 100%;
-    height: auto;
+    height: auto !important;
+    max-height: min(80vh, 900px);
+    object-fit: contain;
     border-radius: 0.5rem;
     margin: 1.25em auto;
   }
@@ -163,13 +166,13 @@ body {
   }
 
   .prose a:hover {
-    color: #f26522;
+    color: #3f9e4d;
   }
 
   .prose strong,
   .prose b {
     font-weight: 700;
-    color: #111827;
+    color: #000;
   }
 
   .prose,
@@ -199,20 +202,70 @@ body {
 
   .prose th,
   .prose td {
-    border: 1px solid #d1d5db;
+    border: 1px solid #cfe5d3;
     padding: 0.625rem 0.75rem;
     vertical-align: middle;
   }
 
   .prose th {
-    background-color: #f8fafc;
+    background-color: #fff;
     font-weight: 700;
-    color: #10243b;
+    color: #000;
   }
 
   .prose-table-fix {
     max-width: 100%;
   }
+}
+
+/* HEPCO public portal palette: environmental green, white and black. */
+.public-site {
+  color: #000;
+  background-color: #fff;
+}
+
+.public-site [class*="text-gray-"] {
+  color: #000 !important;
+}
+
+.public-site [class~="bg-gray-50"],
+.public-site [class~="bg-gray-50/50"],
+.public-site [class~="bg-gray-50/80"],
+.public-site [class~="bg-gray-100"],
+.public-site [class~="bg-gray-100/80"] {
+  background-color: #fff !important;
+}
+
+.public-site [class~="bg-gray-200"],
+.public-site [class~="bg-gray-200/50"],
+.public-site [class~="bg-gray-300"] {
+  background-color: #eaf5ec !important;
+}
+
+.public-site [class*="border-gray-"] {
+  border-color: #cfe5d3 !important;
+}
+
+.public-site [class~="bg-gray-700"],
+.public-site [class~="bg-gray-800"],
+.public-site [class~="bg-gray-800/80"],
+.public-site [class~="bg-gray-800/90"],
+.public-site [class~="bg-gray-900"],
+.public-site [class~="bg-gray-900/90"],
+.public-site [class~="bg-gray-900/95"],
+.public-site [class~="bg-gray-950"] {
+  background-color: #000 !important;
+}
+
+.public-site .pdf-toolbar [class*="text-gray-"] {
+  color: #fff !important;
+}
+
+.public-site [class~="hover:bg-gray-50"]:hover,
+.public-site [class~="hover:bg-gray-100"]:hover,
+.public-site [class~="hover:bg-gray-100/80"]:hover,
+.public-site [class~="hover:bg-gray-200"]:hover {
+  background-color: #eaf5ec !important;
 }
 
 /* Custom Sidebar Scrollbar */
@@ -265,16 +318,16 @@ body {
   height: 100%;
   overflow: hidden;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #cfe5d3;
   font-family: 'Roboto', Arial, sans-serif;
 }
 
 .quill-wrapper .ql-toolbar {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
-  background-color: #f9fafb;
+  background-color: #fff;
   border: none !important;
-  border-bottom: 1px solid #e5e7eb !important;
+  border-bottom: 1px solid #cfe5d3 !important;
   flex-shrink: 0;
   padding: 8px 12px;
   font-family: 'Roboto', Arial, sans-serif;
@@ -442,9 +495,9 @@ body {
   .home-quick-services-group {
     margin: 0 1rem 1.5rem;
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #cfe5d3;
     border-radius: 1.25rem;
-    background: #f8fafc;
+    background: #fff;
   }
 
   .home-quick-services-group .home-quick-links-section,

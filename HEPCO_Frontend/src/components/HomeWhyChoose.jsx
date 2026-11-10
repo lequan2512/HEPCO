@@ -51,7 +51,7 @@ const HomeWhyChoose = ({ config }) => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6">
           <div className="max-w-4xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance">
               {title}
             </h2>
             <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed font-normal text-pretty max-w-3xl">
@@ -61,7 +61,7 @@ const HomeWhyChoose = ({ config }) => {
 
           <Link
             to={ROUTES.ABOUT}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
+            className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-hepco-green text-black hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
           >
             <span>Tìm Hiểu Về HEPCO</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -75,7 +75,7 @@ const HomeWhyChoose = ({ config }) => {
             return (
               <div
                 key={idx}
-                className="group flex flex-col justify-between p-6 sm:p-7 md:p-8 rounded-3xl bg-[#fafafa] border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
+                className="group flex flex-col justify-between p-6 sm:p-7 md:p-8 rounded-3xl bg-white border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
               >
                 <div>
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white shadow-xs border border-gray-100 flex items-center justify-center text-emerald-700 mb-5 sm:mb-6 group-hover:scale-110 transition-transform">
@@ -88,7 +88,7 @@ const HomeWhyChoose = ({ config }) => {
                     </span>
                   )}
 
-                  <h3 className="text-lg sm:text-xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-2 text-balance leading-snug">
+                  <h3 className="text-lg sm:text-xl font-black text-black group-hover:text-emerald-700 transition-colors mb-2 text-balance leading-snug">
                     {point.title}
                   </h3>
 

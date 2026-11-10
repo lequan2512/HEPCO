@@ -49,7 +49,7 @@ const HomeServices = () => {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-14 md:mb-16 gap-6">
           <div className="max-w-4xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight leading-tight text-balance">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight text-balance">
               <span className="sm:hidden">Dịch vụ nổi bật</span>
               <span className="hidden sm:inline">Giải Pháp Môi Trường &amp; <span className="inline-block whitespace-nowrap">Hạ Tầng Đô Thị</span></span>
             </h2>
@@ -60,7 +60,7 @@ const HomeServices = () => {
 
           <Link
             to={ROUTES.SERVICES}
-            className="home-services-all-link inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-[#10243b] text-[#10243b] hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
+            className="home-services-all-link inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gray-100 hover:bg-hepco-green text-black hover:text-white font-bold text-xs sm:text-sm transition-all duration-300 shadow-2xs group self-start md:self-auto shrink-0"
           >
             <span>Tất Cả Dịch Vụ</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -81,7 +81,7 @@ const HomeServices = () => {
                 state={{ serviceId: service.id }}
                 whileTap={{ scale: 0.985 }}
                 transition={{ type: 'spring', visualDuration: 0.22, bounce: 0.2 }}
-                className="group flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
+                className="group flex flex-col rounded-3xl overflow-hidden bg-white border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
               >
                 {/* Image Container */}
                 <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden bg-gray-200">
@@ -100,7 +100,7 @@ const HomeServices = () => {
                 {/* Content Details */}
                 <div className="p-6 sm:p-7 md:p-8 flex flex-col justify-between flex-grow bg-white">
                   <div>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-3 line-clamp-2 text-balance leading-snug">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-black text-black group-hover:text-emerald-700 transition-colors mb-3 line-clamp-2 text-balance leading-snug">
                       {service.title}
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-normal mb-6 line-clamp-3 text-pretty">
@@ -114,7 +114,7 @@ const HomeServices = () => {
                       <span>{service.tag || 'Tiêu chuẩn đô thị'}</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#10243b] group-hover:text-emerald-700">
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-black group-hover:text-emerald-700">
                       <span>Chi tiết phương án</span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </div>

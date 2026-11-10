@@ -5,16 +5,16 @@ import { Toaster } from 'react-hot-toast';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Home from './pages/user/Home';
-import About from './pages/user/About';
-import Services from './pages/user/Services';
-import News from './pages/user/News';
-import ArticleDetail from './pages/user/ArticleDetail';
 
 import { ROUTES } from './constants/routes';
 
 import Loading from './components/Loading';
 
+const Home = lazy(() => import('./pages/user/Home'));
+const About = lazy(() => import('./pages/user/About'));
+const Services = lazy(() => import('./pages/user/Services'));
+const News = lazy(() => import('./pages/user/News'));
+const ArticleDetail = lazy(() => import('./pages/user/ArticleDetail'));
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 const AdminCmsOverview = lazy(() => import('./pages/admin/AdminCmsOverview'));
@@ -47,7 +47,7 @@ const ScrollToTop = () => {
 // Public layout with Header & Footer
 const PublicLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+    <div className="public-site min-h-screen bg-white flex flex-col font-sans">
       <Header />
       <main className="flex-grow flex flex-col">
         <Outlet />

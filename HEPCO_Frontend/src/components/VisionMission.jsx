@@ -17,7 +17,7 @@ const VisionMission = () => {
           <div className="lg:w-1/2">
             <h2 className="text-4xl font-extrabold text-green-900 mb-12 inline-block relative pb-4">
               TẦM NHÌN - SỨ MỆNH
-              <div className="absolute bottom-0 left-0 w-24 h-1 bg-hepco-orange rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-1 bg-hepco-green rounded-full"></div>
             </h2>
 
             <div className="space-y-12">
@@ -25,7 +25,7 @@ const VisionMission = () => {
               <div className="flex items-start gap-6 group cursor-default">
                 <div className="w-16 h-16 rounded-2xl bg-green-50 flex-shrink-0 flex items-center justify-center text-hepco-green relative shadow-sm group-hover:bg-hepco-green group-hover:text-white transition-all duration-500 group-hover:-translate-y-1">
                   <Target className="w-10 h-10 relative z-10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
-                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-hepco-orange rounded-full z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-hepco-green rounded-full z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-hepco-green mb-3 group-hover:text-green-800 transition-colors">Tầm nhìn</h3>
@@ -39,7 +39,7 @@ const VisionMission = () => {
               <div className="flex items-start gap-6 group cursor-default">
                 <div className="w-16 h-16 rounded-2xl bg-green-50 flex-shrink-0 flex items-center justify-center text-hepco-green relative shadow-sm group-hover:bg-hepco-green group-hover:text-white transition-all duration-500 group-hover:-translate-y-1">
                   <Leaf className="w-10 h-10 relative z-10 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12" />
-                  <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-hepco-orange rounded-full z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-hepco-green rounded-full z-0 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-hepco-green mb-3 group-hover:text-green-800 transition-colors">Sứ mệnh</h3>

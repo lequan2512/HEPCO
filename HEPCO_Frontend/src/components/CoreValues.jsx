@@ -24,7 +24,7 @@ const DEFAULT_UTILITIES = [
     icon: FileText,
     link: 'https://hoadondientu.hepco.com.vn/',
     badge: 'Cổng thanh toán',
-    badgeColor: 'bg-blue-50 text-blue-800 border-blue-200',
+    badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
   {
     id: 'report',
@@ -34,7 +34,7 @@ const DEFAULT_UTILITIES = [
     icon: AlertTriangle,
     link: 'https://www.facebook.com/hepco.com.vn',
     badge: 'Phản ứng nhanh',
-    badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+    badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
   {
     id: 'register',
@@ -44,16 +44,16 @@ const DEFAULT_UTILITIES = [
     icon: ClipboardList,
     link: 'https://www.facebook.com/hepco.com.vn',
     badge: 'Dịch vụ trọn gói',
-    badgeColor: 'bg-purple-50 text-purple-800 border-purple-200',
+    badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
 ];
 
 const ICONS = [Calendar, FileText, AlertTriangle, ClipboardList];
 const COLORS = [
   'bg-emerald-50 text-emerald-800 border-emerald-200',
-  'bg-blue-50 text-blue-800 border-blue-200',
-  'bg-amber-50 text-amber-800 border-amber-200',
-  'bg-purple-50 text-purple-800 border-purple-200'
+  'bg-emerald-50 text-emerald-800 border-emerald-200',
+  'bg-emerald-50 text-emerald-800 border-emerald-200',
+  'bg-emerald-50 text-emerald-800 border-emerald-200'
 ];
 
 const CoreValues = ({ config }) => {
@@ -67,12 +67,12 @@ const CoreValues = ({ config }) => {
     : DEFAULT_UTILITIES;
 
   return (
-    <section className="home-quick-links-section py-16 md:py-20 bg-[#fafafa] border-b border-gray-200/80">
+    <section className="home-quick-links-section py-16 md:py-20 bg-white border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="max-w-4xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#10243b] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-black tracking-tight">
               Tra Cứu &amp; Dịch Vụ Nhanh
             </h2>
             <p className="home-quick-links-description mt-2 text-sm sm:text-base text-gray-600 font-normal">
@@ -103,7 +103,7 @@ const CoreValues = ({ config }) => {
                       </span>
                     )}
                   </div>
-                  <h3 className="text-base sm:text-lg font-black text-[#10243b] group-hover:text-emerald-700 transition-colors mb-2">
+                  <h3 className="text-base sm:text-lg font-black text-black group-hover:text-emerald-700 transition-colors mb-2">
                     {item.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
@@ -111,7 +111,7 @@ const CoreValues = ({ config }) => {
                   </p>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-[#10243b] group-hover:text-emerald-700">
+                <div className="pt-6 mt-6 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-black group-hover:text-emerald-700">
                   <span>{item.buttonText}</span>
                   <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>

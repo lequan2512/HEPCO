@@ -315,7 +315,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
         <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-[radial-gradient(ellipse_at_right,#256447_0%,transparent_65%)]" />
         <div className="relative mx-auto max-w-[1320px] px-4 py-10 sm:px-8 sm:py-14 lg:py-16">
           <p className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-emerald-200">
-            <span aria-hidden="true" className="h-px w-7 bg-hepco-orange" />
+            <span aria-hidden="true" className="h-px w-7 bg-hepco-green" />
             {pageType === 'news' ? 'Thông tin HEPCO' : 'Công bố thông tin'}
           </p>
           <h1 className="max-w-4xl text-balance text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
@@ -513,7 +513,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                   e.stopPropagation();
                                   navigate(ROUTES.ARTICLE_DETAIL.replace(':id', imgItem.articleId));
                                 }}
-                                className="text-hepco-green hover:text-hepco-orange font-bold flex items-center gap-1 cursor-pointer"
+                                className="text-hepco-green hover:text-hepco-green font-bold flex items-center gap-1 cursor-pointer"
                               >
                                 Bài viết <ArrowRight className="w-3 h-3" />
                               </button>
@@ -559,7 +559,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <h2 className="text-xl font-bold text-[#10243b]">{pageType === 'shareholders' ? 'Tra cứu tài liệu' : 'Bài viết mới nhất'}</h2>
+                    <h2 className="text-xl font-bold text-black">{pageType === 'shareholders' ? 'Tra cứu tài liệu' : 'Bài viết mới nhất'}</h2>
                   </div>
                   {pageType === 'shareholders' && (
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -602,7 +602,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               <button
                 type="button"
                 onClick={() => setIsFiltersOpen((open) => !open)}
-                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm font-bold text-[#10243b] transition-colors hover:bg-white sm:w-auto sm:min-w-48 sm:self-end"
+                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm font-bold text-black transition-colors hover:bg-white sm:w-auto sm:min-w-48 sm:self-end"
                 aria-expanded={isFiltersOpen}
                 aria-controls="news-filters-panel"
               >
@@ -852,7 +852,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                       )}
 
                     {selectedYear !== 'all' && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                         <span>Năm {selectedYear}</span>
                         <button
                           type="button"
@@ -927,7 +927,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
 
                               {/* Document Title */}
                               <h3
-                                className="text-sm sm:text-base font-bold text-[#10243b] group-hover:text-hepco-green transition-colors leading-snug line-clamp-3 mb-3"
+                                className="text-sm sm:text-base font-bold text-black group-hover:text-hepco-green transition-colors leading-snug line-clamp-3 mb-3"
                                 title={doc.title}
                               >
                                 {doc.title}
@@ -950,7 +950,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                               </div>
 
                               <div className="flex items-center justify-between pt-1">
-                                <span className="text-[11px] font-bold text-emerald-700 group-hover:text-hepco-orange transition-colors flex items-center gap-1">
+                                <span className="text-[11px] font-bold text-emerald-700 group-hover:text-hepco-green transition-colors flex items-center gap-1">
                                   <BookOpen className="w-3.5 h-3.5" />
                                   <button
                                     type="button"
@@ -1027,7 +1027,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
 
                                 {/* Title */}
                                 <h3
-                                  className="text-gray-900 font-bold text-lg mb-3 line-clamp-2 leading-snug group-hover:text-hepco-orange transition-colors"
+                                  className="text-gray-900 font-bold text-lg mb-3 line-clamp-2 leading-snug group-hover:text-hepco-green transition-colors"
                                   title={article.title}
                                 >
                                   <Link

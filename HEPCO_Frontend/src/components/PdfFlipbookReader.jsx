@@ -340,7 +340,7 @@ const PdfReader = ({
       }`}
     >
       {/* Top Toolbar */}
-      <div className="bg-gray-900/95 backdrop-blur-md px-3 sm:px-5 py-2.5 border-b border-gray-800 flex items-center justify-between gap-2.5 shrink-0 z-20">
+      <div className="pdf-toolbar bg-gray-900/95 backdrop-blur-md px-3 sm:px-5 py-2.5 border-b border-gray-800 flex items-center justify-between gap-2.5 shrink-0 z-20">
         {/* Document Title & Icon */}
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
@@ -479,7 +479,7 @@ const PdfReader = ({
         {loading && (
           <div className="flex flex-col items-center justify-center gap-3 text-emerald-400 py-20 z-30">
             <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
-            <p className="text-xs sm:text-sm font-semibold text-gray-200">
+            <p className="text-xs sm:text-sm font-semibold text-white">
               Đang tải tài liệu... {loadingProgress > 0 && `${loadingProgress}%`}
             </p>
           </div>
@@ -489,7 +489,7 @@ const PdfReader = ({
         {error && (
           <div className="flex flex-col items-center justify-center gap-4 text-center p-6 bg-gray-900/90 rounded-2xl border border-gray-800 max-w-md mx-auto my-8 z-30">
             <FileText className="w-10 h-10 text-rose-400" />
-            <p className="text-xs sm:text-sm text-gray-300">{error}</p>
+            <p className="text-xs sm:text-sm text-white">{error}</p>
             <a
               href={pdfUrl}
               target="_blank"
@@ -553,7 +553,7 @@ const PdfReader = ({
                 /* Two-Page Open Book Spread (Desktop Reading Spread) */
                 <div className="relative flex items-center justify-center bg-white rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] border border-gray-600/40 overflow-hidden">
                   {/* Left Page (Even Page) */}
-                  <div className="relative overflow-hidden border-r border-gray-300 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06)] bg-[#fafafa]">
+                  <div className="relative overflow-hidden border-r border-gray-300 shadow-[inset_-8px_0_12px_rgba(0,0,0,0.06)] bg-white">
                     <canvas ref={leftCanvasRef} data-id="left" className="block" />
                     <div className="bg-gray-100 text-gray-600 text-[11px] font-semibold text-center py-1 border-t border-gray-200">
                       Trang {currentPage}
@@ -561,10 +561,10 @@ const PdfReader = ({
                   </div>
 
                   {/* Center Book Crease / Spine Effect */}
-                  <div className="w-1.5 sm:w-2 self-stretch bg-gradient-to-r from-gray-400 via-gray-700 to-gray-400 shadow-inner z-20 shrink-0" />
+                  <div className="w-1.5 sm:w-2 self-stretch bg-gradient-to-r from-emerald-200 via-emerald-500 to-emerald-200 shadow-inner z-20 shrink-0" />
 
                   {/* Right Page (Odd Page) */}
-                  <div className="relative overflow-hidden shadow-[inset_8px_0_12px_rgba(0,0,0,0.06)] bg-[#fafafa]">
+                  <div className="relative overflow-hidden shadow-[inset_8px_0_12px_rgba(0,0,0,0.06)] bg-white">
                     {currentPage + 1 <= numPages ? (
                       <>
                         <canvas ref={rightCanvasRef} data-id="right" className="block" />
@@ -609,7 +609,7 @@ const PdfReader = ({
 
       {/* Bottom Book Navigation & Flip Controls (Always visible in Flip mode) */}
       {viewMode === 'flip' && !loading && !error && (
-        <div className="bg-gray-900/95 backdrop-blur-md px-3 sm:px-6 py-2.5 border-t border-gray-800 flex items-center justify-between gap-3 shrink-0 z-20">
+        <div className="pdf-toolbar bg-gray-900/95 backdrop-blur-md px-3 sm:px-6 py-2.5 border-t border-gray-800 flex items-center justify-between gap-3 shrink-0 z-20">
           {/* Quick Jump: First Page */}
           <button
             type="button"
