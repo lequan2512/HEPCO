@@ -277,16 +277,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     return NEWS_CATEGORY_LABELS[selectedCategory]?.label || 'Chuyên mục';
   }, [selectedCategory, pageType]);
 
-  // Determine which top-level group is active (either directly or because one of its child types is selected)
-  const activeShareholderGroup = useMemo(() => {
-    if (selectedCategory === 'all') return SHAREHOLDER_DOC_GROUP.ALL;
-    if (SHAREHOLDER_DOC_GROUP_LABELS[selectedCategory]) return selectedCategory;
-    const foundGroup = SHAREHOLDER_DOC_GROUP_OPTIONS.find(
-      (grp) => grp.types && grp.types.includes(selectedCategory)
-    );
-    return foundGroup ? foundGroup.value : SHAREHOLDER_DOC_GROUP.ALL;
-  }, [selectedCategory]);
-
   // Keyboard navigation for Lightbox
   const handleNextImage = useCallback(() => {
     if (lightboxIndex === null || allFilteredGallery.length === 0) return;
@@ -885,67 +875,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 </div>
               </div>
 
-                {/* Row 3: Clean Single-Row Quick Group Tabs (5 Main Groups for Shareholders, Categories for News) */}
-              <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-                  {pageType === 'shareholders'
-                    ? SHAREHOLDER_DOC_GROUP_OPTIONS.map((grp) => {
-                      const isActive = activeShareholderGroup === grp.value;
-                      const count = shareholderStats.countsByGroup?.[grp.value] || 0;
-                      return (
-                        <button
-                          key={grp.value}
-                          type="button"
-                          onClick={() => {
-                            setSelectedCategory(grp.value);
-                            setPage(1);
-                          }}
-                          className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${isActive
-                              ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
-                              : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
-                            }`}
-                        >
-                          <span>{grp.shortLabel}</span>
-                          <span
-                            className={`text-[11px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-gray-200/80 text-gray-600'
-                              }`}
-                          >
-                            {count}
-                          </span>
-                        </button>
-                      );
-                    })
-                    : NEWS_CATEGORY_OPTIONS.map((opt) => {
-                      const isActive = selectedCategory === opt.value;
-                      const count =
-                        opt.value === NEWS_CATEGORY.ALL
-                          ? newsStats.total
-                          : newsStats.countsByCategory?.[opt.value] || 0;
-                      return (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => {
-                            setSelectedCategory(opt.value);
-                            setPage(1);
-                          }}
-                          className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${isActive
-                              ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
-                              : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
-                            }`}
-                        >
-                          <span>{opt.label}</span>
-                          <span
-                            className={`text-[11px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-600'
-                              }`}
-                          >
-                            {count}
-                          </span>
-                        </button>
-                      );
-                    })}
-                </div>
-
+              <div className={hasActiveFilters ? 'pt-3 border-t border-gray-100' : 'hidden'}>
                 {/* Active Filter Chips & Quick Reset */}
                 {hasActiveFilters && (
                   <div className="flex flex-wrap items-center gap-2 shrink-0">
