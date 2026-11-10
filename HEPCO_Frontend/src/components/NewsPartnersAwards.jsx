@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { ROUTES } from '../constants/routes';
 import { useGetNews } from '../apis/news';
@@ -199,15 +199,15 @@ const NewsPartnersAwards = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 home-mobile-rail">
               {news.map((item, i) => {
                 const displayDate = item.date || formatDate(item.created_at);
                 const categoryLabel = item.categoryLabel || item.category || (item.type === 'shareholders' ? 'Quan hệ cổ đông' : item.type === 'service' ? 'Dịch vụ' : 'Tin tức');
                 return (
-                  <div
+                  <Link
                     key={i}
+                    to={ROUTES.ARTICLE_DETAIL.replace(':id', item.id)}
                     className="bg-white rounded-3xl overflow-hidden border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl flex flex-col group cursor-pointer transition-all duration-500 hover:-translate-y-2"
-                    onClick={() => navigate(ROUTES.ARTICLE_DETAIL.replace(':id', item.id))}
                   >
                     <div className="h-52 bg-gray-100 relative overflow-hidden">
                       {item.thumbnail ? (
@@ -255,7 +255,7 @@ const NewsPartnersAwards = () => {
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

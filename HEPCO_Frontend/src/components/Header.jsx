@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Phone, Menu, X, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Phone, Menu, X, ExternalLink } from 'lucide-react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { ROUTES } from '../constants/routes';
 import logo from '../assets/images/logo.png';
 
@@ -81,17 +82,25 @@ const Header = () => {
             className="flex items-center gap-2.5 sm:gap-3 group shrink-0"
             title="HEPCO - Về Trang Chủ"
           >
-            <div className="relative w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12 rounded-xl bg-white p-1 border border-gray-200/80 shadow-xs group-hover:border-emerald-500/50 group-hover:shadow-sm transition-all duration-300 flex items-center justify-center shrink-0">
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12 rounded-xl bg-white p-1 border border-gray-200/80 shadow-2xs group-hover:border-emerald-500/50 group-hover:shadow-xs transition-all duration-300 flex items-center justify-center shrink-0">
               <img
                 src={logo}
                 alt="HEPCO Logo"
                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </div>
+            <div className="flex flex-col whitespace-nowrap">
+              <span className="text-base sm:text-lg xl:text-xl font-black tracking-tight text-[#10243b] leading-none group-hover:text-emerald-700 transition-colors">
+                HEPCO
+              </span>
+              <span className="text-[9px] sm:text-[10px] xl:text-[10.5px] font-bold text-emerald-700 tracking-wider uppercase leading-none mt-1">
+                Môi Trường Đô Thị Huế
+              </span>
+            </div>
           </Link>
 
-          {/* Desktop Navigation (1024px+): Strictly single-line with whitespace-nowrap */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink-0">
+          {/* Desktop Navigation (1024px+): Centered, balanced, strictly single-line */}
+          <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 shrink-0 flex-1 mx-2 xl:mx-4">
             {navItems.map((item, index) => {
               if (item.isExternal) {
                 return (
@@ -100,7 +109,7 @@ const Header = () => {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2.5 xl:px-3.5 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 transition-all duration-200 group"
+                    className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2.5 xl:px-3 py-2 rounded-xl text-[13px] xl:text-[14px] font-bold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50/80 transition-all duration-200 group"
                   >
                     <span>{item.name}</span>
                     <ExternalLink className="w-3.5 h-3.5 text-emerald-600 shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
@@ -127,16 +136,36 @@ const Header = () => {
             })}
           </nav>
 
-          {/* Right Action: Hotline CTA, Admin Login & Mobile Toggle */}
+          {/* Right Action: Hotline CTA & Mobile Toggle */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* Quick CMS Admin Portal Button */}
-            <Link
-              to={ROUTES.ADMIN_OVERVIEW}
-              className="hidden lg:inline-flex items-center justify-center p-2 rounded-xl bg-gray-100 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 transition-colors shadow-2xs"
-              title="Cổng Quản Trị Website CMS"
+            {/* Tablet & Desktop Hotline Pill Button */}
+            <a
+              href="tel:1900969669"
+              className="hidden sm:inline-flex whitespace-nowrap shrink-0 items-center gap-2 xl:gap-2.5 px-3 xl:px-4 py-2 rounded-full bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-xs xl:text-sm shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all duration-200 group"
+              title="Tổng đài hỗ trợ 24/7 HEPCO 1900 969669"
             >
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            </Link>
+              <div className="w-5 h-5 xl:w-6 xl:h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-emerald-700 transition-all">
+                <Phone className="w-3 h-3 xl:w-3.5 xl:h-3.5 fill-current" />
+              </div>
+              <div className="flex flex-col text-left leading-none">
+                <span className="hidden xl:block text-[9px] font-bold uppercase tracking-wider text-emerald-400 group-hover:text-emerald-100 leading-none mb-0.5">
+                  Hotline 24/7
+                </span>
+                <span className="text-xs xl:text-sm font-black tracking-tight text-white">
+                  1900 969669
+                </span>
+              </div>
+            </a>
+
+            {/* Mobile Call Button (< 640px) */}
+            <a
+              href="tel:1900969669"
+              className="sm:hidden whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#10243b] text-white font-bold text-[11px] shadow-2xs"
+              title="Gọi hotline 1900 969669"
+            >
+              <Phone className="w-3 h-3 text-emerald-400 fill-current shrink-0" />
+              <span>1900 969669</span>
+            </a>
 
             {/* Mobile Hamburger Toggle Button (< 1024px) */}
             <button
@@ -153,86 +182,91 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Backdrop overlay for mobile drawer */}
-      {isMenuOpen && (
-        <div
-          className="lg:hidden absolute top-full left-0 w-full h-[100dvh] bg-black/50 backdrop-blur-[2px] z-40 transition-opacity"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
+      {/* Backdrop overlay & Mobile Drawer */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden absolute top-full left-0 w-full h-[100dvh] bg-black/45 backdrop-blur-[2px] z-40"
+              onClick={() => setIsMenuOpen(false)}
+            />
 
-      {/* Mobile & Tablet Navigation Drawer */}
-      <div
-        id="mobile-site-menu"
-        inert={!isMenuOpen}
-        className={`lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-2xl transition-all duration-250 ease-out origin-top z-50 max-h-[calc(100dvh-72px)] overflow-y-auto ${isMenuOpen
-          ? 'opacity-100 scale-y-100 visible'
-          : 'opacity-0 scale-y-95 invisible pointer-events-none'
-          }`}
-      >
-        <div className="container mx-auto px-4 py-4 space-y-1.5 max-w-7xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-            {navItems.map((item, index) => {
-              if (item.isExternal) {
-                return (
-                  <a
-                    key={index}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 transition-colors"
-                  >
-                    <span>{item.name}</span>
-                    <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
-                  </a>
-                );
-              }
-
-              const isItemActive = item.matchPaths
-                ? item.matchPaths.some((p) => location.pathname === p || location.pathname.startsWith(p + '/'))
-                : location.pathname === item.path;
-
-              return (
-                <NavLink
-                  key={index}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${isItemActive
-                    ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
-                    : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
-                    }`}
-                >
-                  <span>{item.name}</span>
-                </NavLink>
-              );
-            })}
-          </div>
-
-          {/* Mobile & Tablet Hotline Box & CMS Link */}
-          <div className="pt-3 mt-2 border-t border-gray-200/80 space-y-2">
-            <a
-              href="tel:1900969669"
-              className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors"
+            <motion.div
+              id="mobile-site-menu"
+              initial={{ opacity: 0, y: -10, scaleY: 0.98, filter: 'blur(3px)' }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scaleY: 1,
+                filter: 'blur(0px)',
+                transitionEnd: { filter: 'none' }
+              }}
+              exit={{ opacity: 0, y: -8, scaleY: 0.98, filter: 'blur(2px)' }}
+              transition={{ type: 'spring', visualDuration: 0.35, bounce: 0.15 }}
+              className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-2xl origin-top z-50 max-h-[calc(100dvh-72px)] overflow-y-auto"
             >
-              <Phone className="w-4 h-4 text-emerald-400 fill-current" />
-              <span>Hotline Tư Vấn 24/7: 1900 969669</span>
-            </a>
+              <div className="container mx-auto px-4 py-4 space-y-1.5 max-w-7xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  {navItems.map((item, index) => {
+                    if (item.isExternal) {
+                      return (
+                        <a
+                          key={index}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 transition-colors"
+                        >
+                          <span>{item.name}</span>
+                          <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
+                        </a>
+                      );
+                    }
 
-            <div className="flex items-center justify-between text-xs text-gray-500 px-1 pt-1">
-              <span>Địa chỉ: 46 Trần Phú, TP. Huế</span>
-              <Link
-                to={ROUTES.ADMIN_OVERVIEW}
-                onClick={() => setIsMenuOpen(false)}
-                className="font-bold text-emerald-700 hover:underline inline-flex items-center gap-1"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Cổng CMS</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+                    const isItemActive = item.matchPaths
+                      ? item.matchPaths.some((p) => location.pathname === p || location.pathname.startsWith(p + '/'))
+                      : location.pathname === item.path;
+
+                    return (
+                      <NavLink
+                        key={index}
+                        to={item.path}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold transition-colors ${isItemActive
+                          ? 'text-emerald-700 bg-emerald-50/90 border-l-4 border-emerald-600'
+                          : 'text-gray-800 hover:text-[#10243b] hover:bg-gray-50'
+                          }`}
+                      >
+                        <span>{item.name}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+
+                {/* Mobile & Tablet Hotline Box & CMS Link */}
+                <div className="pt-3 mt-2 border-t border-gray-200/80 space-y-2">
+                  <a
+                    href="tel:1900969669"
+                    className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-[#10243b] hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-emerald-400 fill-current" />
+                    <span>Hotline Tư Vấn 24/7: 1900 969669</span>
+                  </a>
+
+                  <div className="text-center text-xs text-gray-500 px-1 pt-1">
+                    <span>Địa chỉ: 46 Trần Phú, Phường Thuận Hóa, TP Huế</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

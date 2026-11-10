@@ -69,7 +69,7 @@ const HomeWhyChoose = ({ config }) => {
         </div>
 
         {/* 4 Feature Points Grid - 1 col on mobile, 2 cols on tablet, 4 cols on desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 home-mobile-rail">
           {points.map((point, idx) => {
             const IconComponent = point.icon || ShieldCheck;
             return (

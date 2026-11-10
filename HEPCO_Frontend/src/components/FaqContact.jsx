@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, MapPin, Send, HelpCircle } from 'lucide-react';
+import { ChevronDown, MapPin, Send, HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import toast from 'react-hot-toast';
@@ -8,7 +9,7 @@ import { DEFAULT_HEADQUARTERS } from '../constants/showcase';
 const DEFAULT_FAQS = [
   {
     question: 'Làm thế nào để tra cứu lịch trình thu gom rác tại tuyến đường nhà tôi?',
-    answer: 'Quý khách có thể vào mục "Lịch Gom Rác" ngay trên trang chủ để tra cứu lịch theo từng phường/xã và tuyến đường cụ thể, hoặc liên hệ tổng đài (0234) 3822 052.'
+    answer: 'Quý khách có thể vào mục "Lịch Gom Rác" ngay trên trang chủ để tra cứu lịch theo từng phường/xã và tuyến đường cụ thể, hoặc liên hệ tổng đài 1900.96.96.69.'
   },
   {
     question: 'Quy trình đăng ký dịch vụ hút hầm vệ sinh hoặc cắt tỉa cành cây như thế nào?',
@@ -105,26 +106,40 @@ const FaqContact = ({ config }) => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('faq')}
-                  className={`flex items-center gap-2 pb-3.5 px-3 text-sm sm:text-base font-bold transition-all border-b-2 cursor-pointer ${
+                  className={`relative flex items-center gap-2 pb-3.5 px-3 text-sm sm:text-base font-bold transition-colors cursor-pointer ${
                     activeTab === 'faq'
-                      ? 'border-[#10243b] text-[#10243b]'
-                      : 'border-transparent text-gray-400 hover:text-gray-700'
+                      ? 'text-[#10243b]'
+                      : 'text-gray-400 hover:text-gray-700'
                   }`}
                 >
                   <HelpCircle className="w-4 h-4 text-emerald-600" />
                   <span>Câu Hỏi Thường Gặp</span>
+                  {activeTab === 'faq' && (
+                    <motion.div
+                      layoutId="faqTabUnderline"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#10243b]"
+                      transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.15 }}
+                    />
+                  )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('contact')}
-                  className={`flex items-center gap-2 pb-3.5 px-3 text-sm sm:text-base font-bold transition-all border-b-2 cursor-pointer ${
+                  className={`relative flex items-center gap-2 pb-3.5 px-3 text-sm sm:text-base font-bold transition-colors cursor-pointer ${
                     activeTab === 'contact'
-                      ? 'border-[#10243b] text-[#10243b]'
-                      : 'border-transparent text-gray-400 hover:text-gray-700'
+                      ? 'text-[#10243b]'
+                      : 'text-gray-400 hover:text-gray-700'
                   }`}
                 >
                   <Send className="w-4 h-4 text-emerald-600" />
                   <span>Gửi Yêu Cầu Dịch Vụ</span>
+                  {activeTab === 'contact' && (
+                    <motion.div
+                      layoutId="faqTabUnderline"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#10243b]"
+                      transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.15 }}
+                    />
+                  )}
                 </button>
               </div>
 
@@ -149,18 +164,32 @@ const FaqContact = ({ config }) => {
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                           openFaq === index ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-500'
                         }`}>
-                          {openFaq === index ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          )}
+                          <ChevronDown
+                            className="w-4 h-4 transition-transform duration-350 ease-[cubic-bezier(0.215,0.61,0.355,1)]"
+                            style={{ transform: openFaq === index ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                          />
                         </div>
                       </button>
-                      {openFaq === index && (
-                        <div className="mt-4 pt-3 border-t border-gray-200/60 text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                          {item.answer}
-                        </div>
-                      )}
+                      <AnimatePresence initial={false}>
+                        {openFaq === index && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0, filter: 'blur(3px)' }}
+                            animate={{
+                              height: 'auto',
+                              opacity: 1,
+                              filter: 'blur(0px)',
+                              transitionEnd: { filter: 'none' }
+                            }}
+                            exit={{ height: 0, opacity: 0, filter: 'blur(3px)' }}
+                            transition={{ duration: 0.35, ease: [0.215, 0.61, 0.355, 1] }}
+                            style={{ overflow: 'hidden' }}
+                          >
+                            <div className="mt-4 pt-3 border-t border-gray-200/60 text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+                              {item.answer}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   ))}
                 </div>
@@ -318,8 +347,8 @@ const FaqContact = ({ config }) => {
 
             <div className="mt-8 pt-6 border-t border-gray-200 text-xs text-gray-500">
               Tổng đài tiếp nhận thông tin 24/7:{' '}
-              <a href="tel:02343822052" className="font-bold text-emerald-700 hover:underline">
-                (0234) 3822 052
+              <a href="tel:1900969669" className="font-bold text-emerald-700 hover:underline">
+                1900.96.96.69
               </a>
             </div>
           </div>

@@ -12,7 +12,7 @@ export const DEFAULT_HEADQUARTERS = {
   officeLabel: 'Thông Tin Trụ Sở',
   officeName: 'HEPCO Huế',
   officeDescription: 'Công ty Cổ phần Môi trường và Công trình Đô thị Huế.',
-  officeAddress: '46 Trần Phú, Phường Phước Vĩnh, TP. Huế',
+  officeAddress: '46 Trần Phú, Phường Thuận Hóa, TP Huế',
 };
 
 export const DEFAULT_FOOTER = {

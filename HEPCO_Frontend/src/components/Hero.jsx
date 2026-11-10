@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, Phone, Play, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
+import { Play, X } from 'lucide-react';
 import { getHeroSettings } from '../services/news.service';
 import { resolveAssetUrl } from '../utils/assetUrl';
 import bgImg from '../assets/images/bg-img.avif';
@@ -26,7 +24,7 @@ const Hero = ({ config }) => {
     >
       <div className="container mx-auto px-3.5 sm:px-6 lg:px-8 max-w-7xl">
         {/* Main Display Headline */}
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-4 sm:mb-10 md:mb-12">
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-3 sm:mb-6 md:mb-8">
           {(heroConfig.headlinePrefix || heroConfig.headlineHighlight) && <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[#10243b] leading-[1.2] sm:leading-[1.15] text-balance mb-4 empty:hidden sm:mb-6 drop-shadow-2xs">
             <span className="block" style={{ color: heroConfig.headlinePrefixColor || undefined }}>{heroConfig.headlinePrefix}</span>
             <span className="block text-hepco-green mt-1 sm:mt-2" style={{ color: heroConfig.headlineHighlightColor || undefined }}>
@@ -35,28 +33,9 @@ const Hero = ({ config }) => {
           </h1>}
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-800 max-w-3xl leading-relaxed mb-6 sm:mb-8 md:mb-10 font-medium px-1 text-pretty empty:hidden">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-800 max-w-3xl leading-relaxed font-medium px-1 text-pretty empty:hidden">
             {heroConfig.subtitle}
           </p>
-
-          {/* Dual Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none">
-            <Link
-              to={heroConfig.primaryCtaLink || ROUTES.SERVICES}
-              className="w-full sm:w-auto whitespace-nowrap inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl text-white font-bold text-sm sm:text-base bg-[#10243b] hover:bg-emerald-700 active:scale-[0.98] transition-all duration-200 shadow-md hover:shadow-xl group"
-            >
-              <span>{heroConfig.primaryCtaText || 'Khám Phá Dịch Vụ'}</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 shrink-0" />
-            </Link>
-
-            <a
-              href={`tel:${heroConfig.hotlineTel || '1900969669'}`}
-              className="w-full sm:w-auto whitespace-nowrap inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3.5 sm:py-4 rounded-xl text-gray-800 font-bold text-sm sm:text-base bg-white hover:bg-gray-50 border border-gray-300 shadow-xs hover:border-gray-400 transition-all active:scale-[0.98]"
-            >
-              <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Hotline: {heroConfig.hotlineDisplay || '1900.96.96.69'}</span>
-            </a>
-          </div>
         </div>
 
         {/* Hero Showcase Frame - Centered and perfectly proportioned */}

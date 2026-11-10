@@ -128,7 +128,7 @@ const DEFAULT_HOME_CONFIG = {
     title: 'Giải Đáp Thắc Mắc Thường Gặp',
     subtitle: 'Tổng hợp các câu hỏi và hướng dẫn nhanh về quy trình dịch vụ, hóa đơn và tiếp nhận phản ánh tại HEPCO',
     items: [
-      { question: 'Làm thế nào để tra cứu lịch trình thu gom rác tại tuyến đường nhà tôi?', answer: 'Quý khách có thể vào mục "Lịch Gom Rác" ngay trên trang chủ để tra cứu lịch theo từng phường/xã và tuyến đường cụ thể, hoặc liên hệ tổng đài (0234) 3822 052.' },
+      { question: 'Làm thế nào để tra cứu lịch trình thu gom rác tại tuyến đường nhà tôi?', answer: 'Quý khách có thể vào mục "Lịch Gom Rác" ngay trên trang chủ để tra cứu lịch theo từng phường/xã và tuyến đường cụ thể, hoặc liên hệ tổng đài 1900.96.96.69.' },
       { question: 'Quy trình đăng ký dịch vụ hút hầm vệ sinh hoặc cắt tỉa cành cây như thế nào?', answer: 'Quý khách chỉ cần chọn mục "Đăng ký dịch vụ" trên website hoặc liên hệ hotline. Đội ngũ kỹ thuật của HEPCO sẽ liên hệ lại trong vòng 24 giờ để khảo sát và báo giá cụ thể.' },
       { question: 'Doanh nghiệp có thể ký hợp đồng thu gom chất thải công nghiệp định kỳ bằng cách nào?', answer: 'Doanh nghiệp có thể gửi yêu cầu qua form liên hệ hoặc liên hệ trực tiếp phòng Kế hoạch - Kinh doanh của HEPCO. Chúng tôi cung cấp hợp đồng trọn gói kèm đầy đủ chứng từ nghiệm thu môi trường theo luật định.' },
       { question: 'Cách thức tra cứu và thanh toán tiền dịch vụ vệ sinh môi trường qua hóa đơn điện tử?', answer: 'Quý khách truy cập cổng "Hóa Đơn Điện Tử" tại hoadondientu.hepco.com.vn, nhập mã khách hàng in trên biên lai thu tiền để tra cứu và thanh toán trực tuyến qua các ngân hàng.' },

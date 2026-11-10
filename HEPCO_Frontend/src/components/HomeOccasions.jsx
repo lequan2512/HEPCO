@@ -90,7 +90,7 @@ const HomeOccasions = ({ config }) => {
         </div>
 
         {/* 4 Occasions Grid - Responsive 1 col on mobile, 2 cols on tablet, 4 cols on desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 home-mobile-rail">
           {items.map((item, idx) => {
             const IconComponent = item.icon || Building2;
             return (

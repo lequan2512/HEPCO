@@ -47,7 +47,7 @@ const Home = () => {
         };
         if (id === 'hero' || id === 'stats') return <Section key={id} {...sectionProps} />;
         return (
-          <ScrollAnimation key={id} animation="fade-up" duration={700}>
+          <ScrollAnimation key={id} animation="fade-up">
             <Section {...sectionProps} />
           </ScrollAnimation>
         );
@@ -57,3 +57,4 @@ const Home = () => {
 };
 
 export default Home;
+

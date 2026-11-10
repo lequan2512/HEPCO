@@ -131,8 +131,6 @@ const HomeImageSlider = () => {
     return null;
   }
 
-  const currentSlideInfo = slides[currentSlide];
-
   return (
     <section className="py-16 md:py-24 bg-white border-b border-gray-200/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -202,25 +200,6 @@ const HomeImageSlider = () => {
             );
           })}
 
-          {/* Caption Overlay */}
-          {currentSlideInfo?.caption && (
-            <div className="absolute bottom-5 sm:bottom-6 left-5 right-5 sm:left-8 sm:right-auto sm:max-w-xl z-25 bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/10 text-white pointer-events-none shadow-xl">
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/90 text-white">
-                  {currentSlideInfo.category}
-                </span>
-                {currentSlideInfo.date && (
-                  <span className="text-xs text-gray-300 font-medium">
-                    {currentSlideInfo.date}
-                  </span>
-                )}
-              </div>
-              <h3 className="text-sm sm:text-base md:text-lg font-bold line-clamp-2 leading-snug">
-                {currentSlideInfo.caption}
-              </h3>
-            </div>
-          )}
-
           {/* Slider Controls */}
           {banners.length > 1 && (
             <>
@@ -241,12 +220,12 @@ const HomeImageSlider = () => {
               </button>
 
               {/* Dots */}
-              <div className="absolute bottom-4 sm:bottom-6 right-6 sm:right-8 z-30 flex gap-1.5 sm:gap-2">
+              <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-1.5 sm:gap-2 bg-black/35 backdrop-blur-xs px-3 py-1.5 rounded-full">
                 {banners.slice(0, 10).map((_, index) => (
                   <button
                     key={index}
                     onClick={() => changeSlide(index, index > currentSlide ? 'next' : 'prev')}
-                    className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all cursor-pointer ${
+                    className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all cursor-pointer ${
                       index === currentSlide ? 'bg-emerald-400 scale-125 shadow-md' : 'bg-white/50 hover:bg-white/80'
                     }`}
                     aria-label={`Go to slide ${index + 1}`}

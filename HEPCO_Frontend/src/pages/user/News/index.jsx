@@ -617,9 +617,9 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               </div>
 
               {/* Row 2: Unified Responsive Toolbar: Search Input + Grouped Dropdown + Year Dropdown + Sort Dropdown */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 pt-1">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 pt-1">
                 {/* 1. Keyword Search Input (Full width on tablet, 4-5 cols on laptop/desktop) */}
-                <div className="relative sm:col-span-2 lg:col-span-4 xl:col-span-5">
+                <div className="relative col-span-2 sm:col-span-2 lg:col-span-4 xl:col-span-5">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
@@ -644,7 +644,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 </div>
 
                 {/* 2. Searchable Grouped Document Type / Category Dropdown (Full width on tablet, 3 cols on laptop/desktop) */}
-                <div className="relative sm:col-span-2 lg:col-span-3" ref={typeDropdownRef}>
+                <div className="relative col-span-2 sm:col-span-2 lg:col-span-3" ref={typeDropdownRef}>
                   <button
                     type="button"
                     onClick={() => setIsTypeDropdownOpen((prev) => !prev)}

@@ -1,5 +1,9 @@
 import { Calendar, FileText, AlertTriangle, ClipboardList, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
+
+const MotionLink = motion.create(Link);
+const MotionA = motion.create('a');
 
 const DEFAULT_UTILITIES = [
   {
@@ -115,26 +119,32 @@ const CoreValues = ({ config }) => {
             );
 
             const cardClass =
-              'group relative flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white border border-gray-200 hover:border-emerald-600/50 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5';
+              'group relative flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white border border-gray-200 hover:border-emerald-600/50 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer';
+
+            const tapProps = {
+              whileTap: { scale: 0.985 },
+              transition: { type: 'spring', visualDuration: 0.22, bounce: 0.2 }
+            };
 
             if (!isExternal) {
               return (
-                <Link key={item.id || idx} to={targetUrl} className={cardClass}>
+                <MotionLink key={item.id || idx} to={targetUrl} className={cardClass} {...tapProps}>
                   {cardInner}
-                </Link>
+                </MotionLink>
               );
             }
 
             return (
-              <a
+              <MotionA
                 key={item.id || idx}
                 href={targetUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cardClass}
+                {...tapProps}
               >
                 {cardInner}
-              </a>
+              </MotionA>
             );
           })}
         </div>

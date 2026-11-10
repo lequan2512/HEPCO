@@ -1,8 +1,11 @@
 import { useGetNews } from '../apis/news';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { ROUTES } from '../constants/routes';
 import { resolveAssetUrl } from '../utils/assetUrl';
+
+const MotionLink = motion.create(Link);
 
 const FALLBACK_SERVICES = [
   {
@@ -64,18 +67,20 @@ const HomeServices = () => {
         </div>
 
         {/* Services Showcase Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 home-mobile-rail">
           {displayServices.map((service, index) => {
             const imageSrc = service.thumbnail
               ? resolveAssetUrl(service.thumbnail)
               : FALLBACK_SERVICES[index % FALLBACK_SERVICES.length].thumbnail;
 
             return (
-              <Link
+              <MotionLink
                 key={service.id || index}
                 to={ROUTES.SERVICES}
                 state={{ serviceId: service.id }}
-                className="group flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                whileTap={{ scale: 0.985 }}
+                transition={{ type: 'spring', visualDuration: 0.22, bounce: 0.2 }}
+                className="group flex flex-col rounded-3xl overflow-hidden bg-[#fafafa] border border-gray-200/90 hover:border-emerald-600/60 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
               >
                 {/* Image Container */}
                 <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden bg-gray-200">
@@ -114,7 +119,7 @@ const HomeServices = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </MotionLink>
             );
           })}
         </div>

@@ -31,7 +31,7 @@ const HomeShowcaseView = ({ config, preview = false }) => {
         </div>
 
         {/* Showcase Grid (Visual Cards) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 home-mobile-rail">
           {config.items.map((item) => (
             <CardLink
               key={item.id}

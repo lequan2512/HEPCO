@@ -45,7 +45,7 @@ const HomeTestimonials = ({ config }) => {
         </div>
 
         {/* Review Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 home-mobile-rail">
           {testimonials.map((item, idx) => (
             <div
               key={idx}

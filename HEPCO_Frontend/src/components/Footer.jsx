@@ -1,8 +1,6 @@
 import { useShowcase } from '../apis/showcase';
 import { DEFAULT_FOOTER } from '../constants/showcase';
-import { Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import logo from '../assets/images/logo.png';
 
 const Footer = () => {
@@ -10,20 +8,82 @@ const Footer = () => {
   const footer = { ...DEFAULT_FOOTER, ...data?.data?.footer };
   return (
     <footer className="bg-gradient-to-br from-green-900 to-hepco-green text-white relative overflow-hidden pt-10 pb-6">
-      {/* Background shape/line art */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
+      {/* Bong cau Truong Tien chim nhe tren nen song Huong */}
+      <div className="absolute inset-x-0 bottom-0 pointer-events-none opacity-[0.14] overflow-hidden flex items-end justify-center select-none" aria-hidden="true">
         <svg
-          className="absolute bottom-0 left-0 w-full h-auto"
-          viewBox="0 0 100 20"
+          className="w-full min-w-[760px] max-w-[1600px] h-28 sm:h-36 md:h-44 text-white"
+          viewBox="0 0 1200 150"
           preserveAspectRatio="none"
           fill="none"
           stroke="currentColor"
-          strokeWidth="0.5"
         >
-          <path d="M0,20 L10,10 L20,20 L30,5 L40,20 L50,15 L60,20 L70,10 L80,20 L90,15 L100,20" />
-          <circle cx="15" cy="5" r="2" />
-          <circle cx="35" cy="15" r="1" />
-          <circle cx="75" cy="8" r="3" />
+          <defs>
+            <linearGradient id="truongTienWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          {/* Duong mat cau ngang & lan can */}
+          <line x1="0" y1="108" x2="1200" y2="108" strokeWidth="2.5" />
+          <line x1="0" y1="112" x2="1200" y2="112" strokeWidth="1.2" />
+
+          {/* 6 vai cau thep uon cong dac trung cua cau Truong Tien (6 nhip thep parabol) */}
+          {[0, 200, 400, 600, 800, 1000].map((startX, idx) => {
+            const midX = startX + 100;
+            const endX = startX + 200;
+            return (
+              <g key={idx}>
+                {/* Vanh thep tren parabol */}
+                <path
+                  d={`M ${startX + 4} 108 Q ${midX} 24 ${endX - 4} 108`}
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+                {/* Vanh thep song song ben trong */}
+                <path
+                  d={`M ${startX + 14} 108 Q ${midX} 35 ${endX - 14} 108`}
+                  strokeWidth="1.2"
+                />
+                {/* Cac thanh thep giang dung (vertical truss members) */}
+                <line x1={startX + 30} y1="108" x2={startX + 30} y2="82" strokeWidth="0.9" />
+                <line x1={startX + 55} y1="108" x2={startX + 55} y2="58" strokeWidth="0.9" />
+                <line x1={startX + 80} y1="108" x2={startX + 80} y2="39" strokeWidth="0.9" />
+                <line x1={midX} y1="108" x2={midX} y2="31" strokeWidth="1.1" />
+                <line x1={startX + 120} y1="108" x2={startX + 120} y2="39" strokeWidth="0.9" />
+                <line x1={startX + 145} y1="108" x2={startX + 145} y2="58" strokeWidth="0.9" />
+                <line x1={startX + 170} y1="108" x2={startX + 170} y2="82" strokeWidth="0.9" />
+
+                {/* Cac thanh giang cheo (diagonal truss cross) */}
+                <line x1={startX + 30} y1="82" x2={startX + 55} y2="108" strokeWidth="0.6" strokeDasharray="2,2" />
+                <line x1={startX + 55} y1="58" x2={startX + 80} y2="108" strokeWidth="0.6" strokeDasharray="2,2" />
+                <line x1={startX + 145} y1="58" x2={startX + 120} y2="108" strokeWidth="0.6" strokeDasharray="2,2" />
+                <line x1={startX + 170} y1="82" x2={startX + 145} y2="108" strokeWidth="0.6" strokeDasharray="2,2" />
+
+                {/* Tru cau (Piers) cam xuong mat nuoc */}
+                <rect x={startX - 5} y="108" width="10" height="24" rx="2" fill="currentColor" fillOpacity="0.4" strokeWidth="1" />
+              </g>
+            );
+          })}
+          {/* Tru cau cuoi cung o mep phai */}
+          <rect x="1195" y="108" width="10" height="24" rx="2" fill="currentColor" fillOpacity="0.4" strokeWidth="1" />
+
+          {/* Mat nuoc song Huong lan tan phan chieu duoi chan cau */}
+          <path
+            d="M 0 126 C 100 123, 200 129, 300 126 C 400 123, 500 129, 600 126 C 700 123, 800 129, 900 126 C 1000 123, 1100 129, 1200 126"
+            strokeWidth="1.2"
+            strokeOpacity="0.6"
+          />
+          <path
+            d="M 0 134 C 150 131, 300 137, 450 134 C 600 131, 750 137, 900 134 C 1050 131, 1200 135, 1200 134"
+            strokeWidth="0.8"
+            strokeOpacity="0.4"
+          />
+          <path
+            d="M 0 142 C 200 139, 400 144, 600 142 C 800 139, 1000 144, 1200 142"
+            strokeWidth="0.6"
+            strokeOpacity="0.25"
+          />
         </svg>
       </div>
 
@@ -104,17 +164,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="mt-8 pt-4 border-t border-white/20 text-center text-xs text-green-100 flex flex-col md:flex-row justify-between items-center gap-2">
           <p>© {new Date().getFullYear()} {footer.copyright}</p>
-          <div className="flex items-center gap-4">
-            <p className="opacity-70">{footer.credit}</p>
-            <Link
-              to={ROUTES.ADMIN_DASHBOARD}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/25 text-white font-semibold transition-colors"
-              title="Truy cập Hệ thống Quản trị Website"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Quản trị</span>
-            </Link>
-          </div>
+          <p className="opacity-70">{footer.credit}</p>
         </div>
       </div>
     </footer>
