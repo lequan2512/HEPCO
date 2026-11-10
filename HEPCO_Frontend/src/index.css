@@ -2,6 +2,51 @@
 
 @theme {
   --color-hepco-green: #3f9e4d;
+  /* Keep the interface on one environmental green plus white and black. */
+  --color-emerald-50: #ffffff;
+  --color-emerald-100: #ffffff;
+  --color-emerald-200: #ffffff;
+  --color-emerald-300: #3f9e4d;
+  --color-emerald-400: #3f9e4d;
+  --color-emerald-500: #3f9e4d;
+  --color-emerald-600: #3f9e4d;
+  --color-emerald-700: #3f9e4d;
+  --color-emerald-800: #3f9e4d;
+  --color-emerald-900: #3f9e4d;
+  --color-emerald-950: #3f9e4d;
+  --color-green-50: #ffffff;
+  --color-green-100: #ffffff;
+  --color-green-200: #ffffff;
+  --color-green-300: #3f9e4d;
+  --color-green-400: #3f9e4d;
+  --color-green-500: #3f9e4d;
+  --color-green-600: #3f9e4d;
+  --color-green-700: #3f9e4d;
+  --color-green-800: #3f9e4d;
+  --color-green-900: #3f9e4d;
+  --color-green-950: #3f9e4d;
+  --color-teal-50: #ffffff;
+  --color-teal-100: #ffffff;
+  --color-teal-200: #ffffff;
+  --color-teal-300: #3f9e4d;
+  --color-teal-400: #3f9e4d;
+  --color-teal-500: #3f9e4d;
+  --color-teal-600: #3f9e4d;
+  --color-teal-700: #3f9e4d;
+  --color-teal-800: #3f9e4d;
+  --color-teal-900: #3f9e4d;
+  --color-teal-950: #3f9e4d;
+  --color-lime-50: #ffffff;
+  --color-lime-100: #ffffff;
+  --color-lime-200: #ffffff;
+  --color-lime-300: #3f9e4d;
+  --color-lime-400: #3f9e4d;
+  --color-lime-500: #3f9e4d;
+  --color-lime-600: #3f9e4d;
+  --color-lime-700: #3f9e4d;
+  --color-lime-800: #3f9e4d;
+  --color-lime-900: #3f9e4d;
+  --color-lime-950: #3f9e4d;
   --font-sans: 'Roboto', Arial, sans-serif;
   --font-serif: 'Roboto', Arial, sans-serif;
   --font-display: 'Roboto', Arial, sans-serif;
@@ -159,7 +204,7 @@ body {
   }
 
   .prose a {
-    color: #15803d;
+    color: #3f9e4d;
     font-weight: 500;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -202,7 +247,7 @@ body {
 
   .prose th,
   .prose td {
-    border: 1px solid #cfe5d3;
+    border: 1px solid rgba(63, 158, 77, 0.2);
     padding: 0.625rem 0.75rem;
     vertical-align: middle;
   }
@@ -239,11 +284,11 @@ body {
 .public-site [class~="bg-gray-200"],
 .public-site [class~="bg-gray-200/50"],
 .public-site [class~="bg-gray-300"] {
-  background-color: #eaf5ec !important;
+  background-color: #ffffff !important;
 }
 
 .public-site [class*="border-gray-"] {
-  border-color: #cfe5d3 !important;
+  border-color: rgba(63, 158, 77, 0.2) !important;
 }
 
 .public-site [class~="bg-gray-700"],
@@ -265,7 +310,7 @@ body {
 .public-site [class~="hover:bg-gray-100"]:hover,
 .public-site [class~="hover:bg-gray-100/80"]:hover,
 .public-site [class~="hover:bg-gray-200"]:hover {
-  background-color: #eaf5ec !important;
+  background-color: #ffffff !important;
 }
 
 /* Custom Sidebar Scrollbar */
@@ -318,7 +363,7 @@ body {
   height: 100%;
   overflow: hidden;
   border-radius: 0.5rem;
-  border: 1px solid #cfe5d3;
+  border: 1px solid rgba(63, 158, 77, 0.2);
   font-family: 'Roboto', Arial, sans-serif;
 }
 
@@ -327,7 +372,7 @@ body {
   border-top-right-radius: 0.5rem;
   background-color: #fff;
   border: none !important;
-  border-bottom: 1px solid #cfe5d3 !important;
+  border-bottom: 1px solid rgba(63, 158, 77, 0.2) !important;
   flex-shrink: 0;
   padding: 8px 12px;
   font-family: 'Roboto', Arial, sans-serif;
@@ -495,7 +540,7 @@ body {
   .home-quick-services-group {
     margin: 0 1rem 1.5rem;
     overflow: hidden;
-    border: 1px solid #cfe5d3;
+    border: 1px solid rgba(63, 158, 77, 0.2);
     border-radius: 1.25rem;
     background: #fff;
   }
@@ -592,7 +637,7 @@ body {
   }
 
   .home-mobile-rail::-webkit-scrollbar { height: 3px; }
-  .home-mobile-rail::-webkit-scrollbar-thumb { background: #a7d8b2; border-radius: 999px; }
+  .home-mobile-rail::-webkit-scrollbar-thumb { background: #3f9e4d; border-radius: 999px; }
 
   .home-stats-grid { gap: 0.5rem; }
   .home-stat-card { padding: 0.75rem 0.5rem; }

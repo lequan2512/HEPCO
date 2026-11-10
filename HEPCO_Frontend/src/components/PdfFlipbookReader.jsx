@@ -473,7 +473,7 @@ const PdfReader = ({
         ref={bookContainerRef}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="flex-1 relative overflow-hidden bg-gradient-to-b from-[#111827] via-[#0f172a] to-[#020617] flex items-center justify-center p-2 sm:p-4 overscroll-contain"
+        className="flex-1 relative overflow-hidden bg-black flex items-center justify-center p-2 sm:p-4 overscroll-contain"
       >
         {/* Loading */}
         {loading && (

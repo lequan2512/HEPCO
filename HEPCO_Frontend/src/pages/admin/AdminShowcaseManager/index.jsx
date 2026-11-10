@@ -203,7 +203,7 @@ const AdminShowcaseManager = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-[#10243b] text-white shadow-sm'
+                      ? 'bg-[#000000] text-white shadow-sm'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
@@ -268,29 +268,7 @@ const AdminShowcaseManager = () => {
               {renderInput('hero.headlinePrefix', 'Tiêu đề chính')}
               {renderInput('hero.headlineHighlight', 'Tiêu đề dòng 2')}
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                ['headlinePrefixColor', 'Màu chữ dòng 1', '#10243b'],
-                ['headlineHighlightColor', 'Màu chữ dòng 2', '#3f9e4d']
-              ].map(([field, label, defaultColor]) => {
-                const value = form.values.hero[field] || defaultColor;
-                return (
-                  <div key={field} className="flex items-center gap-3">
-                    <label className="flex items-center gap-2 text-sm font-semibold">
-                      <input type="color" value={value}
-                        onChange={(event) => form.setFieldValue(`hero.${field}`, event.target.value)}
-                        disabled={busy} className="h-10 w-12 cursor-pointer" />
-                      {label} <span className="font-mono text-xs">{value}</span>
-                    </label>
-                    {form.values.hero[field] && (
-                      <button type="button" disabled={busy}
-                        onClick={() => form.setFieldValue(`hero.${field}`, '')}
-                        className="text-xs text-emerald-700 underline">Mặc định</button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <p className="text-sm text-black/70">Màu tiêu đề được cố định theo nhận diện HEPCO: đen và xanh môi trường.</p>
             {renderInput('hero.subtitle', 'Đoạn giới thiệu ngắn', true)}
             <div className="grid sm:grid-cols-2 gap-4">
               {renderInput('hero.primaryCtaText', 'Chữ trên nút khám phá')}

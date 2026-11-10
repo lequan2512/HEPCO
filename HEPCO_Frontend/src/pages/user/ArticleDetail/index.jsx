@@ -150,7 +150,7 @@ const ArticleDetail = () => {
         {/* Facebook Floating Round Icon */}
         <button
           onClick={handleShareFacebook}
-          className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:bg-[#165EBF] hover:scale-110 transition-all shadow-md active:scale-95 cursor-pointer"
+          className="w-10 h-10 rounded-full bg-[#3f9e4d] text-white flex items-center justify-center hover:bg-[#3f9e4d] hover:scale-110 transition-all shadow-md active:scale-95 cursor-pointer"
           title="Chia sẻ bài viết lên Facebook"
         >
           <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@ const ArticleDetail = () => {
         {/* Zalo Floating Round Icon */}
         <button
           onClick={handleShareZalo}
-          className="w-10 h-10 rounded-full bg-[#0068FF] text-white flex items-center justify-center hover:bg-[#0052CC] hover:scale-110 transition-all shadow-md active:scale-95 cursor-pointer"
+          className="w-10 h-10 rounded-full bg-[#3f9e4d] text-white flex items-center justify-center hover:bg-[#3f9e4d] hover:scale-110 transition-all shadow-md active:scale-95 cursor-pointer"
           title="Chia sẻ bài viết qua Zalo"
         >
           <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -242,7 +242,7 @@ const ArticleDetail = () => {
                 <span className="text-xs font-semibold text-gray-400">Chia sẻ:</span>
                 <button
                   onClick={handleShareFacebook}
-                  className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:opacity-90 transition-all shadow-xs cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-[#3f9e4d] text-white flex items-center justify-center hover:opacity-90 transition-all shadow-xs cursor-pointer"
                   title="Facebook"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -251,7 +251,7 @@ const ArticleDetail = () => {
                 </button>
                 <button
                   onClick={handleShareZalo}
-                  className="w-8 h-8 rounded-full bg-[#0068FF] text-white flex items-center justify-center hover:opacity-90 transition-all shadow-xs cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-[#3f9e4d] text-white flex items-center justify-center hover:opacity-90 transition-all shadow-xs cursor-pointer"
                   title="Zalo"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -480,7 +480,7 @@ const ArticleDetail = () => {
               {/* Facebook Button */}
               <button
                 onClick={handleShareFacebook}
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold bg-[#1877F2] text-white px-4 py-2 rounded-full hover:bg-[#165EBF] hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold bg-[#3f9e4d] text-white px-4 py-2 rounded-full hover:bg-[#3f9e4d] hover:shadow-md transition-all active:scale-95 cursor-pointer"
                 title="Chia sẻ bài viết lên Facebook"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -492,7 +492,7 @@ const ArticleDetail = () => {
               {/* Zalo Button */}
               <button
                 onClick={handleShareZalo}
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold bg-[#0068FF] text-white px-4 py-2 rounded-full hover:bg-[#0052CC] hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold bg-[#3f9e4d] text-white px-4 py-2 rounded-full hover:bg-[#3f9e4d] hover:shadow-md transition-all active:scale-95 cursor-pointer"
                 title="Chia sẻ bài viết qua Zalo"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">

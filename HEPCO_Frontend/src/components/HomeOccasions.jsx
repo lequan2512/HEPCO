@@ -100,7 +100,7 @@ const HomeOccasions = ({ config }) => {
               >
                 <div>
                   <div className="flex items-center justify-between mb-5 sm:mb-6">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#f0fdf4] text-emerald-800 flex items-center justify-center transition-transform group-hover:scale-110">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#ffffff] text-emerald-800 flex items-center justify-center transition-transform group-hover:scale-110">
                       <IconComponent className="w-6 h-6 sm:w-7 sm:h-7" />
                     </div>
                     {item.tag && (

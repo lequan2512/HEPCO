@@ -559,7 +559,7 @@ const AdminNewsManager = ({ type = 'news', editOnly = false }) => {
           {/* Row 4: Attachments Manager (PDF, Word, Excel, RAR) */}
           <div className="p-4 sm:p-5 rounded-xl bg-emerald-50/40 border border-emerald-200/80 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <h3 className="text-sm font-extrabold text-[#10243b] flex items-center gap-2">
+              <h3 className="text-sm font-extrabold text-[#000000] flex items-center gap-2">
                 <Paperclip className="w-4 h-4 text-hepco-green" />
                 <span>Tài liệu đính kèm (PDF, Word, Excel, RAR) ({formik.values.attachments?.length || 0})</span>
               </h3>

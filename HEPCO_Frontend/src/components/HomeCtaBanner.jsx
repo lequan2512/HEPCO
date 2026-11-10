@@ -47,7 +47,7 @@ const HomeCtaBanner = ({ config }) => {
 
               <a
                 href={`tel:${hotlineTel}`}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl text-white font-bold text-sm sm:text-base bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-all duration-200 shadow-lg"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl text-white font-bold text-sm sm:text-base bg-hepco-green hover:bg-hepco-green active:scale-[0.98] transition-all duration-200 shadow-lg"
               >
                 <Phone className="w-4 h-4 text-white" />
                 <span>Hotline: {hotlineDisplay}</span>

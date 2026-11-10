@@ -311,8 +311,8 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
 
   return (
     <div className="bg-gray-50 pb-20 flex-grow min-h-screen">
-      <header className="relative overflow-hidden bg-[#102f26] text-white">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-[radial-gradient(ellipse_at_right,#256447_0%,transparent_65%)]" />
+      <header className="relative overflow-hidden bg-[#3f9e4d] text-white">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-[radial-gradient(ellipse_at_right,#3f9e4d_0%,transparent_65%)]" />
         <div className="relative mx-auto max-w-[1320px] px-4 py-10 sm:px-8 sm:py-14 lg:py-16">
           <p className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-emerald-200">
             <span aria-hidden="true" className="h-px w-7 bg-hepco-green" />

@@ -445,7 +445,7 @@ const AdminBannerManager = () => {
               className="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-hepco-green"
             />
 
-            <div className="rounded-xl overflow-hidden border border-gray-200 bg-[#0e3b2f] max-w-2xl">
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-[#000000] max-w-2xl">
               <img
                 src={resolveAssetUrl(heroFormik.values.coverImage || '/images/cover.png')}
                 alt="Hero Cover Preview"

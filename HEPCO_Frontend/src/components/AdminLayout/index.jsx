@@ -146,7 +146,7 @@ const AdminLayout = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 bg-[#0e8a44] text-white flex flex-col shadow-2xl z-50 transition-all duration-300 ease-in-out w-64 overflow-x-hidden ${
+        className={`fixed lg:static inset-y-0 left-0 bg-[#3f9e4d] text-white flex flex-col shadow-2xl z-50 transition-all duration-300 ease-in-out w-64 overflow-x-hidden ${
           isCollapsed ? 'lg:w-20' : 'lg:w-64'
         } ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
@@ -280,7 +280,7 @@ const AdminLayout = () => {
         </nav>
 
         {/* Sidebar Footer: Collapse Toggle on Desktop & Quick Logout on Mobile */}
-        <div className="p-3 border-t border-emerald-800 bg-[#0a6d36] shrink-0">
+        <div className="p-3 border-t border-emerald-800 bg-[#3f9e4d] shrink-0">
           <div className="flex items-center justify-between">
             <button
               onClick={toggleCollapse}
@@ -346,7 +346,7 @@ const AdminLayout = () => {
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center gap-2 p-1 sm:p-1.5 rounded-xl hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-full bg-emerald-100 text-[#0e8a44] flex items-center justify-center font-bold text-xs shadow-xs border border-emerald-200">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-[#3f9e4d] flex items-center justify-center font-bold text-xs shadow-xs border border-emerald-200">
                   {currentUser.username ? currentUser.username.slice(0, 2).toUpperCase() : 'AD'}
                 </div>
                 <span className="text-xs sm:text-sm font-semibold text-gray-700 hidden sm:inline">

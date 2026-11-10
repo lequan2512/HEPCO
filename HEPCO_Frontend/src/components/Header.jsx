@@ -89,12 +89,12 @@ const Header = () => {
                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div className="flex flex-col whitespace-nowrap">
+            <div className="flex min-w-0 flex-col">
               <span className="text-base sm:text-lg xl:text-xl font-black tracking-tight text-black leading-none group-hover:text-emerald-700 transition-colors">
                 HEPCO
               </span>
-              <span className="text-[9px] sm:text-[10px] xl:text-[10.5px] font-bold text-emerald-700 tracking-wider uppercase leading-none mt-1">
-                Môi Trường Đô Thị Huế
+              <span className="hidden xl:block max-w-[230px] whitespace-normal text-[9px] font-bold text-black leading-tight mt-1">
+                Công ty Cổ phần Môi trường và Công trình Đô thị Huế
               </span>
             </div>
           </Link>

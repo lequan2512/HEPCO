@@ -121,7 +121,7 @@ const AdminCmsOverview = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner Card */}
-      <div className="bg-gradient-to-r from-[#10243b] via-emerald-900 to-[#0e8a44] rounded-2xl p-5 sm:p-7 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <div className="bg-gradient-to-r from-[#000000] via-emerald-900 to-[#3f9e4d] rounded-2xl p-5 sm:p-7 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 text-emerald-200 mb-3">
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -139,7 +139,7 @@ const AdminCmsOverview = () => {
           <Link
             to={ROUTES.HOME}
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#10243b] hover:bg-emerald-50 font-bold text-xs sm:text-sm shadow-md transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#000000] hover:bg-emerald-50 font-bold text-xs sm:text-sm shadow-md transition-all"
           >
             <ExternalLink className="w-4 h-4 text-emerald-700" />
             <span>Mở xem Website</span>
@@ -170,7 +170,7 @@ const AdminCmsOverview = () => {
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-[#10243b]">
+                    <span className="text-2xl font-black text-[#000000]">
                       {mod.count}
                     </span>
                     <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
@@ -191,7 +191,7 @@ const AdminCmsOverview = () => {
                 <button
                   type="button"
                   onClick={() => navigate(mod.route)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0e8a44] hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#3f9e4d] hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 >
                   <span>Chỉnh sửa</span>
                   <ArrowRight className="w-3.5 h-3.5" />

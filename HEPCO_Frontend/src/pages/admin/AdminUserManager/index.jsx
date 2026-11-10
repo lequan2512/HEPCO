@@ -119,7 +119,7 @@ const AdminUserManager = () => {
       <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-xs border border-gray-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 flex items-center gap-2.5">
-            <Users className="w-6 h-6 text-[#0e8a44]" />
+            <Users className="w-6 h-6 text-[#3f9e4d]" />
             <span>Quản Lý &amp; Phân Quyền Tài Khoản Admin</span>
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -130,7 +130,7 @@ const AdminUserManager = () => {
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0e8a44] hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#3f9e4d] hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer shrink-0"
         >
           <UserPlus className="w-4 h-4" />
           <span>Cấp tài khoản Admin</span>
@@ -200,7 +200,7 @@ const AdminUserManager = () => {
                         </td>
                         <td className="py-3.5 px-4 sm:px-6">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-emerald-100 text-[#0e8a44] flex items-center justify-center font-bold text-xs">
+                            <div className="w-8 h-8 rounded-full bg-emerald-100 text-[#3f9e4d] flex items-center justify-center font-bold text-xs">
                               {user.username.slice(0, 2).toUpperCase()}
                             </div>
                             <div>
@@ -271,7 +271,7 @@ const AdminUserManager = () => {
                 <article key={user.id} className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-[#0e8a44] flex items-center justify-center font-bold text-sm shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-[#3f9e4d] flex items-center justify-center font-bold text-sm shrink-0">
                         {user.username.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -311,7 +311,7 @@ const AdminUserManager = () => {
             </button>
 
             <h3 className="text-lg font-black text-gray-900 mb-1 flex items-center gap-2">
-              <UserCheck className="w-5 h-5 text-[#0e8a44]" />
+              <UserCheck className="w-5 h-5 text-[#3f9e4d]" />
               <span>{editingUser ? 'Cập Nhật Tài Khoản' : 'Cấp Tài Khoản Mới'}</span>
             </h3>
             <p className="text-xs text-gray-500 mb-5">
@@ -331,7 +331,7 @@ const AdminUserManager = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={Boolean(editingUser && editingUser.id === 1)}
                   placeholder="ví dụ: editor01"
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-[#0e8a44] disabled:bg-gray-100"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-[#3f9e4d] disabled:bg-gray-100"
                   required
                 />
               </div>
@@ -346,7 +346,7 @@ const AdminUserManager = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={editingUser ? '••••••••' : 'Tối thiểu 6 ký tự'}
-                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-[#0e8a44]"
+                    className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-[#3f9e4d]"
                     required={!editingUser}
                   />
                   <Lock className="w-4 h-4 text-gray-400 absolute right-3.5 top-3" />
@@ -360,7 +360,7 @@ const AdminUserManager = () => {
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-[#0e8a44] bg-white font-medium"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-[#3f9e4d] bg-white font-medium"
                 >
                   <option value="super_admin">Quản trị Tối cao (Toàn quyền hệ thống &amp; tài khoản)</option>
                   <option value="admin">Quản trị viên (Chỉnh sửa thông tin, tin tức, thông báo, cổ đông, dịch vụ)</option>
@@ -379,7 +379,7 @@ const AdminUserManager = () => {
                 <button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="px-5 py-2 rounded-xl bg-[#0e8a44] hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-colors disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-[#3f9e4d] hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-colors disabled:opacity-50"
                 >
                   {editingUser ? 'Lưu cập nhật' : 'Tạo tài khoản'}
                 </button>

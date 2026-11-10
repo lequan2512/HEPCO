@@ -59,7 +59,7 @@ const AdminLogin = () => {
   });
 
   return (
-    <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-gradient-to-br from-emerald-950 via-[#10243b] to-emerald-900 relative">
+    <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-gradient-to-br from-emerald-950 via-[#000000] to-emerald-900 relative">
       {formik.isSubmitting && <Loading fullScreen message="Đang xác thực tài khoản..." />}
 
       <div className="w-full max-w-md p-6 sm:p-8 bg-white rounded-2xl shadow-2xl border border-gray-100">
@@ -80,7 +80,7 @@ const AdminLogin = () => {
         <div className="flex justify-center mb-4">
           <img src={logo} alt="HEPCO Logo" className="h-16 w-auto object-contain" />
         </div>
-        <h2 className="text-xl sm:text-2xl font-extrabold text-center text-[#10243b] mb-1">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-center text-[#000000] mb-1">
           Hệ Thống Quản Trị Website
         </h2>
         <p className="text-xs sm:text-sm text-center text-gray-500 mb-6">

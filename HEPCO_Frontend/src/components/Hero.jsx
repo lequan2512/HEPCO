@@ -26,8 +26,8 @@ const Hero = ({ config }) => {
         {/* Main Display Headline */}
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-3 sm:mb-6 md:mb-8">
           {(heroConfig.headlinePrefix || heroConfig.headlineHighlight) && <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-black leading-[1.2] sm:leading-[1.15] text-balance mb-4 empty:hidden sm:mb-6 drop-shadow-2xs">
-            <span className="block" style={{ color: heroConfig.headlinePrefixColor || undefined }}>{heroConfig.headlinePrefix}</span>
-            <span className="block text-hepco-green mt-1 sm:mt-2" style={{ color: heroConfig.headlineHighlightColor || undefined }}>
+            <span className="block text-black">{heroConfig.headlinePrefix}</span>
+            <span className="block text-hepco-green mt-1 sm:mt-2">
               {heroConfig.headlineHighlight}
             </span>
           </h1>}
