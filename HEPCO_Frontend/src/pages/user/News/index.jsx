@@ -83,7 +83,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   }
   const [selectedYear, setSelectedYear] = useState('all');
   const [sortOption, setSortOption] = useState('created_at_desc');
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [shareholderViewMode, setShareholderViewMode] = useState(() => window.matchMedia('(max-width: 639px)').matches ? 'list' : 'grid');
 
@@ -140,7 +140,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     setSelectedCategory('all');
     setSelectedYear('all');
     setSortOption('created_at_desc');
-    setIsMobileFiltersOpen(false);
+    setIsFiltersOpen(false);
     setPage(1);
     setIsTypeDropdownOpen(false);
     setTypeSearchTerm('');
@@ -626,24 +626,24 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
 
               <button
                 type="button"
-                onClick={() => setIsMobileFiltersOpen((open) => !open)}
-                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm font-bold text-[#10243b] sm:hidden"
-                aria-expanded={isMobileFiltersOpen}
-                aria-controls="news-mobile-filters"
+                onClick={() => setIsFiltersOpen((open) => !open)}
+                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm font-bold text-[#10243b] transition-colors hover:bg-white sm:w-auto sm:min-w-48 sm:self-end"
+                aria-expanded={isFiltersOpen}
+                aria-controls="news-filters-panel"
               >
                 <span className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-hepco-green" />
-                  Bộ lọc &amp; tìm kiếm
+                  {isFiltersOpen ? 'Thu gọn bộ lọc' : 'Bộ lọc & tìm kiếm'}
                   {activeFilterCount > 0 && (
                     <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-extrabold text-emerald-800">
                       {activeFilterCount}
                     </span>
                   )}
                 </span>
-                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isMobileFiltersOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              <div id="news-mobile-filters" className={isMobileFiltersOpen ? 'block' : 'hidden sm:block'}>
+              <div id="news-filters-panel" className={isFiltersOpen ? 'block' : 'hidden'}>
                 {/* Row 2: Unified Responsive Toolbar: Search Input + Grouped Dropdown + Year Dropdown + Sort Dropdown */}
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 pt-1">
                 {/* 1. Keyword Search Input (Full width on tablet, 4-5 cols on laptop/desktop) */}
