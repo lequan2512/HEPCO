@@ -14,6 +14,9 @@ import toast from 'react-hot-toast';
 import { useGetUsers, useCreateUser, useUpdateUser, useDeleteUser } from '../../../apis/user';
 import ConfirmModal from '../../../components/ConfirmModal';
 import Loading from '../../../components/Loading';
+import Pagination from '../../../components/Pagination';
+
+const PAGE_SIZE = 10;
 
 const ROLE_LABELS = {
   super_admin: { label: 'Quản trị Tối cao', bg: 'bg-purple-100 text-purple-800 border-purple-200' },
@@ -23,6 +26,7 @@ const ROLE_LABELS = {
 
 const AdminUserManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
 
@@ -34,7 +38,7 @@ const AdminUserManager = () => {
   // Delete modal state
   const [deleteId, setDeleteId] = useState(null);
 
-  const { data: usersResponse, isLoading } = useGetUsers();
+  const { data: usersResponse, isLoading } = useGetUsers({ page, limit: PAGE_SIZE });
   const users = usersResponse?.data || [];
 
   const createMutation = useCreateUser();
@@ -102,6 +106,12 @@ const AdminUserManager = () => {
   const filteredUsers = users.filter((u) =>
     u.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const paginationMeta = usersResponse?.meta || {
+    total: filteredUsers.length,
+    page,
+    limit: PAGE_SIZE,
+    totalPages: Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE))
+  };
 
   return (
     <div className="space-y-6">
@@ -133,13 +143,19 @@ const AdminUserManager = () => {
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(1);
+          }}
           placeholder="Tìm kiếm tài khoản theo tên..."
           className="w-full text-xs sm:text-sm text-gray-700 bg-transparent focus:outline-hidden"
         />
         {searchTerm && (
           <button
-            onClick={() => setSearchTerm('')}
+            onClick={() => {
+              setSearchTerm('');
+              setPage(1);
+            }}
             className="p-1 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600"
           >
             <X className="w-4 h-4" />
@@ -154,7 +170,7 @@ const AdminUserManager = () => {
             <Loading message="Đang tải danh sách tài khoản..." />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase text-[11px] font-bold tracking-wider">
@@ -243,6 +259,44 @@ const AdminUserManager = () => {
             </table>
           </div>
         )}
+        {!isLoading && (
+          <div className="sm:hidden divide-y divide-gray-100">
+            {filteredUsers.length === 0 ? (
+              <p className="px-4 py-8 text-center text-sm text-gray-500">Không tìm thấy tài khoản quản trị nào.</p>
+            ) : filteredUsers.map((user) => {
+              const roleInfo = ROLE_LABELS[user.role] || ROLE_LABELS.admin;
+              const isRoot = user.id === 1 || user.username === 'admin';
+
+              return (
+                <article key={user.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-[#0e8a44] flex items-center justify-center font-bold text-sm shrink-0">
+                        {user.username.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 break-all">{user.username}</p>
+                        {isRoot && <span className="text-xs text-purple-700 font-semibold inline-flex items-center gap-1"><Shield className="w-3 h-3 fill-purple-600 text-purple-600" />Tài khoản gốc hệ thống</span>}
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono text-gray-400 shrink-0">#{user.id}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 pl-[52px]">
+                    <div className="space-y-2">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border ${roleInfo.bg}`}><Shield className="w-3 h-3" />{roleInfo.label}</span>
+                      <p className="text-xs text-gray-500">Ngày cấp: {user.created_at ? new Date(user.created_at).toLocaleDateString('vi-VN') : 'Mặc định'}</p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button type="button" onClick={() => handleOpenEdit(user)} className="p-2 rounded-lg text-blue-600 hover:bg-blue-50" title="Chỉnh sửa phân quyền & Mật khẩu"><Edit2 className="w-4 h-4" /></button>
+                      {!isRoot && <button type="button" onClick={() => setDeleteId(user.id)} className="p-2 rounded-lg text-rose-600 hover:bg-rose-50" title="Xóa tài khoản"><Trash2 className="w-4 h-4" /></button>}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+        {!isLoading && <Pagination meta={paginationMeta} onPageChange={setPage} />}
       </div>
 
       {/* Modal Add / Edit User */}
