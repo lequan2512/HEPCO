@@ -87,9 +87,8 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   const [page, setPage] = useState(1);
   const [shareholderViewMode, setShareholderViewMode] = useState(() => window.matchMedia('(max-width: 639px)').matches ? 'list' : 'grid');
 
-  // Searchable Category/Document Type Dropdown Popover state
+  // Category/Document Type Dropdown Popover state
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
-  const [typeSearchTerm, setTypeSearchTerm] = useState('');
   const typeDropdownRef = useRef(null);
 
   // Expanded attachments tracking for Shareholder items with many files
@@ -143,7 +142,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     setIsFiltersOpen(false);
     setPage(1);
     setIsTypeDropdownOpen(false);
-    setTypeSearchTerm('');
     setActiveSubView(tabParam === 'gallery' && pageType === 'news' ? 'gallery' : 'articles');
   } else if (tabParam !== prevTabParam) {
     setPrevTabParam(tabParam);
@@ -250,7 +248,6 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     setSelectedCategory('all');
     setSelectedYear('all');
     setSortOption('created_at_desc');
-    setTypeSearchTerm('');
     setPage(1);
   };
 
@@ -691,36 +688,9 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                     />
                   </button>
 
-                  {/* Popover Dropdown Menu with Search & Grouped Options */}
+                  {/* Popover Dropdown Menu with Grouped Options */}
                   {isTypeDropdownOpen && (
                     <div className="absolute left-0 right-0 sm:w-80 md:w-96 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-200 z-40 overflow-hidden">
-                      {/* Quick Filter Inside Dropdown */}
-                      <div className="p-2.5 border-b border-gray-100 bg-gray-50/70">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                          <input
-                            type="text"
-                            placeholder={
-                              pageType === 'shareholders'
-                                ? 'Tìm nhanh loại tài liệu...'
-                                : 'Tìm nhanh chuyên mục...'
-                            }
-                            value={typeSearchTerm}
-                            onChange={(e) => setTypeSearchTerm(e.target.value)}
-                            className="w-full pl-8 pr-7 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-hepco-green"
-                          />
-                          {typeSearchTerm && (
-                            <button
-                              type="button"
-                              onClick={() => setTypeSearchTerm('')}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
                       <div className="max-h-80 overflow-y-auto p-2 space-y-1 custom-scrollbar">
                         {/* All Option */}
                         <button
@@ -755,12 +725,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                           SHAREHOLDER_DOC_GROUP_OPTIONS.filter(
                             (grp) => grp.value !== SHAREHOLDER_DOC_GROUP.ALL
                           ).map((grp) => {
-                            const q = typeSearchTerm.trim().toLowerCase();
-                            const matchingTypes = (grp.types || []).filter((tKey) => {
-                              const label = SHAREHOLDER_DOC_TYPE_LABELS[tKey]?.label || '';
-                              return !q || label.toLowerCase().includes(q) || grp.label.toLowerCase().includes(q);
-                            });
-                            if (matchingTypes.length === 0) return null;
+                            const matchingTypes = grp.types || [];
                             const grpCount = shareholderStats.countsByGroup?.[grp.value] || 0;
                             const isGrpSelected = selectedCategory === grp.value;
 
@@ -826,12 +791,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                         ) : (
                           /* News Categories inside Dropdown */
                           NEWS_CATEGORY_OPTIONS.filter(
-                            (opt) =>
-                              opt.value !== NEWS_CATEGORY.ALL &&
-                              (!typeSearchTerm.trim() ||
-                                opt.label
-                                  .toLowerCase()
-                                  .includes(typeSearchTerm.trim().toLowerCase()))
+                            (opt) => opt.value !== NEWS_CATEGORY.ALL
                           ).map((opt) => {
                             const count = newsStats.countsByCategory?.[opt.value] || 0;
                             const isSelected = selectedCategory === opt.value;
