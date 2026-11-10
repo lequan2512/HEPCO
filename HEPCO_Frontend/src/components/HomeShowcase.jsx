@@ -54,19 +54,7 @@ const HomeShowcase = () => {
   const { data } = useShowcase();
   const config = data?.data;
 
-  // Use 2026 flagship activities if no server data or if server data contains legacy placeholder illustrations
-  const hasLegacyPlaceholders =
-    !config?.items ||
-    !config.items.length ||
-    config.items.some(
-      (item) =>
-        item.image?.includes('news_trucks') ||
-        item.image?.includes('news_planting') ||
-        item.image?.includes('news_cleanup') ||
-        item.image?.includes('news_meeting')
-    );
-
-  const finalConfig = hasLegacyPlaceholders ? SHOWCASE_2026_DEFAULT : config;
+  const finalConfig = config ?? SHOWCASE_2026_DEFAULT;
   return <HomeShowcaseView config={finalConfig} />;
 };
 

@@ -1,9 +1,13 @@
+import { useShowcase } from '../apis/showcase';
+import { DEFAULT_FOOTER } from '../constants/showcase';
 import { Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import logo from '../assets/images/logo.png';
 
 const Footer = () => {
+  const { data } = useShowcase();
+  const footer = { ...DEFAULT_FOOTER, ...data?.data?.footer };
   return (
     <footer className="bg-gradient-to-br from-green-900 to-hepco-green text-white relative overflow-hidden pt-10 pb-6">
       {/* Background shape/line art */}
@@ -30,21 +34,21 @@ const Footer = () => {
             <div className="flex items-center gap-3 mb-4">
               <img
                 src={logo}
-                alt="HEPCO"
+                alt={footer.brand || 'HEPCO'}
                 className="h-12 w-auto rounded-full bg-white p-1 shadow-md"
               />
               <span className="text-2xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-green-200">
-                HEPCO
+                {footer.brand}
               </span>
             </div>
             <p className="text-sm leading-relaxed mb-6 text-green-50 text-pretty">
-              Phát huy thế mạnh và đa dạng hóa lĩnh vực hoạt động để trở thành Công ty môi trường hàng đầu khu vực miền Trung - Tây Nguyên.
+              {footer.description}
             </p>
 
             {/* Social Icons */}
             <div className="flex gap-3">
               <a
-                href="https://www.facebook.com/hepco.com.vn"
+                href={footer.facebook || undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-hepco-orange transition-all hover:scale-110 shadow-md border border-white/5"
@@ -55,7 +59,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="mailto:info@hepco.com.vn"
+                href={footer.email ? "mailto:" + footer.email : undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-hepco-orange transition-all hover:scale-110 shadow-md border border-white/5"
@@ -69,18 +73,18 @@ const Footer = () => {
           {/* Column 2: Contact Info */}
           <div className="col-span-1">
             <h3 className="text-lg font-bold mb-5 relative inline-block text-white">
-              Cổng thông tin điện tử
+              {footer.contactTitle}
               <div className="absolute -bottom-2 left-0 w-12 h-1 bg-hepco-orange rounded-full"></div>
             </h3>
             <div className="space-y-4 text-sm text-green-50">
               <p className="font-extrabold uppercase leading-snug text-white">
-                CÔNG TY CỔ PHẦN MÔI TRƯỜNG VÀ CÔNG TRÌNH ĐÔ THỊ HUẾ
+                {footer.companyName}
               </p>
               <div className="flex gap-3 items-start group">
                 <div className="bg-white/10 p-1.5 rounded-md group-hover:bg-hepco-orange transition-colors">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
-                <p>46 Trần Phú, Phường Thuận Hóa, Thành phố Huế</p>
+                <p>{footer.address}</p>
               </div>
               <div className="flex gap-3 items-start group">
                 <div className="bg-white/10 p-1.5 rounded-md group-hover:bg-hepco-orange transition-colors">
@@ -88,8 +92,8 @@ const Footer = () => {
                 </div>
                 <p>
                   Hotline / Đường dây nóng:{' '}
-                  <a href="tel:1900969669" className="font-bold text-white hover:underline">
-                    1900 969669
+                  <a href={footer.hotline ? "tel:" + footer.hotline.replace(/[^+\d]/g, "") : undefined} className="font-bold text-white hover:underline">
+                    {footer.hotline}
                   </a>
                 </p>
               </div>
@@ -99,9 +103,9 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="mt-8 pt-4 border-t border-white/20 text-center text-xs text-green-100 flex flex-col md:flex-row justify-between items-center gap-2">
-          <p>© {new Date().getFullYear()} HEPCO. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {footer.copyright}</p>
           <div className="flex items-center gap-4">
-            <p className="opacity-70">Thiết kế &amp; Phát triển bởi HEPCO IT</p>
+            <p className="opacity-70">{footer.credit}</p>
             <Link
               to={ROUTES.ADMIN_DASHBOARD}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/25 text-white font-semibold transition-colors"

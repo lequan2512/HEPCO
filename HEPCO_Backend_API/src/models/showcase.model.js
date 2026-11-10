@@ -2,6 +2,21 @@ const { prisma } = require('../db');
 const { SHOWCASE_ID } = require('../constants/showcase');
 const AppError = require('../utils/AppError');
 
+const DEFAULT_HOME_SECTIONS = [
+  ['hero', 'Banner chính'],
+  ['stats', 'Số liệu thống kê'],
+  ['utilities', 'Tiện ích công dân'],
+  ['services', 'Dịch vụ'],
+  ['sectors', 'Lĩnh vực phục vụ'],
+  ['why', 'Năng lực và thế mạnh'],
+  ['showcase', 'Hoạt động trọng điểm'],
+  ['banners', 'Thư viện hình ảnh'],
+  ['testimonials', 'Đánh giá'],
+  ['cta', 'Kêu gọi hành động'],
+  ['news', 'Tin tức'],
+  ['faq', 'Câu hỏi thường gặp']
+].map(([id, label]) => ({ id, label, visible: true }));
+
 const DEFAULT_HOME_CONFIG = {
   title: 'Hoạt Động & Dự Án Trọng Điểm',
   description: 'Hình ảnh công tác thực tế của đội ngũ cán bộ công nhân viên HEPCO trên khắp các nẻo đường Cố đô Huế.',
@@ -156,7 +171,13 @@ class ShowcaseModel {
   }
 
   static async getHomeSections() {
-    return prisma.homeSection.findMany({ orderBy: { order: 'asc' } });
+    try {
+      const sections = await prisma.homeSection.findMany({ orderBy: { order: 'asc' } });
+      return sections.length ? sections : DEFAULT_HOME_SECTIONS;
+    } catch (error) {
+      if (error.code !== 'P2021') throw error;
+      return DEFAULT_HOME_SECTIONS;
+    }
   }
 
   static async save(data, version) {

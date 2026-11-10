@@ -35,10 +35,8 @@ export const useGetNewsStats = ({ enabled = true } = {}) => {
       } catch {
         // Fall back to local dataset stats
       }
-      return {
-        news: getNewsCategoryStats(),
-        shareholders: getShareholderStats()
-      };
+      const [news, shareholders] = await Promise.all([getNewsCategoryStats(), getShareholderStats()]);
+      return { news, shareholders };
     }
   });
 };

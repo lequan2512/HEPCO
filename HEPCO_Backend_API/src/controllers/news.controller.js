@@ -44,8 +44,10 @@ const forwardError = (error, next) => next(error.code === 'P2025' ? new AppError
 
 exports.getNewsStats = async (req, res, next) => {
   try {
-    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
-    const stats = await publicReads.read('stats', () => NewsModel.getStats());
+    const authenticated = Boolean(req.headers.authorization);
+    const stats = await (authenticated ? NewsModel.getStats() : publicReads.read('stats', () => NewsModel.getStats()));
+    res.vary('Authorization');
+    res.setHeader('Cache-Control', authenticated ? 'no-store' : 'public, s-maxage=120, stale-while-revalidate=600');
     res.json(stats);
   } catch (error) { next(error); }
 };
@@ -56,16 +58,18 @@ exports.getAllNews = async (req, res, next) => {
     const page = positiveId(req.query.page || 1);
     const limit = positiveId(req.query.limit || 20);
     if (limit > NEWS_MAX_PAGE_SIZE || (type && type !== 'all' && !NEWS_TYPES.includes(type)) || typeof search !== 'string' || (category !== undefined && typeof category !== 'string') || !Object.hasOwn(NEWS_SORTS, sort)) throw new AppError('INVALID_INPUT', 400, 'Invalid list parameters');
+    if ([documentType, documentTypes].some((value) => value !== undefined && typeof value !== 'string')) {
+      throw new AppError('INVALID_INPUT', 400, 'Invalid document type filter');
+    }
     const parsedYear = year && year !== 'all' ? positiveId(year) : undefined;
     const filteredCategory = category && category !== 'all' ? category : undefined;
     const docTypes = documentTypes ? documentTypes.split(',').filter(Boolean) : (documentType && documentType !== 'all' ? [documentType] : undefined);
     const params = { type, search, category: filteredCategory, documentTypes: docTypes, year: parsedYear, sort, page, limit, summaryOnly: view === 'summary' };
     const load = () => NewsModel.getAll(params);
     const cacheable = params.summaryOnly && page === 1 && limit <= 24 && !search && !req.headers.authorization;
-    if (!req.headers.authorization) {
-      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    }
     const result = await (cacheable ? publicReads.read(JSON.stringify(params), load) : load());
+    res.vary('Authorization');
+    res.setHeader('Cache-Control', cacheable ? 'public, s-maxage=60, stale-while-revalidate=300' : 'no-store');
     res.json(result);
   } catch (error) { next(error); }
 };
@@ -97,11 +101,10 @@ const saveBase64Media = async (dataUri) => {
 
 exports.getNewsById = async (req, res, next) => {
   try {
-    if (!req.headers.authorization) {
-      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
-    }
     const article = await NewsModel.getById(positiveId(req.params.id));
     if (!article) throw new AppError('ARTICLE_NOT_FOUND', 404, 'Article not found');
+    res.vary('Authorization');
+    res.setHeader('Cache-Control', req.headers.authorization ? 'no-store' : 'public, s-maxage=120, stale-while-revalidate=600');
     res.json(article);
   } catch (error) { next(error); }
 };

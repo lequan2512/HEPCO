@@ -2,10 +2,25 @@ import { useMutation } from '@tanstack/react-query';
 import axiosInstance from '../utils/axios';
 import { CMS_REQUEST_TIMEOUT } from '../constants/cms';
 import { apiContractError } from '../services/apiErrors';
+import { prepareImageUpload } from '../utils/prepareImageUpload';
 
 export const useUploadImage = () =>
   useMutation({
     mutationFn: async (formData) => {
+      const field = formData.get('image') ? 'image' : 'file';
+      const selectedFile = formData.get(field);
+      if (selectedFile instanceof File && (field === 'image' || selectedFile.type.startsWith('image/'))) {
+        const prepared = await prepareImageUpload(selectedFile);
+        formData.set(field, prepared);
+        const response = await axiosInstance.post('/api/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: CMS_REQUEST_TIMEOUT
+        });
+        if (response.data?.success === true && typeof response.data.url === 'string' && response.data.url.trim()) {
+          return response.data;
+        }
+        throw apiContractError('UPLOAD_FAILED', 'Máy chủ chưa xác nhận lưu ảnh.');
+      }
       try {
         const response = await axiosInstance.post('/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },

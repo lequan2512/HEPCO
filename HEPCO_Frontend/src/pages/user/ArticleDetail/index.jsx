@@ -432,7 +432,7 @@ const ArticleDetail = () => {
                     prose-a:text-hepco-green hover:prose-a:text-hepco-orange prose-a:font-semibold
                     prose-strong:text-gray-900
                     prose-img:rounded-2xl prose-img:shadow-md prose-img:mx-auto prose-img:my-6
-                    prose-table:border-collapse prose-table:w-full prose-td:border prose-td:border-gray-300 prose-td:p-2.5 prose-th:border prose-th:border-gray-300 prose-th:p-2.5 prose-th:bg-gray-50
+                    [&_table]:max-sm:block [&_table]:max-sm:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto prose-table:border-collapse prose-table:w-full prose-td:border prose-td:border-gray-300 prose-td:p-2.5 prose-th:border prose-th:border-gray-300 prose-th:p-2.5 prose-th:bg-gray-50
                     prose-ul:list-disc prose-ol:list-decimal prose-li:mb-2
                     prose-blockquote:border-l-4 prose-blockquote:border-hepco-green prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:my-8 prose-blockquote:text-gray-600 prose-blockquote:bg-gray-50 prose-blockquote:py-4 prose-blockquote:rounded-r-lg"
                   dangerouslySetInnerHTML={{

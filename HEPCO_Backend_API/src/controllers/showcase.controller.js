@@ -51,15 +51,19 @@ const validate = async (body) => {
   })) : dbSections.map(d => ({ id: d.id, label: d.label, visible: d.visible }));
 
   // 3. Hero
+  const color = (value) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value : '';
   const hero = config.hero ? {
     headlinePrefix: text(config.hero.headlinePrefix ?? '', 200, false),
     headlineHighlight: text(config.hero.headlineHighlight ?? '', 200, false),
+    headlinePrefixColor: color(config.hero.headlinePrefixColor),
+    headlineHighlightColor: color(config.hero.headlineHighlightColor),
     subtitle: text(config.hero.subtitle ?? '', 1000, false),
     primaryCtaText: text(config.hero.primaryCtaText ?? 'Khám Phá Dịch Vụ', 100, false),
     primaryCtaLink: safeUrl(config.hero.primaryCtaLink) || '/dich-vu',
     hotlineDisplay: text(config.hero.hotlineDisplay ?? '1900.96.96.69', 50, false),
     hotlineTel: text(config.hero.hotlineTel ?? '1900969669', 50, false),
     coverImage: safeUrl(config.hero.coverImage, true) || '/uploads/images/TongQuan_6a06c09d.jpg',
+    backgroundImage: safeUrl(config.hero.backgroundImage, true),
     videoUrl: safeUrl(config.hero.videoUrl) || '',
     videoButtonText: text(config.hero.videoButtonText ?? 'Xem Phim Giới Thiệu', 100, false)
   } : undefined;
@@ -129,13 +133,29 @@ const validate = async (body) => {
   const faq = config.faq ? {
     title: text(config.faq.title ?? '', 200, false),
     subtitle: text(config.faq.subtitle ?? '', 500, false),
+    ...Object.fromEntries(
+      [['officeLabel', 200], ['officeName', 200], ['officeDescription', 500], ['officeAddress', 500]]
+        .filter(([key]) => Object.hasOwn(config.faq, key))
+        .map(([key, limit]) => [key, text(config.faq[key], limit, false)])
+    ),
     items: Array.isArray(config.faq.items) ? config.faq.items.map(it => ({
       question: text(it.question ?? '', 300, false),
       answer: text(it.answer ?? '', 2000, false)
     })) : []
   } : undefined;
 
+  const footer = config.footer && Object.fromEntries(
+    Object.entries({ brand: 100, description: 1000, contactTitle: 150, companyName: 250,
+      address: 500, hotline: 50, email: 254, facebook: SHOWCASE_URL_LIMIT, copyright: 250, credit: 250 })
+      .filter(([key]) => Object.hasOwn(config.footer, key))
+      .map(([key, limit]) => [key, text(config.footer[key], limit, false)])
+  );
+  if (footer?.facebook && !/^https:\/\//i.test(footer.facebook)) {
+    throw new AppError('INVALID_INPUT', 400, 'Footer Facebook link must use HTTPS');
+  }
+
   const sanitized = {
+    ...(footer && { footer }),
     title: text(config.title || 'Hoạt Động & Dự Án Trọng Điểm', SHOWCASE_TITLE_LIMIT),
     description: text(config.description ?? '', SHOWCASE_TEXT_LIMIT, false),
     linkLabel: text(config.linkLabel || 'Thư Viện Hình Ảnh & Hoạt Động', SHOWCASE_TITLE_LIMIT),

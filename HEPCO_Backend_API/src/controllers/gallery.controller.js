@@ -6,6 +6,10 @@ const publicReads = require('../utils/publicReadCache')();
 exports.getGallery = async (req, res, next) => {
   try {
     const { category, search, page = GALLERY_LIMITS.DEFAULT_PAGE, limit = GALLERY_LIMITS.DEFAULT_LIMIT } = req.query;
+    if ([category, search].some((value) => value !== undefined && typeof value !== 'string') ||
+        [page, limit].some((value) => !/^\d+$/.test(String(value)) || !Number.isSafeInteger(Number(value)) || Number(value) < 1)) {
+      throw new AppError('INVALID_INPUT', 400, 'Invalid gallery filters or pagination');
+    }
     const params = {
       category,
       search,
@@ -14,10 +18,9 @@ exports.getGallery = async (req, res, next) => {
     };
     const load = () => GalleryModel.getAll(params);
     const cacheable = params.page === 1 && params.limit <= 24 && !search && !req.headers.authorization;
-    if (!req.headers.authorization) {
-      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
-    }
     const result = await (cacheable ? publicReads.read(JSON.stringify(params), load) : load());
+    res.vary('Authorization');
+    res.setHeader('Cache-Control', cacheable ? 'public, s-maxage=120, stale-while-revalidate=600' : 'no-store');
     res.json(result);
   } catch (error) {
     next(error);

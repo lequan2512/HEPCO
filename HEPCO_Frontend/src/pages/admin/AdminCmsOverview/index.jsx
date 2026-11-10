@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Newspaper,
   TrendingUp,
@@ -33,15 +33,14 @@ const AdminCmsOverview = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
-  const [, setRefreshTick] = useState(0);
   const [confirmReset, setConfirmReset] = useState(false);
 
-  const counts = getCmsOverviewCounts();
+  const { data: counts = {} } = useQuery({ queryKey: ['cms-overview'], queryFn: getCmsOverviewCounts });
 
   const modules = [
     {
       title: 'Cập Nhật Tin Tức',
-      count: counts.newsCount,
+      count: counts.newsCount ?? 0,
       unit: 'bài viết',
       description: 'Quản lý tin hoạt động công ty, sự kiện, môi trường, đoàn thể và sản xuất kinh doanh với trình soạn thảo phong phú.',
       icon: Newspaper,
@@ -61,7 +60,7 @@ const AdminCmsOverview = () => {
     },
     {
       title: 'Quan Hệ Cổ Đông',
-      count: counts.shareholdersCount,
+      count: counts.shareholdersCount ?? 0,
       unit: 'tài liệu',
       description: 'Đăng tải báo cáo tài chính đã kiểm toán, báo cáo thường niên, nghị quyết ĐHĐCĐ, thông báo cổ tức & file PDF.',
       icon: TrendingUp,
@@ -71,7 +70,7 @@ const AdminCmsOverview = () => {
     },
     {
       title: 'Dịch Vụ Công Ty',
-      count: counts.servicesCount,
+      count: counts.servicesCount ?? 0,
       unit: 'dịch vụ',
       description: 'Cập nhật nội dung các dịch vụ thu gom chất thải, vệ sinh môi trường, thoát nước, chiếu sáng và chăm sóc cây xanh.',
       icon: Wrench,
@@ -81,7 +80,7 @@ const AdminCmsOverview = () => {
     },
     {
       title: 'Thông Tin Giới Thiệu & Thư Ngỏ',
-      count: counts.aboutCount + 4,
+      count: (counts.aboutCount ?? 0) + 4,
       unit: 'mục cấu hình',
       description: 'Chỉnh sửa Thư ngỏ Ban Lãnh Đạo, số liệu năng lực, Giấy phép môi trường 317 & 48, Sơ đồ tổ chức & Hồ sơ năng lực 2026.',
       icon: Building2,
@@ -101,7 +100,7 @@ const AdminCmsOverview = () => {
     },
     {
       title: 'Banner & Hero Trang Chủ',
-      count: counts.bannersCount,
+      count: counts.bannersCount ?? 0,
       unit: 'banner',
       description: 'Tùy chỉnh tiêu đề trang chủ, hotline hiển thị, video Youtube giới thiệu và danh sách banner chạy trên trang chủ.',
       icon: Sliders,
@@ -111,7 +110,7 @@ const AdminCmsOverview = () => {
     },
     {
       title: 'Thư Viện Hình Ảnh',
-      count: counts.galleryCount,
+      count: counts.galleryCount ?? 0,
       unit: 'hình ảnh',
       description: 'Quản lý kho ảnh thực tế phân theo chủ đề: Hoạt động công ty, Môi trường, Sự kiện đoàn thể, Phương tiện & Công trình.',
       icon: ImageIcon,
@@ -154,7 +153,7 @@ const AdminCmsOverview = () => {
       const text = await file.text();
       importCmsDataJson(text);
       queryClient.invalidateQueries();
-      setRefreshTick((t) => t + 1);
+
       toast.success('Đã khôi phục dữ liệu CMS từ tệp sao lưu!');
     } catch {
       toast.error('Tệp JSON không hợp lệ!');
@@ -166,7 +165,7 @@ const AdminCmsOverview = () => {
   const handleResetDefaults = () => {
     resetLocalOverrides();
     queryClient.invalidateQueries();
-    setRefreshTick((t) => t + 1);
+
     setConfirmReset(false);
     toast.success('Đã khôi phục dữ liệu mặc định từ hệ thống gốc!');
   };

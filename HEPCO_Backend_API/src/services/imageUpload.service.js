@@ -2,7 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const cloudinary = require('cloudinary').v2;
-const { LOCAL_MEDIA_DIRECTORY, IMAGE_FOLDER } = require('../constants/upload');
+const { LOCAL_MEDIA_DIRECTORY, IMAGE_FOLDER, IMAGE_MAX_BYTES } = require('../constants/upload');
 const { prisma } = require('../db');
 const AppError = require('../utils/AppError');
 
@@ -48,6 +48,9 @@ if (hasCloudConfig()) {
 exports.uploadImage = async (file) => {
   if (!file?.buffer) throw new AppError('NO_FILE_UPLOADED', 400, 'An image or document file is required');
   const extension = fileExtension(file.buffer);
+  if (extension !== 'pdf' && file.buffer.length > IMAGE_MAX_BYTES) {
+    throw new AppError('INVALID_IMAGE_UPLOAD', 400, 'Image size must not exceed 10 MB');
+  }
   const subFolder = extension === 'pdf' ? 'files' : 'images';
   const filename = `${randomUUID()}.${extension}`;
 

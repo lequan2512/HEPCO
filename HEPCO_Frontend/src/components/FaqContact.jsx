@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, MapPin, Send, HelpCircle } from 'lucide-react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import toast from 'react-hot-toast';
+import { DEFAULT_HEADQUARTERS } from '../constants/showcase';
 
 const DEFAULT_FAQS = [
   {
@@ -28,6 +29,7 @@ const DEFAULT_FAQS = [
 ];
 
 const FaqContact = ({ config }) => {
+  const office = { ...DEFAULT_HEADQUARTERS, ...config };
   const [openFaq, setOpenFaq] = useState(0);
   const [activeTab, setActiveTab] = useState('faq'); // 'faq' or 'contact'
 
@@ -279,13 +281,13 @@ const FaqContact = ({ config }) => {
             <div className="space-y-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                  Thông Tin Trụ Sở
+                  {office.officeLabel}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black text-[#10243b] mt-1 mb-2">
-                  HEPCO Huế
+                  {office.officeName}
                 </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  Công ty Cổ phần Môi trường và Công trình Đô thị Huế.
+                  {office.officeDescription}
                 </p>
               </div>
 
@@ -296,7 +298,7 @@ const FaqContact = ({ config }) => {
                   </div>
                   <div>
                     <span className="font-bold text-gray-800 block text-xs uppercase">Địa chỉ trụ sở</span>
-                    <span>46 Trần Phú, Phường Phước Vĩnh, TP. Huế</span>
+                    <span>{office.officeAddress}</span>
                   </div>
                 </div>
               </div>

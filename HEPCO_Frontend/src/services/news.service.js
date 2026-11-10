@@ -1,13 +1,14 @@
 import { CONTENT_SOURCE } from '../constants/cms';
 import { createServerArticle, updateServerArticle, deleteServerArticle, getServerArticles, getServerArticle } from './article.service';
 import axiosInstance from '../utils/axios';
-import migratedData from '../data/migratedData.json';
 import {
   NEWS_CATEGORY_LABELS,
   SHAREHOLDER_DOC_TYPE_LABELS,
   SHAREHOLDER_DOC_GROUP_LABELS,
   GALLERY_CATEGORY_LABELS
 } from '../constants/news';
+
+const loadMigratedData = () => import('../data/migratedData.json').then(({ default: data }) => data);
 
 const STORAGE_OVERRIDES_KEY = 'hepco_cms_overrides_v1';
 
@@ -178,7 +179,7 @@ const extractYearFromDateString = (dateStr) => {
   return match ? Number(match[1]) : new Date().getFullYear();
 };
 
-const getBaseCollectionByType = (type) => {
+const getBaseCollectionByType = (migratedData, type) => {
   if (type === 'shareholders') return migratedData.shareholders || [];
   if (type === 'service') return migratedData.services || [];
   if (type === 'about') return migratedData.about || [];
@@ -313,7 +314,7 @@ export const getNewsList = async (params = {}) => {
       // Fallback seamlessly to local collection when server is offline
     }
   }
-  let items = mergeWithOverridesAndApi(getBaseCollectionByType(type), [], type);
+  let items = mergeWithOverridesAndApi(getBaseCollectionByType(await loadMigratedData(), type), [], type);
 
   // Filter by category / documentType / documentGroup
   const activeCategory = documentType || category;
@@ -405,11 +406,12 @@ export const getArticleById = async (rawId) => {
   }
   if (!rawId) throw new Error('Missing article ID');
   const strId = String(rawId).trim();
+  const migratedData = await loadMigratedData();
   const aliasId = migratedData.legacyIdAliases?.[strId]
     ? String(migratedData.legacyIdAliases[strId])
     : strId;
 
-  const allLocal = mergeWithOverridesAndApi(getBaseCollectionByType('all'), [], 'all');
+  const allLocal = mergeWithOverridesAndApi(getBaseCollectionByType(migratedData, 'all'), [], 'all');
 
   let found = allLocal.find(
     (item) =>
@@ -463,7 +465,8 @@ export const getArticleById = async (rawId) => {
   };
 };
 
-export const getShareholderStats = () => {
+export const getShareholderStats = async () => {
+  const migratedData = await loadMigratedData();
   const list = mergeWithOverridesAndApi(migratedData.shareholders || [], [], 'shareholders');
   const years = Array.from(new Set(list.map((i) => i.publishYear).filter(Boolean))).sort(
     (a, b) => b - a
@@ -496,7 +499,8 @@ export const getShareholderStats = () => {
   };
 };
 
-export const getNewsCategoryStats = () => {
+export const getNewsCategoryStats = async () => {
+  const migratedData = await loadMigratedData();
   const list = mergeWithOverridesAndApi(migratedData.news || [], [], 'news');
   const years = Array.from(new Set(list.map((i) => i.publishYear).filter(Boolean))).sort(
     (a, b) => b - a
@@ -520,7 +524,7 @@ export const getNewsCategoryStats = () => {
   };
 };
 
-const getMergedGalleryItems = () => {
+const getMergedGalleryItems = (migratedData) => {
   const overrides = loadLocalOverrides();
   const deletedSet = new Set((overrides.galleryDeleted || []).map((id) => String(id)));
   const result = [];
@@ -558,8 +562,8 @@ const getMergedGalleryItems = () => {
   return result;
 };
 
-export const getGalleryList = ({ category = 'all', search = '', page = 1, limit = 18 } = {}) => {
-  let items = getMergedGalleryItems();
+export const getGalleryList = async ({ category = 'all', search = '', page = 1, limit = 18 } = {}) => {
+  let items = getMergedGalleryItems(await loadMigratedData());
 
   if (category && category !== 'all') {
     items = items.filter((item) => item.category === category);
@@ -643,7 +647,8 @@ export const deleteGalleryItem = async (id) => {
   return { success: true };
 };
 
-export const getAboutPages = () => {
+export const getAboutPages = async () => {
+  const migratedData = await loadMigratedData();
   return mergeWithOverridesAndApi(migratedData.about || [], [], 'about');
 };
 
@@ -696,6 +701,7 @@ export const getMigratedBanners = async () => {
   } catch {
     // Fallback to migrated banners
   }
+  const migratedData = await loadMigratedData();
   const combined = Array.from(new Set([...apiBanners, ...(migratedData.banners || [])]));
   return {
     data: combined,
@@ -802,7 +808,8 @@ export const deleteNewsItem = async (id) => {
   return { success: true, id };
 };
 
-export const getCmsOverviewCounts = () => {
+export const getCmsOverviewCounts = async () => {
+  const migratedData = await loadMigratedData();
   const newsCount = mergeWithOverridesAndApi(migratedData.news || [], [], 'news').length;
   const shareholdersCount = mergeWithOverridesAndApi(
     migratedData.shareholders || [],
@@ -811,7 +818,7 @@ export const getCmsOverviewCounts = () => {
   ).length;
   const servicesCount = mergeWithOverridesAndApi(migratedData.services || [], [], 'service').length;
   const aboutCount = mergeWithOverridesAndApi(migratedData.about || [], [], 'about').length;
-  const galleryCount = getMergedGalleryItems().length;
+  const galleryCount = getMergedGalleryItems(migratedData).length;
   const overrides = loadLocalOverrides();
   const bannersCount = Array.isArray(overrides.banners)
     ? overrides.banners.length

@@ -38,17 +38,15 @@ const HomeStats = ({ config }) => {
     : DEFAULT_STATS;
 
   return (
-    <section className="bg-white border-b border-gray-200/80 py-10 md:py-14">
+    <section className="bg-white border-b border-gray-200/80 py-6 sm:py-10 md:py-14">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 divide-y lg:divide-y-0 lg:divide-x divide-gray-200/80">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-10 lg:divide-x divide-gray-200/80">
           {stats.map((item, idx) => {
             const IconComponent = item.icon || Award;
             return (
               <div
                 key={idx}
-                className={`flex flex-col items-center text-center px-4 ${
-                  idx > 0 && idx % 2 === 0 ? 'pt-8 lg:pt-0' : ''
-                } ${idx % 2 !== 0 ? 'pt-8 sm:pt-0' : ''}`}
+                className="flex min-w-0 flex-col items-center rounded-xl bg-slate-50 px-2 py-4 text-center sm:px-4 lg:rounded-none lg:bg-transparent lg:py-0"
               >
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4 shadow-xs border border-emerald-100">
                   <IconComponent className="w-6 h-6 stroke-[2.2]" />
@@ -56,7 +54,7 @@ const HomeStats = ({ config }) => {
                 <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#10243b] tracking-tight mb-1">
                   {item.value}
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-emerald-800 tracking-wider mb-2 uppercase">
+                <div className="min-h-8 sm:min-h-10 flex items-start justify-center text-xs sm:text-sm leading-4 sm:leading-5 font-bold text-emerald-800 tracking-wide mb-2 uppercase">
                   {item.label}
                 </div>
                 <p className="text-xs sm:text-sm text-gray-500 max-w-[220px] leading-relaxed">

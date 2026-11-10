@@ -84,7 +84,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   const [selectedYear, setSelectedYear] = useState('all');
   const [sortOption, setSortOption] = useState('created_at_desc');
   const [page, setPage] = useState(1);
-  const [shareholderViewMode, setShareholderViewMode] = useState('grid');
+  const [shareholderViewMode, setShareholderViewMode] = useState(() => window.matchMedia('(max-width: 639px)').matches ? 'list' : 'grid');
 
   // Searchable Category/Document Type Dropdown Popover state
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
@@ -96,6 +96,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   // Gallery state
   const [galleryCategory, setGalleryCategory] = useState(GALLERY_CATEGORY.ALL);
   const [gallerySearch, setGallerySearch] = useState('');
+  const [debouncedGallerySearch, setDebouncedGallerySearch] = useState('');
   const [galleryPage, setGalleryPage] = useState(1);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [lightboxZoom, setLightboxZoom] = useState(false);
@@ -169,6 +170,14 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedGallerySearch(gallerySearch);
+      setGalleryPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [gallerySearch]);
+
   const isGalleryView = pageType === 'news' && activeSubView === 'gallery';
   const pageSize = pageType === 'shareholders' ? 12 : 9;
 
@@ -201,7 +210,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
 
   const { data: galleryResponse, isLoading: galleryLoading } = useGetGallery({
     category: galleryCategory,
-    search: gallerySearch,
+    search: debouncedGallerySearch,
     page: galleryPage,
     limit: 16
   }, { enabled: isGalleryView });
@@ -213,15 +222,15 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   const bannerInfo =
     pageType === 'news'
       ? {
-          title: 'Tin tức & Thông báo',
-          description:
-            'Cập nhật những thông tin mới nhất về hoạt động sản xuất kinh doanh, bảo vệ môi trường, sự kiện đoàn thể và thông báo chính thức của HEPCO.'
-        }
+        title: 'Tin tức & Thông báo',
+        description:
+          'Cập nhật những thông tin mới nhất về hoạt động sản xuất kinh doanh, bảo vệ môi trường, sự kiện đoàn thể và thông báo chính thức của HEPCO.'
+      }
       : {
-          title: 'Quan hệ Cổ đông - Chủ đầu tư',
-          description:
-            'Hệ thống công bố thông tin minh bạch, báo cáo tài chính, báo cáo thường niên, nghị quyết HĐQT và tài liệu Đại hội đồng cổ đông của HEPCO.'
-        };
+        title: 'Quan hệ Cổ đông - Chủ đầu tư',
+        description:
+          'Hệ thống công bố thông tin minh bạch, báo cáo tài chính, báo cáo thường niên, nghị quyết HĐQT và tài liệu Đại hội đồng cổ đông của HEPCO.'
+      };
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -312,7 +321,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
         <div className="relative mx-auto max-w-[1320px] px-4 py-10 sm:px-8 sm:py-14 lg:py-16">
           <p className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-emerald-200">
             <span aria-hidden="true" className="h-px w-7 bg-hepco-orange" />
-            {pageType === 'news' ? 'Truyền thông HEPCO' : 'Công bố thông tin'}
+            {pageType === 'news' ? 'Thông tin HEPCO' : 'Công bố thông tin'}
           </p>
           <h1 className="max-w-4xl text-balance text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
             {bannerInfo.title}
@@ -334,18 +343,16 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                   setActiveSubView('articles');
                   setSearchParams({});
                 }}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                  activeSubView === 'articles'
+                className={`flex-1 min-w-0 min-h-11 sm:flex-initial inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeSubView === 'articles'
                     ? 'bg-hepco-green text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <Newspaper className="w-4 h-4 shrink-0" />
                 <span className="truncate">Tin tức &amp; Thông báo</span>
                 <span
-                  className={`text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-extrabold shrink-0 ${
-                    activeSubView === 'articles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-                  }`}
+                  className={`text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full font-extrabold shrink-0 ${activeSubView === 'articles' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                    }`}
                 >
                   {newsStats.total}
                 </span>
@@ -357,11 +364,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                   setActiveSubView('gallery');
                   setSearchParams({ tab: 'gallery' });
                 }}
-                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                  activeSubView === 'gallery'
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${activeSubView === 'gallery'
                     ? 'bg-hepco-green text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <ImageIcon className="w-4 h-4 shrink-0" />
                 <span className="truncate">Thư viện Hình ảnh</span>
@@ -449,11 +455,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                         setGalleryCategory(opt.value);
                         setGalleryPage(1);
                       }}
-                      className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${
-                        isActive
+                      className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${isActive
                           ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
                           : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
-                      }`}
+                        }`}
                     >
                       {opt.label}
                     </button>
@@ -465,7 +470,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
             {/* Gallery Grid */}
             {galleryLoading ? <Loading message="Đang tải hình ảnh..." /> : galleryItems.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                   {galleryItems.map((imgItem, idx) => {
                     const globalIdx = (galleryPage - 1) * 16 + idx;
                     const catStyle =
@@ -498,12 +503,12 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                             </span>
                           </div>
                           <span
-                            className={`absolute top-3 right-3 text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs backdrop-blur-md bg-white/95 ${catStyle}`}
+                            className={`absolute top-2 right-2 max-w-[calc(100%-1rem)] truncate text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full border shadow-2xs backdrop-blur-md bg-white/95 ${catStyle}`}
                           >
                             {imgItem.categoryLabel}
                           </span>
                         </div>
-                        <div className="p-4 flex-grow flex flex-col justify-between">
+                        <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between">
                           <p
                             className="text-gray-800 font-bold text-sm line-clamp-2 leading-snug group-hover:text-hepco-green transition-colors"
                             title={imgItem.caption}
@@ -586,11 +591,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                     <button
                       type="button"
                       onClick={() => setShareholderViewMode('list')}
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                        shareholderViewMode === 'list'
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${shareholderViewMode === 'list'
                           ? 'bg-white text-hepco-green shadow-2xs'
                           : 'text-gray-600 hover:text-gray-900'
-                      }`}
+                        }`}
                       title="Hiển thị dạng danh sách tài liệu"
                     >
                       <List className="w-3.5 h-3.5" />
@@ -599,11 +603,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                     <button
                       type="button"
                       onClick={() => setShareholderViewMode('grid')}
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                        shareholderViewMode === 'grid'
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${shareholderViewMode === 'grid'
                           ? 'bg-white text-hepco-green shadow-2xs'
                           : 'text-gray-600 hover:text-gray-900'
-                      }`}
+                        }`}
                       title="Hiển thị dạng lưới thẻ"
                     >
                       <LayoutGrid className="w-3.5 h-3.5" />
@@ -645,20 +648,18 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                   <button
                     type="button"
                     onClick={() => setIsTypeDropdownOpen((prev) => !prev)}
-                    className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                      selectedCategory !== 'all'
+                    className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${selectedCategory !== 'all'
                         ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900'
                         : 'bg-gray-50/80 hover:bg-white border-gray-200 text-gray-700'
-                    }`}
+                      }`}
                   >
                     <span className="flex items-center gap-2 truncate">
                       <Filter className="w-4 h-4 text-hepco-green shrink-0" />
                       <span className="truncate">{currentCategoryLabel}</span>
                     </span>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${
-                        isTypeDropdownOpen ? 'rotate-180' : ''
-                      }`}
+                      className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${isTypeDropdownOpen ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
 
@@ -701,11 +702,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                             setPage(1);
                             setIsTypeDropdownOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                            selectedCategory === 'all'
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${selectedCategory === 'all'
                               ? 'bg-hepco-green text-white'
                               : 'text-gray-700 hover:bg-gray-100'
-                          }`}
+                            }`}
                         >
                           <span>
                             {pageType === 'shareholders'
@@ -713,11 +713,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                               : 'Tất cả chuyên mục'}
                           </span>
                           <span
-                            className={`text-[11px] px-2 py-0.5 rounded-full ${
-                              selectedCategory === 'all'
+                            className={`text-[11px] px-2 py-0.5 rounded-full ${selectedCategory === 'all'
                                 ? 'bg-white/20 text-white'
                                 : 'bg-gray-100 text-gray-600'
-                            }`}
+                              }`}
                           >
                             {pageType === 'shareholders' ? shareholderStats.total : newsStats.total}
                           </span>
@@ -746,11 +745,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                     setPage(1);
                                     setIsTypeDropdownOpen(false);
                                   }}
-                                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition-colors cursor-pointer ${
-                                    isGrpSelected
+                                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition-colors cursor-pointer ${isGrpSelected
                                       ? 'bg-emerald-100 text-emerald-900'
                                       : 'text-emerald-800 bg-emerald-50/60 hover:bg-emerald-100/70'
-                                  }`}
+                                    }`}
                                 >
                                   <span>{grp.label}</span>
                                   <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white text-emerald-700 border border-emerald-200">
@@ -773,22 +771,20 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                           setPage(1);
                                           setIsTypeDropdownOpen(false);
                                         }}
-                                        className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                                          isSelected
+                                        className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${isSelected
                                             ? 'bg-hepco-green text-white font-bold'
                                             : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                          }`}
                                       >
                                         <span className="truncate text-left flex items-center gap-1.5">
                                           {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
                                           <span className="truncate">{opt.label}</span>
                                         </span>
                                         <span
-                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0 ${
-                                            isSelected
+                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0 ${isSelected
                                               ? 'bg-white/20 text-white'
                                               : 'bg-gray-100 text-gray-600'
-                                          }`}
+                                            }`}
                                         >
                                           {count}
                                         </span>
@@ -820,22 +816,20 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                                   setPage(1);
                                   setIsTypeDropdownOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
-                                  isSelected
+                                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${isSelected
                                     ? 'bg-hepco-green text-white font-bold'
                                     : 'text-gray-700 hover:bg-gray-100'
-                                }`}
+                                  }`}
                               >
                                 <span className="flex items-center gap-1.5 truncate">
                                   {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
                                   <span className="truncate">{opt.label}</span>
                                 </span>
                                 <span
-                                  className={`text-[11px] px-2 py-0.5 rounded-full ${
-                                    isSelected
+                                  className={`text-[11px] px-2 py-0.5 rounded-full ${isSelected
                                       ? 'bg-white/20 text-white'
                                       : 'bg-gray-100 text-gray-600'
-                                  }`}
+                                    }`}
                                 >
                                   {count}
                                 </span>
@@ -857,11 +851,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                       setSelectedYear(e.target.value);
                       setPage(1);
                     }}
-                    className={`w-full pl-9 pr-8 py-2.5 border rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-hepco-green ${
-                      selectedYear !== 'all'
+                    className={`w-full pl-9 pr-8 py-2.5 border rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer appearance-none focus:outline-none focus:ring-2 focus:ring-hepco-green ${selectedYear !== 'all'
                         ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900'
                         : 'bg-gray-50/80 hover:bg-white border-gray-200 text-gray-700'
-                    }`}
+                      }`}
                   >
                     <option value="all">
                       Tất cả các năm ({pageType === 'shareholders' ? shareholderStats.total : newsStats.total})
@@ -909,64 +902,60 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
                   {pageType === 'shareholders'
                     ? SHAREHOLDER_DOC_GROUP_OPTIONS.map((grp) => {
-                        const isActive = activeShareholderGroup === grp.value;
-                        const count = shareholderStats.countsByGroup?.[grp.value] || 0;
-                        return (
-                          <button
-                            key={grp.value}
-                            type="button"
-                            onClick={() => {
-                              setSelectedCategory(grp.value);
-                              setPage(1);
-                            }}
-                            className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${
-                              isActive
-                                ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
-                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
+                      const isActive = activeShareholderGroup === grp.value;
+                      const count = shareholderStats.countsByGroup?.[grp.value] || 0;
+                      return (
+                        <button
+                          key={grp.value}
+                          type="button"
+                          onClick={() => {
+                            setSelectedCategory(grp.value);
+                            setPage(1);
+                          }}
+                          className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${isActive
+                              ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
+                              : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
                             }`}
-                          >
-                            <span>{grp.shortLabel}</span>
-                            <span
-                              className={`text-[11px] px-1.5 py-0.2 rounded-full ${
-                                isActive ? 'bg-white/20 text-white' : 'bg-gray-200/80 text-gray-600'
+                        >
+                          <span>{grp.shortLabel}</span>
+                          <span
+                            className={`text-[11px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-gray-200/80 text-gray-600'
                               }`}
-                            >
-                              {count}
-                            </span>
-                          </button>
-                        );
-                      })
+                          >
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })
                     : NEWS_CATEGORY_OPTIONS.map((opt) => {
-                        const isActive = selectedCategory === opt.value;
-                        const count =
-                          opt.value === NEWS_CATEGORY.ALL
-                            ? newsStats.total
-                            : newsStats.countsByCategory?.[opt.value] || 0;
-                        return (
-                          <button
-                            key={opt.value}
-                            type="button"
-                            onClick={() => {
-                              setSelectedCategory(opt.value);
-                              setPage(1);
-                            }}
-                            className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${
-                              isActive
-                                ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
-                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
+                      const isActive = selectedCategory === opt.value;
+                      const count =
+                        opt.value === NEWS_CATEGORY.ALL
+                          ? newsStats.total
+                          : newsStats.countsByCategory?.[opt.value] || 0;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setSelectedCategory(opt.value);
+                            setPage(1);
+                          }}
+                          className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer border ${isActive
+                              ? 'bg-hepco-green text-white border-hepco-green shadow-xs'
+                              : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'
                             }`}
-                          >
-                            <span>{opt.label}</span>
-                            <span
-                              className={`text-[11px] px-1.5 py-0.2 rounded-full ${
-                                isActive ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-600'
+                        >
+                          <span>{opt.label}</span>
+                          <span
+                            className={`text-[11px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-600'
                               }`}
-                            >
-                              {count}
-                            </span>
-                          </button>
-                        );
-                      })}
+                          >
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
                 </div>
 
                 {/* Active Filter Chips & Quick Reset */}
@@ -1109,7 +1098,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                     </div>
                   ) : (
                     /* ================= NEWS AND ANNOUNCEMENTS CARD GRID ================= */
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 xl:gap-8">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:gap-8">
                       {articles.map((article) => {
                         const catBadge = NEWS_CATEGORY_LABELS[article.category];
                         const attCount = article.attachments?.length || 0;
@@ -1123,7 +1112,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                             className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-emerald-700"
                           >
                             {/* Image Section */}
-                            <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+                            <div className="relative aspect-[16/9] overflow-hidden bg-gray-100 sm:aspect-[16/10]">
                               <img
                                 src={resolveThumbnailUrl(article.thumbnail)}
                                 alt={article.title}
@@ -1353,11 +1342,10 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
               src={resolveAssetUrl(activeLightboxItem.url)}
               alt={activeLightboxItem.caption}
               onClick={() => setLightboxZoom((z) => !z)}
-              className={`rounded-xl shadow-2xl transition-transform duration-300 ${
-                lightboxZoom
+              className={`rounded-xl shadow-2xl transition-transform duration-300 ${lightboxZoom
                   ? 'scale-125 cursor-zoom-out max-h-none'
                   : 'max-h-[70vh] w-auto object-contain cursor-zoom-in'
-              }`}
+                }`}
             />
 
             {/* Caption Bar */}

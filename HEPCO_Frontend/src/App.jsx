@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
@@ -11,16 +11,19 @@ import Services from './pages/user/Services';
 import News from './pages/user/News';
 import ArticleDetail from './pages/user/ArticleDetail';
 
-import AdminLogin from './pages/admin/AdminLogin';
-import AdminLayout from './components/AdminLayout';
-import AdminCmsOverview from './pages/admin/AdminCmsOverview';
-import AdminNewsManager from './pages/admin/AdminNewsManager';
-import AdminAboutManager from './pages/admin/AdminAboutManager';
-import AdminShowcaseManager from './pages/admin/AdminShowcaseManager';
-import AdminGalleryManager from './pages/admin/AdminGalleryManager';
-import AdminBannerManager from './pages/admin/AdminBannerManager';
-import AdminUserManager from './pages/admin/AdminUserManager';
 import { ROUTES } from './constants/routes';
+
+import Loading from './components/Loading';
+
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./components/AdminLayout'));
+const AdminCmsOverview = lazy(() => import('./pages/admin/AdminCmsOverview'));
+const AdminNewsManager = lazy(() => import('./pages/admin/AdminNewsManager'));
+const AdminAboutManager = lazy(() => import('./pages/admin/AdminAboutManager'));
+const AdminShowcaseManager = lazy(() => import('./pages/admin/AdminShowcaseManager'));
+const AdminGalleryManager = lazy(() => import('./pages/admin/AdminGalleryManager'));
+const AdminBannerManager = lazy(() => import('./pages/admin/AdminBannerManager'));
+const AdminUserManager = lazy(() => import('./pages/admin/AdminUserManager'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -113,7 +116,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <Toaster position="top-right" />
-        <AppRoutes />
+        <Suspense fallback={<Loading message="Đang tải trang..." />}>
+          <AppRoutes />
+        </Suspense>
       </Router>
     </QueryClientProvider>
   );

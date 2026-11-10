@@ -28,6 +28,9 @@ import Loading from '../../../components/Loading';
 import ConfirmModal from '../../../components/ConfirmModal';
 import ShowcaseImagePicker from './ShowcaseImagePicker';
 import { ROUTES } from '../../../constants/routes';
+import defaultHeroBackground from '../../../assets/images/bg-img.avif';
+
+import { DEFAULT_FOOTER, DEFAULT_HEADQUARTERS } from '../../../constants/showcase';
 
 const TABS = [
   { id: 'layout', label: 'Bố cục trang chủ', icon: Layout },
@@ -39,6 +42,7 @@ const TABS = [
   { id: 'why', label: 'Năng lực & Thế mạnh', icon: Award },
   { id: 'testimonials', label: 'Đánh giá & Ý kiến', icon: MessageSquare },
   { id: 'cta', label: 'Banner Kêu gọi (CTA)', icon: PhoneCall },
+  { id: 'footer', label: 'Chân trang (Footer)', icon: Layout },
   { id: 'faq', label: 'Câu hỏi thường gặp (FAQ)', icon: HelpCircle }
 ];
 
@@ -51,7 +55,7 @@ const AdminShowcaseManager = () => {
   const [reloading, setReloading] = useState(false);
 
   const initialData = data?.data || {};
-  const version = data?.version || 1;
+  const version = data?.version ?? 0;
 
   const form = useFormik({
     initialValues: {
@@ -79,7 +83,8 @@ const AdminShowcaseManager = () => {
       why: initialData.why || { title: '', subtitle: '', items: [] },
       testimonials: initialData.testimonials || { title: '', subtitle: '', items: [] },
       cta: initialData.cta || { title: '', subtitle: '', buttonText: '', hotlineDisplay: '', hotlineTel: '' },
-      faq: initialData.faq || { title: '', subtitle: '', items: [] }
+      footer: { ...DEFAULT_FOOTER, ...initialData.footer },
+      faq: { title: '', subtitle: '', items: [], ...DEFAULT_HEADQUARTERS, ...initialData.faq }
     },
     enableReinitialize: true,
     onSubmit: async (values) => {
@@ -88,7 +93,8 @@ const AdminShowcaseManager = () => {
         cache.setQueryData(['home-showcase'], result);
         toast.success('Đã lưu toàn bộ cấu hình trang chủ thành công lên máy chủ!');
       } catch (error) {
-        toast.error(getErrorMessage(error?.response?.data?.errorCode) || 'Lỗi khi lưu dữ liệu');
+        const failure = error?.response?.data;
+        toast.error(getErrorMessage(failure?.errorCode) || failure?.message || 'Lỗi khi lưu dữ liệu');
       }
     }
   });
@@ -260,7 +266,30 @@ const AdminShowcaseManager = () => {
             <h2 className="text-lg font-bold text-gray-800">Cấu hình Banner Hero & Video</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               {renderInput('hero.headlinePrefix', 'Tiêu đề chính')}
-              {renderInput('hero.headlineHighlight', 'Cụm từ nổi bật (chữ màu xanh)')}
+              {renderInput('hero.headlineHighlight', 'Tiêu đề dòng 2')}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                ['headlinePrefixColor', 'Màu chữ dòng 1', '#10243b'],
+                ['headlineHighlightColor', 'Màu chữ dòng 2', '#3f9e4d']
+              ].map(([field, label, defaultColor]) => {
+                const value = form.values.hero[field] || defaultColor;
+                return (
+                  <div key={field} className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 text-sm font-semibold">
+                      <input type="color" value={value}
+                        onChange={(event) => form.setFieldValue(`hero.${field}`, event.target.value)}
+                        disabled={busy} className="h-10 w-12 cursor-pointer" />
+                      {label} <span className="font-mono text-xs">{value}</span>
+                    </label>
+                    {form.values.hero[field] && (
+                      <button type="button" disabled={busy}
+                        onClick={() => form.setFieldValue(`hero.${field}`, '')}
+                        className="text-xs text-emerald-700 underline">Mặc định</button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
             {renderInput('hero.subtitle', 'Đoạn giới thiệu ngắn', true)}
             <div className="grid sm:grid-cols-2 gap-4">
@@ -284,6 +313,26 @@ const AdminShowcaseManager = () => {
                 onBusyChange={setUploading}
                 disabled={busy}
               />
+            </div>
+            <div>
+              <h3 className="mb-2 text-xs font-bold uppercase text-gray-700">Ảnh nền phía sau</h3>
+              <ShowcaseImagePicker
+                name="hero-background"
+                value={form.values.hero.backgroundImage || defaultHeroBackground}
+                onChange={(url) => form.setFieldValue('hero.backgroundImage', url)}
+                onBusyChange={setUploading}
+                disabled={busy}
+              />
+              {form.values.hero.backgroundImage && (
+                <button
+                  type="button"
+                  onClick={() => form.setFieldValue('hero.backgroundImage', '')}
+                  disabled={busy}
+                  className="mt-3 text-sm font-semibold text-emerald-700 hover:underline"
+                >
+                  Dùng lại ảnh nền mặc định
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -504,6 +553,24 @@ const AdminShowcaseManager = () => {
         )}
 
         {/* Tab 10: FAQ */}
+        {activeTab === 'footer' && (
+          <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 sm:p-7">
+            <h2 className="text-lg font-bold">Chân trang website</h2>
+            {renderInput('footer.brand', 'Tên thương hiệu')}
+            {renderInput('footer.description', 'Giới thiệu ngắn', true)}
+            {renderInput('footer.contactTitle', 'Tiêu đề liên hệ')}
+            {renderInput('footer.companyName', 'Tên công ty')}
+            {renderInput('footer.address', 'Địa chỉ')}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {renderInput('footer.hotline', 'Hotline')}
+              {renderInput('footer.email', 'Email')}
+            </div>
+            {renderInput('footer.facebook', 'Liên kết Facebook (HTTPS)')}
+            {renderInput('footer.copyright', 'Nội dung bản quyền')}
+            {renderInput('footer.credit', 'Dòng ghi công')}
+          </div>
+        )}
+
         {activeTab === 'faq' && (
           <div className="bg-white p-5 sm:p-7 rounded-2xl border border-gray-200/80 shadow-xs space-y-5">
             <div className="flex flex-wrap justify-between items-center gap-3">
@@ -527,6 +594,11 @@ const AdminShowcaseManager = () => {
             </div>
             {renderInput('faq.title', 'Tiêu đề khối FAQ')}
             {renderInput('faq.subtitle', 'Mô tả khối FAQ', true)}
+            <h3 className="font-bold">Thông tin trụ sở</h3>
+            {renderInput('faq.officeLabel', 'Nhãn khối trụ sở')}
+            {renderInput('faq.officeName', 'Tên trụ sở')}
+            {renderInput('faq.officeDescription', 'Mô tả trụ sở', true)}
+            {renderInput('faq.officeAddress', 'Địa chỉ trụ sở')}
 
             <div className="space-y-4 pt-3">
               {(form.values.faq.items || []).map((faqItem, idx) => (

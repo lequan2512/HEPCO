@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { API_BASE_URL } from '../constants/api';
 import thumbnailUrls from '../data/thumbnailUrls.json';
 
@@ -41,7 +42,7 @@ export const formatFileSize = (bytes) => {
 
 export const sanitizeLegacyHtml = (html) => {
   if (!html || typeof html !== 'string') return '';
-  return html
+  const normalized = html
     .replace(/&nbsp;|\u00a0/g, ' ')
     .replace(/(https?:\/\/[^\s"'<>]+)?(https:\/\/res\.cloudinary\.com\/[^\s"'<>]+)/g, '$2')
     .replace(/src=(["'])\/uploads\//gi, `src=$1${API_BASE_URL}/uploads/`)
@@ -51,4 +52,5 @@ export const sanitizeLegacyHtml = (html) => {
     .replace(/font-size\s*:[^;"']+(;)?/gi, '')
     .replace(/line-height\s*:[^;"']+(;)?/gi, '')
     .replace(/mso-[a-z0-9-]+\s*:[^;"']+(;)?/gi, '');
+  return DOMPurify.sanitize(normalized, { USE_PROFILES: { html: true } });
 };

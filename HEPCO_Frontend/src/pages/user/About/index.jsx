@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -35,7 +36,7 @@ const About = () => {
 
   const { data: savedAbout } = useAboutSettings();
   const aboutConfig = savedAbout?.settings ?? getPublicAboutDefaults();
-  const aboutPages = getAboutPages();
+  const { data: aboutPages = [] } = useQuery({ queryKey: ['legacy-about-pages'], queryFn: getAboutPages });
   const historyPage = aboutPages.find((p) => Number(p.id) === 49) || aboutPages[1];
   const functionsPage = aboutPages.find((p) => Number(p.id) === 48) || aboutPages[0];
 
