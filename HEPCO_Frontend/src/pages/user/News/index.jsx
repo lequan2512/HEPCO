@@ -83,6 +83,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
   }
   const [selectedYear, setSelectedYear] = useState('all');
   const [sortOption, setSortOption] = useState('created_at_desc');
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [shareholderViewMode, setShareholderViewMode] = useState(() => window.matchMedia('(max-width: 639px)').matches ? 'list' : 'grid');
 
@@ -139,6 +140,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     setSelectedCategory('all');
     setSelectedYear('all');
     setSortOption('created_at_desc');
+    setIsMobileFiltersOpen(false);
     setPage(1);
     setIsTypeDropdownOpen(false);
     setTypeSearchTerm('');
@@ -257,6 +259,12 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
     selectedYear !== 'all' ||
     Boolean(searchQuery.trim()) ||
     sortOption !== 'created_at_desc';
+  const activeFilterCount = [
+    selectedCategory !== 'all',
+    selectedYear !== 'all',
+    Boolean(searchQuery.trim()),
+    sortOption !== 'created_at_desc'
+  ].filter(Boolean).length;
 
   // Helper to get human-readable label for currently selected Category / Group / DocType
   const currentCategoryLabel = useMemo(() => {
@@ -616,7 +624,27 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 )}
               </div>
 
-              {/* Row 2: Unified Responsive Toolbar: Search Input + Grouped Dropdown + Year Dropdown + Sort Dropdown */}
+              <button
+                type="button"
+                onClick={() => setIsMobileFiltersOpen((open) => !open)}
+                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm font-bold text-[#10243b] sm:hidden"
+                aria-expanded={isMobileFiltersOpen}
+                aria-controls="news-mobile-filters"
+              >
+                <span className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-hepco-green" />
+                  Bộ lọc &amp; tìm kiếm
+                  {activeFilterCount > 0 && (
+                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-extrabold text-emerald-800">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${isMobileFiltersOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <div id="news-mobile-filters" className={isMobileFiltersOpen ? 'block' : 'hidden sm:block'}>
+                {/* Row 2: Unified Responsive Toolbar: Search Input + Grouped Dropdown + Year Dropdown + Sort Dropdown */}
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 sm:gap-3 pt-1">
                 {/* 1. Keyword Search Input (Full width on tablet, 4-5 cols on laptop/desktop) */}
                 <div className="relative col-span-2 sm:col-span-2 lg:col-span-4 xl:col-span-5">
@@ -897,7 +925,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                 </div>
               </div>
 
-              {/* Row 3: Clean Single-Row Quick Group Tabs (5 Main Groups for Shareholders, Categories for News) */}
+                {/* Row 3: Clean Single-Row Quick Group Tabs (5 Main Groups for Shareholders, Categories for News) */}
               <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
                   {pageType === 'shareholders'
@@ -1004,6 +1032,7 @@ const News = ({ pageType = 'news', initialCategory = 'all' }) => {
                     </button>
                   </div>
                 )}
+              </div>
               </div>
             </div>
 
